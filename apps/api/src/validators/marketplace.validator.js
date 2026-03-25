@@ -4,17 +4,11 @@ import {
   ensureObjectId,
   ensureRequiredString,
   normalizeOptionalString,
-  normalizeStringArray,
 } from "./common.js";
+import { normalizeAcademicTaxonomy, normalizeStudyMetadata } from "../utils/academicTaxonomy.js";
 
 function normalizeTaxonomy(body) {
-  return {
-    university: ensureRequiredString(body?.university, "university", { maxLength: 120 }),
-    branch: ensureRequiredString(body?.branch, "branch", { maxLength: 120 }),
-    year: ensureRequiredString(body?.year, "year", { maxLength: 40 }),
-    semester: ensureRequiredString(body?.semester, "semester", { maxLength: 40 }),
-    subject: ensureRequiredString(body?.subject, "subject", { maxLength: 120 }),
-  };
+  return normalizeAcademicTaxonomy(body || {});
 }
 
 function normalizeVisibility(value, fallback = "draft") {
@@ -26,6 +20,8 @@ function normalizeVisibility(value, fallback = "draft") {
 }
 
 function buildSanitizedListingPayload(body, { requireGeneratedPdfId }) {
+  const studyMetadata = normalizeStudyMetadata(body || {});
+
   return {
     ...(requireGeneratedPdfId
       ? { generatedPdfId: ensureObjectId(body?.generatedPdfId, "generatedPdfId") }
@@ -36,8 +32,14 @@ function buildSanitizedListingPayload(body, { requireGeneratedPdfId }) {
     visibility: normalizeVisibility(body?.visibility),
     seoTitle: normalizeOptionalString(body?.seoTitle, { maxLength: 160 }),
     seoDescription: normalizeOptionalString(body?.seoDescription, { maxLength: 260 }),
-    tags: normalizeStringArray(body?.tags, { maxItems: 8, itemMaxLength: 40 }),
-    ...normalizeTaxonomy(body),
+    tags: studyMetadata.tags,
+    studyMetadata: {
+      examFocus: studyMetadata.examFocus,
+      questionType: studyMetadata.questionType,
+      difficultyLevel: studyMetadata.difficultyLevel,
+      intendedAudience: studyMetadata.intendedAudience,
+    },
+    taxonomy: normalizeTaxonomy(body),
   };
 }
 

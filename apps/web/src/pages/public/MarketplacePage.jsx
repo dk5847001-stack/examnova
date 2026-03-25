@@ -5,6 +5,13 @@ import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { MarketplaceListingCard } from "../../components/ui/MarketplaceListingCard.jsx";
 import { PageHero } from "../../components/ui/PageHero.jsx";
 import { UpcomingLockedCard } from "../../components/ui/UpcomingLockedCard.jsx";
+import {
+  BRANCH_OPTIONS,
+  DEFAULT_UNIVERSITY,
+  SEMESTER_OPTIONS,
+  YEAR_OPTIONS,
+  withAllOption,
+} from "../../features/academic/academicTaxonomy.js";
 import { SeoHead } from "../../seo/SeoHead.jsx";
 import {
   fetchPublicListings,
@@ -14,6 +21,11 @@ import {
 import { buildBreadcrumbSchema, buildCollectionSchema, buildSeoPayload } from "../../utils/seo.js";
 
 export function MarketplacePage() {
+  const universityOptions = withAllOption([DEFAULT_UNIVERSITY], "All universities");
+  const branchOptions = withAllOption(BRANCH_OPTIONS, "All branches");
+  const yearOptions = withAllOption(YEAR_OPTIONS, "All years");
+  const semesterOptions = withAllOption(SEMESTER_OPTIONS, "All semesters");
+
   const [filters, setFilters] = useState({
     search: "",
     university: "",
@@ -137,12 +149,12 @@ export function MarketplacePage() {
       <SeoHead {...seoPayload} />
       <PageHero
         eyebrow="Public marketplace"
-        title="Find compact exam PDFs by subject and semester."
-        description="Browse clean, searchable exam-prep PDFs listed by university, branch, year, semester, and subject. Each listing is structured for public discovery and later purchase flow."
+        title="Find premium study PDFs without guessing where to start."
+        description="The marketplace is the main front door to ExamNova AI. Browse clean, searchable Sandip University PDFs by branch, year, semester, and subject, then open a listing and purchase it with a guided flow."
         metrics={[
-          { label: "Discovery", value: "SEO Ready" },
-          { label: "Filtering", value: "Subject Smart" },
-          { label: "Surface", value: "Premium Cards" },
+          { label: "Discovery", value: "Marketplace first" },
+          { label: "Filtering", value: "Academic guided" },
+          { label: "Access", value: "Buy and save" },
         ]}
       />
       {discoveryIndex ? (
@@ -161,20 +173,57 @@ export function MarketplacePage() {
             <div>
               <p className="eyebrow">Browse filters</p>
               <h2>Search and refine</h2>
+              <p className="support-copy">Use guided filters to narrow the catalog quickly, even if you are using the platform for the first time.</p>
             </div>
           </div>
           <label className="field">
             <span>Search</span>
-            <input className="input" onChange={(event) => handleFilterChange("search", event.target.value)} value={filters.search} />
+            <input className="input" onChange={(event) => handleFilterChange("search", event.target.value)} placeholder="Search by subject, topic, or listing title" value={filters.search} />
           </label>
           <div className="two-column-grid compact">
-            <label className="field"><span>University</span><input className="input" onChange={(event) => handleFilterChange("university", event.target.value)} value={filters.university} /></label>
-            <label className="field"><span>Branch</span><input className="input" onChange={(event) => handleFilterChange("branch", event.target.value)} value={filters.branch} /></label>
-            <label className="field"><span>Year</span><input className="input" onChange={(event) => handleFilterChange("year", event.target.value)} value={filters.year} /></label>
-            <label className="field"><span>Semester</span><input className="input" onChange={(event) => handleFilterChange("semester", event.target.value)} value={filters.semester} /></label>
+            <label className="field">
+              <span>University</span>
+              <select className="input" onChange={(event) => handleFilterChange("university", event.target.value)} value={filters.university}>
+                {universityOptions.map((option) => (
+                  <option key={option.value || "all-university"} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Branch</span>
+              <select className="input" onChange={(event) => handleFilterChange("branch", event.target.value)} value={filters.branch}>
+                {branchOptions.map((option) => (
+                  <option key={option.value || "all-branch"} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Year</span>
+              <select className="input" onChange={(event) => handleFilterChange("year", event.target.value)} value={filters.year}>
+                {yearOptions.map((option) => (
+                  <option key={option.value || "all-year"} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Semester</span>
+              <select className="input" onChange={(event) => handleFilterChange("semester", event.target.value)} value={filters.semester}>
+                {semesterOptions.map((option) => (
+                  <option key={option.value || "all-semester"} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
           <div className="two-column-grid compact">
-            <label className="field"><span>Subject</span><input className="input" onChange={(event) => handleFilterChange("subject", event.target.value)} value={filters.subject} /></label>
+            <label className="field"><span>Subject</span><input className="input" onChange={(event) => handleFilterChange("subject", event.target.value)} placeholder="Example: Operating Systems" value={filters.subject} /></label>
             <label className="field">
               <span>Sort</span>
               <select className="input" onChange={(event) => handleFilterChange("sort", event.target.value)} value={filters.sort}>
@@ -195,7 +244,7 @@ export function MarketplacePage() {
             <>
               <div className="document-meta-row">
                 <span>{result.pagination?.total || result.items.length} listings found</span>
-                <span>SEO-ready public detail pages available</span>
+                <span>Open a listing to review details, price, and purchase access</span>
               </div>
               <div className="marketplace-grid">
                 {result.items.map((listing) => (
@@ -221,7 +270,7 @@ export function MarketplacePage() {
           ) : (
             <EmptyStateCard
               title="No marketplace PDFs match yet"
-              description="Try adjusting your university, branch, semester, or subject filters to discover more public exam PDFs."
+              description="Try adjusting your academic filters or broadening your subject search to discover more exam-ready PDFs."
             />
           )}
         </section>

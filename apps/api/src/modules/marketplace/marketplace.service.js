@@ -1,6 +1,7 @@
 import { GeneratedPdf, MarketplaceListing } from "../../models/index.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { slugify } from "../../utils/slugify.js";
+import { normalizeAcademicTaxonomy, normalizeStudyMetadata } from "../../utils/academicTaxonomy.js";
 
 const MIN_PRICE = 4;
 const MAX_PRICE = 10;
@@ -29,6 +30,10 @@ function buildSearchText(payload) {
     payload.taxonomy?.subject,
     payload.taxonomy?.branch,
     payload.taxonomy?.university,
+    payload.studyMetadata?.examFocus,
+    payload.studyMetadata?.questionType,
+    payload.studyMetadata?.difficultyLevel,
+    payload.studyMetadata?.intendedAudience,
     ...(payload.tags || []),
   ]
     .filter(Boolean)
@@ -73,23 +78,10 @@ function ensureVisibility(visibility) {
 }
 
 function normalizeTaxonomy(payload) {
-  const taxonomy = {
-    university: normalizeText(payload.university),
-    branch: normalizeText(payload.branch),
-    year: normalizeText(payload.year),
-    semester: normalizeText(payload.semester),
-    subject: normalizeText(payload.subject),
-  };
-
-  const missing = Object.entries(taxonomy)
-    .filter(([, value]) => !value)
-    .map(([key]) => key);
-
-  if (missing.length) {
-    throw new ApiError(422, `Missing marketplace categories: ${missing.join(", ")}.`);
+  if (payload?.taxonomy) {
+    return payload.taxonomy;
   }
-
-  return taxonomy;
+  return normalizeAcademicTaxonomy(payload || {});
 }
 
 function serializeListing(record) {
@@ -112,6 +104,7 @@ function serializeListing(record) {
     moderationStatus: record.moderationStatus || "clear",
     isPublished: Boolean(record.isPublished),
     taxonomy: record.taxonomy,
+    studyMetadata: record.studyMetadata || {},
     coverImageUrl: record.coverImageUrl || "",
     previewImages: record.previewImages || [],
     tags: record.tags || [],
@@ -174,6 +167,7 @@ export const marketplaceService = {
     const title = normalizeText(payload.title) || generation.title;
     const description = normalizeText(payload.description);
     const tags = normalizeTags(payload.tags);
+    const studyMetadata = payload.studyMetadata || normalizeStudyMetadata(payload || {});
     const slug = await buildUniqueSlug(`${title}-${taxonomy.subject}-${taxonomy.semester}`);
 
     const listing = await MarketplaceListing.create({
@@ -190,10 +184,11 @@ export const marketplaceService = {
       moderationStatus: "clear",
       isPublished: visibility === "published",
       taxonomy,
+      studyMetadata,
       tags,
       seoTitle: normalizeText(payload.seoTitle) || title,
       seoDescription: normalizeText(payload.seoDescription) || description.slice(0, 150),
-      searchText: buildSearchText({ title, description, taxonomy, tags }),
+      searchText: buildSearchText({ title, description, taxonomy, studyMetadata, tags }),
       publishedAt: visibility === "published" ? new Date() : null,
     });
 
@@ -219,6 +214,7 @@ export const marketplaceService = {
     const title = normalizeText(payload.title) || listing.title;
     const description = normalizeText(payload.description);
     const tags = normalizeTags(payload.tags);
+    const studyMetadata = payload.studyMetadata || normalizeStudyMetadata(payload || {}) || listing.studyMetadata || {};
 
     listing.title = title;
     listing.description = description;
@@ -226,10 +222,11 @@ export const marketplaceService = {
     listing.visibility = visibility;
     listing.isPublished = visibility === "published";
     listing.taxonomy = taxonomy;
+    listing.studyMetadata = studyMetadata;
     listing.tags = tags;
     listing.seoTitle = normalizeText(payload.seoTitle) || title;
     listing.seoDescription = normalizeText(payload.seoDescription) || description.slice(0, 150);
-    listing.searchText = buildSearchText({ title, description, taxonomy, tags });
+    listing.searchText = buildSearchText({ title, description, taxonomy, tags, studyMetadata });
     listing.slug = await buildUniqueSlug(`${title}-${taxonomy.subject}-${taxonomy.semester}`, listing._id);
     listing.publishedAt = visibility === "published" ? listing.publishedAt || new Date() : null;
     await listing.save();

@@ -2,6 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { SectionHeader } from "../../components/ui/SectionHeader.jsx";
 import { StatusBadge } from "../../components/ui/StatusBadge.jsx";
+import {
+  BRANCH_OPTIONS,
+  DEFAULT_UNIVERSITY,
+  DIFFICULTY_LEVEL_OPTIONS,
+  EXAM_FOCUS_OPTIONS,
+  INTENDED_AUDIENCE_OPTIONS,
+  QUESTION_TYPE_OPTIONS,
+  SEMESTER_OPTIONS,
+  YEAR_OPTIONS,
+} from "../../features/academic/academicTaxonomy.js";
 import { useAuth } from "../../hooks/useAuth.js";
 import {
   createAdminUpload,
@@ -13,11 +23,15 @@ const initialForm = {
   title: "",
   description: "",
   priceInr: "4",
-  university: "",
+  university: DEFAULT_UNIVERSITY,
   branch: "",
   year: "",
   semester: "",
   subject: "",
+  examFocus: "",
+  questionType: "",
+  difficultyLevel: "",
+  intendedAudience: "",
   tags: "",
   coverImageUrl: "",
   seoTitle: "",
@@ -82,11 +96,15 @@ export function AdminUploadsPage() {
       title: item.title || "",
       description: item.description || "",
       priceInr: String(item.priceInr || 4),
-      university: item.taxonomy?.university || "",
+      university: item.taxonomy?.university || DEFAULT_UNIVERSITY,
       branch: item.taxonomy?.branch || "",
       year: item.taxonomy?.year || "",
       semester: item.taxonomy?.semester || "",
       subject: item.taxonomy?.subject || "",
+      examFocus: item.studyMetadata?.examFocus || "",
+      questionType: item.studyMetadata?.questionType || "",
+      difficultyLevel: item.studyMetadata?.difficultyLevel || "",
+      intendedAudience: item.studyMetadata?.intendedAudience || "",
       tags: (item.tags || []).join(", "),
       coverImageUrl: item.coverImageUrl || "",
       seoTitle: item.seoTitle || "",
@@ -142,7 +160,7 @@ export function AdminUploadsPage() {
       <SectionHeader
         eyebrow="Admin uploads"
         title="Direct premium PDF publishing"
-        description="Upload admin-owned PDFs, categorize them academically, and control whether they are draft, published, or held back for a later release."
+        description="Upload admin-owned PDFs, classify them with the controlled academic taxonomy, and publish them cleanly into the marketplace."
       />
       {feedback.message ? (
         <p className={feedback.type === "error" ? "form-error" : "form-success"}>{feedback.message}</p>
@@ -153,7 +171,7 @@ export function AdminUploadsPage() {
           <SectionHeader
             eyebrow={editingId ? "Edit mode" : "New upload"}
             title={formTitle}
-            description="Use this for admin-owned PDFs that should go directly into the marketplace catalog."
+            description="Use this for admin-owned PDFs that should go directly into the marketplace catalog with strong buyer-facing metadata."
           />
           {!editingId ? (
             <label className="field">
@@ -166,8 +184,8 @@ export function AdminUploadsPage() {
               />
             </label>
           ) : null}
-          <label className="field"><span>Title</span><input className="input" onChange={(event) => handleChange("title", event.target.value)} value={form.title} /></label>
-          <label className="field"><span>Description</span><textarea className="input" onChange={(event) => handleChange("description", event.target.value)} rows={4} value={form.description} /></label>
+          <label className="field"><span>Title</span><input className="input" onChange={(event) => handleChange("title", event.target.value)} placeholder="Example: DBMS End-Sem Important Questions" required value={form.title} /></label>
+          <label className="field"><span>Description</span><textarea className="input" onChange={(event) => handleChange("description", event.target.value)} placeholder="Explain what this PDF covers and why a student should buy it." rows={4} value={form.description} /></label>
           <div className="two-column-grid compact">
             <label className="field"><span>Price (Rs.)</span><input className="input" max="10" min="4" onChange={(event) => handleChange("priceInr", event.target.value)} type="number" value={form.priceInr} /></label>
             <label className="field">
@@ -181,12 +199,93 @@ export function AdminUploadsPage() {
             </label>
           </div>
           <div className="two-column-grid compact">
-            <label className="field"><span>University</span><input className="input" onChange={(event) => handleChange("university", event.target.value)} value={form.university} /></label>
-            <label className="field"><span>Branch</span><input className="input" onChange={(event) => handleChange("branch", event.target.value)} value={form.branch} /></label>
-            <label className="field"><span>Year</span><input className="input" onChange={(event) => handleChange("year", event.target.value)} value={form.year} /></label>
-            <label className="field"><span>Semester</span><input className="input" onChange={(event) => handleChange("semester", event.target.value)} value={form.semester} /></label>
+            <label className="field">
+              <span>University</span>
+              <select className="input" onChange={(event) => handleChange("university", event.target.value)} value={form.university} required>
+                <option value={DEFAULT_UNIVERSITY}>{DEFAULT_UNIVERSITY}</option>
+              </select>
+            </label>
+            <label className="field">
+              <span>Branch</span>
+              <select className="input" onChange={(event) => handleChange("branch", event.target.value)} value={form.branch} required>
+                <option value="">Select branch</option>
+                {BRANCH_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Year</span>
+              <select className="input" onChange={(event) => handleChange("year", event.target.value)} value={form.year} required>
+                <option value="">Select year</option>
+                {YEAR_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Semester</span>
+              <select className="input" onChange={(event) => handleChange("semester", event.target.value)} value={form.semester} required>
+                <option value="">Select semester</option>
+                {SEMESTER_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    Semester {option}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
-          <label className="field"><span>Subject</span><input className="input" onChange={(event) => handleChange("subject", event.target.value)} value={form.subject} /></label>
+          <label className="field"><span>Subject</span><input className="input" onChange={(event) => handleChange("subject", event.target.value)} placeholder="Example: Operating Systems" required value={form.subject} /></label>
+          <div className="two-column-grid compact">
+            <label className="field">
+              <span>Exam focus</span>
+              <select className="input" onChange={(event) => handleChange("examFocus", event.target.value)} value={form.examFocus}>
+                <option value="">Select exam focus</option>
+                {EXAM_FOCUS_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Question type</span>
+              <select className="input" onChange={(event) => handleChange("questionType", event.target.value)} value={form.questionType}>
+                <option value="">Select question type</option>
+                {QUESTION_TYPE_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Difficulty level</span>
+              <select className="input" onChange={(event) => handleChange("difficultyLevel", event.target.value)} value={form.difficultyLevel}>
+                <option value="">Select difficulty</option>
+                {DIFFICULTY_LEVEL_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Intended audience</span>
+              <select className="input" onChange={(event) => handleChange("intendedAudience", event.target.value)} value={form.intendedAudience}>
+                <option value="">Select intended audience</option>
+                {INTENDED_AUDIENCE_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
           <label className="field"><span>Tags</span><input className="input" onChange={(event) => handleChange("tags", event.target.value)} placeholder="exam, important, revision" value={form.tags} /></label>
           <label className="field"><span>Cover image URL</span><input className="input" onChange={(event) => handleChange("coverImageUrl", event.target.value)} value={form.coverImageUrl} /></label>
           <label className="field"><span>SEO title</span><input className="input" onChange={(event) => handleChange("seoTitle", event.target.value)} value={form.seoTitle} /></label>
@@ -214,7 +313,7 @@ export function AdminUploadsPage() {
               <article className="activity-item" key={item.id}>
                 <strong>{item.title}</strong>
                 <span className="support-copy">
-                  {item.taxonomy?.subject} - {item.taxonomy?.semester} - Rs. {item.priceInr}
+                  {item.taxonomy?.subject} - Semester {item.taxonomy?.semester} - Rs. {item.priceInr}
                 </span>
                 <div className="topbar-chip-group">
                   <StatusBadge tone={item.visibility === "published" ? "success" : "warning"}>

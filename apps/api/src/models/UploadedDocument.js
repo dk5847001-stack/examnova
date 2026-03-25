@@ -1,6 +1,28 @@
 import mongoose from "mongoose";
 import { COLLECTION_NAMES } from "../constants/db.constants.js";
 
+const academicTaxonomySchema = new mongoose.Schema(
+  {
+    university: { type: String, default: "", trim: true, index: true },
+    branch: { type: String, default: "", trim: true, index: true },
+    year: { type: String, default: "", trim: true },
+    semester: { type: String, default: "", trim: true, index: true },
+    subject: { type: String, default: "", trim: true, index: true },
+  },
+  { _id: false },
+);
+
+const studyMetadataSchema = new mongoose.Schema(
+  {
+    examFocus: { type: String, default: "", trim: true },
+    questionType: { type: String, default: "", trim: true },
+    difficultyLevel: { type: String, default: "", trim: true },
+    intendedAudience: { type: String, default: "", trim: true },
+    tags: { type: [String], default: [] },
+  },
+  { _id: false },
+);
+
 const uploadedDocumentSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
@@ -13,6 +35,9 @@ const uploadedDocumentSchema = new mongoose.Schema(
     storageUrl: { type: String },
     documentType: { type: String, default: "study_material" },
     sourceCategory: { type: String, default: "notes", index: true },
+    description: { type: String, default: "" },
+    academicTaxonomy: { type: academicTaxonomySchema, default: () => ({}) },
+    studyMetadata: { type: studyMetadataSchema, default: () => ({}) },
     uploadStatus: { type: String, default: "uploaded", index: true },
     parsingStatus: { type: String, default: "pending", index: true },
     status: { type: String, default: "active", index: true },

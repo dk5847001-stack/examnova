@@ -42,6 +42,8 @@ import { AdminWithdrawalsPage } from "../pages/admin/AdminWithdrawalsPage.jsx";
 import { AdminModerationPage } from "../pages/admin/AdminModerationPage.jsx";
 import { AdminNotificationsPage } from "../pages/admin/AdminNotificationsPage.jsx";
 import { AdminAuditLogsPage } from "../pages/admin/AdminAuditLogsPage.jsx";
+import { AdminProfilePage } from "../pages/admin/AdminProfilePage.jsx";
+import { AdminSettingsPage } from "../pages/admin/AdminSettingsPage.jsx";
 import { NotFoundPage } from "../pages/shared/NotFoundPage.jsx";
 import { ProtectedRoute } from "../guards/ProtectedRoute.jsx";
 import { AdminRoute } from "../guards/AdminRoute.jsx";
@@ -82,7 +84,7 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="/app/dashboard" replace />} />
+        <Route index element={<Navigate to="/app/profile" replace />} />
         <Route path="dashboard" element={<UserDashboardPage />} />
         <Route path="upload-generate" element={<UploadGeneratePage />} />
         <Route path="documents/:id" element={<DocumentDetailPage />} />
@@ -108,7 +110,7 @@ export function AppRouter() {
           </AdminRoute>
         }
       >
-        <Route index element={<Navigate to="/admin/dashboard" replace />} />
+        <Route index element={<Navigate to="/admin/profile" replace />} />
         <Route path="dashboard" element={<AdminDashboardPage />} />
         <Route path="analytics" element={<AdminAnalyticsPage />} />
         <Route path="moderation" element={<AdminModerationPage />} />
@@ -120,6 +122,8 @@ export function AppRouter() {
         <Route path="listings" element={<AdminListingsPage />} />
         <Route path="commerce" element={<AdminCommercePage />} />
         <Route path="withdrawals" element={<AdminWithdrawalsPage />} />
+        <Route path="profile" element={<AdminProfilePage />} />
+        <Route path="settings" element={<AdminSettingsPage />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

@@ -2,17 +2,18 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth.js";
 
 const navItems = [
-  { to: "/app/dashboard", label: "Overview", icon: "bi-grid-1x2-fill", meta: "Command center" },
+  { to: "/marketplace", label: "Marketplace", icon: "bi-shop-window", meta: "Discover and buy PDFs" },
   { to: "/app/upload-generate", label: "Upload & Generate", icon: "bi-cloud-arrow-up-fill", meta: "Source intake" },
   { to: "/app/generated-pdfs", label: "Generated PDFs", icon: "bi-file-earmark-pdf-fill", meta: "Rendered outputs" },
   { to: "/app/purchased-pdfs", label: "Purchased PDFs", icon: "bi-bag-check-fill", meta: "Buyer library" },
   { to: "/app/listed-pdfs", label: "Listed PDFs", icon: "bi-shop", meta: "Seller catalogue" },
   { to: "/app/wallet", label: "Wallet", icon: "bi-wallet2", meta: "Balance and ledger" },
   { to: "/app/withdrawals", label: "Withdrawals", icon: "bi-cash-stack", meta: "Payout requests" },
-  { to: "/app/payments", label: "Payments", icon: "bi-credit-card-2-front-fill", meta: "Receipt history" },
   { to: "/app/notifications", label: "Notifications", icon: "bi-bell-fill", meta: "Signals and alerts" },
   { to: "/app/profile", label: "Profile", icon: "bi-person-badge-fill", meta: "Identity surface" },
   { to: "/app/settings", label: "Settings", icon: "bi-sliders2-vertical", meta: "Preference control" },
+  { to: "/app/payments", label: "Payments", icon: "bi-credit-card-2-front-fill", meta: "Receipt history" },
+  { to: "/app/dashboard", label: "Overview", icon: "bi-grid-1x2-fill", meta: "Workspace summary" },
 ];
 
 export function DashboardLayout() {
@@ -36,7 +37,7 @@ export function DashboardLayout() {
             <p className="eyebrow">Active cockpit</p>
             <h2>{user?.name || "Student"}</h2>
             <p className="support-copy">
-              {user?.academicProfile?.university || "ExamNova account"} {user?.academicProfile?.semester ? `- ${user.academicProfile.semester}` : ""}
+              {user?.academicProfile?.university || "ExamNova account"} {user?.academicProfile?.semester ? `- Semester ${user.academicProfile.semester}` : ""}
             </p>
           </div>
         </div>
@@ -75,7 +76,7 @@ export function DashboardLayout() {
             <div className="dashboard-topbar-copy">
               <p className="eyebrow">Student AI cockpit</p>
               <h1>{user?.name || "User dashboard"}</h1>
-              <p className="support-copy">From raw uploads to premium exam-ready output, every step stays in one command surface.</p>
+              <p className="support-copy">Start in the marketplace, manage your study assets from profile, and move from upload to selling without losing the plot.</p>
             </div>
           </div>
           <div className="topbar-chip-group">

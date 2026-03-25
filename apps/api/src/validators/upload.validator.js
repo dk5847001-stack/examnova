@@ -1,5 +1,6 @@
 import { ApiError } from "../utils/ApiError.js";
 import { normalizeOptionalString } from "./common.js";
+import { normalizeAcademicTaxonomy, normalizeStudyMetadata } from "../utils/academicTaxonomy.js";
 
 const allowedSourceCategories = new Set(["notes", "assignment", "question_bank", "study_material"]);
 
@@ -60,7 +61,24 @@ export function validateUploadRequest(req, _res, next) {
       throw new ApiError(415, "Uploaded file content does not match the declared file type.");
     }
 
-    req.body.sourceCategory = sourceCategory;
+    const studyMetadata = normalizeStudyMetadata(req.body || {});
+
+    req.body = {
+      sourceCategory,
+      description: normalizeOptionalString(req.body?.description, {
+        maxLength: 600,
+        collapseWhitespace: false,
+      }),
+      academicTaxonomy: normalizeAcademicTaxonomy(req.body || {}),
+      studyMetadata: {
+        examFocus: studyMetadata.examFocus,
+        questionType: studyMetadata.questionType,
+        difficultyLevel: studyMetadata.difficultyLevel,
+        intendedAudience: studyMetadata.intendedAudience,
+        tags: studyMetadata.tags,
+      },
+    };
+
     return next();
   } catch (error) {
     return next(error);

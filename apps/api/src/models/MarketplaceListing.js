@@ -12,6 +12,16 @@ const taxonomySchema = new mongoose.Schema(
   { _id: false },
 );
 
+const studyMetadataSchema = new mongoose.Schema(
+  {
+    examFocus: { type: String, default: "", trim: true },
+    questionType: { type: String, default: "", trim: true },
+    difficultyLevel: { type: String, default: "", trim: true },
+    intendedAudience: { type: String, default: "", trim: true },
+  },
+  { _id: false },
+);
+
 const marketplaceListingSchema = new mongoose.Schema(
   {
     sellerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
@@ -28,6 +38,7 @@ const marketplaceListingSchema = new mongoose.Schema(
     moderationStatus: { type: String, default: "clear", index: true },
     isPublished: { type: Boolean, default: false, index: true },
     taxonomy: { type: taxonomySchema, required: true },
+    studyMetadata: { type: studyMetadataSchema, default: () => ({}) },
     coverImageUrl: { type: String },
     previewImages: [{ type: String }],
     tags: [{ type: String }],

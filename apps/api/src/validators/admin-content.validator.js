@@ -5,17 +5,11 @@ import {
   ensureRequiredString,
   normalizeBoolean,
   normalizeOptionalString,
-  normalizeStringArray,
 } from "./common.js";
+import { normalizeAcademicTaxonomy, normalizeStudyMetadata } from "../utils/academicTaxonomy.js";
 
 function validateTaxonomy(body) {
-  return {
-    university: ensureRequiredString(body?.university, "university", { maxLength: 120 }),
-    branch: ensureRequiredString(body?.branch, "branch", { maxLength: 120 }),
-    year: ensureRequiredString(body?.year, "year", { maxLength: 40 }),
-    semester: ensureRequiredString(body?.semester, "semester", { maxLength: 40 }),
-    subject: ensureRequiredString(body?.subject, "subject", { maxLength: 120 }),
-  };
+  return normalizeAcademicTaxonomy(body || {});
 }
 
 function validatePrice(priceInr) {
@@ -27,17 +21,25 @@ function looksLikePdf(buffer) {
 }
 
 function buildSanitizedPayload(body) {
+  const studyMetadata = normalizeStudyMetadata(body || {});
+
   return {
     title: ensureRequiredString(body?.title, "title", { maxLength: 140 }),
     description: normalizeOptionalString(body?.description, { maxLength: 1200 }),
     priceInr: validatePrice(body?.priceInr),
     visibility: normalizeOptionalString(body?.visibility, { maxLength: 20 }).toLowerCase() || "draft",
-    tags: normalizeStringArray(body?.tags, { maxItems: 10, itemMaxLength: 40 }),
+    tags: studyMetadata.tags,
+    studyMetadata: {
+      examFocus: studyMetadata.examFocus,
+      questionType: studyMetadata.questionType,
+      difficultyLevel: studyMetadata.difficultyLevel,
+      intendedAudience: studyMetadata.intendedAudience,
+    },
     coverImageUrl: normalizeOptionalString(body?.coverImageUrl, { maxLength: 400 }),
     seoTitle: normalizeOptionalString(body?.seoTitle, { maxLength: 160 }),
     seoDescription: normalizeOptionalString(body?.seoDescription, { maxLength: 260 }),
     isFeatured: normalizeBoolean(body?.isFeatured, false),
-    ...validateTaxonomy(body),
+    taxonomy: validateTaxonomy(body),
   };
 }
 
@@ -71,14 +73,14 @@ export function validateUpcomingLockedCreate(req, _res, next) {
       title: ensureRequiredString(req.body?.title, "title", { maxLength: 140 }),
       summary: normalizeOptionalString(req.body?.summary, { maxLength: 1200 }),
       adminUploadId: req.body?.adminUploadId ? ensureObjectId(req.body.adminUploadId, "adminUploadId") : "",
-      tags: normalizeStringArray(req.body?.tags, { maxItems: 10, itemMaxLength: 40 }),
+      tags: normalizeStudyMetadata(req.body || {}).tags,
       coverImageUrl: normalizeOptionalString(req.body?.coverImageUrl, { maxLength: 400 }),
       isFeatured: normalizeBoolean(req.body?.isFeatured, false),
       visibility: req.body?.visibility === undefined ? true : normalizeBoolean(req.body?.visibility, true),
       visibilityStartAt: normalizeOptionalString(req.body?.visibilityStartAt, { maxLength: 40 }),
       expectedReleaseAt: normalizeOptionalString(req.body?.expectedReleaseAt, { maxLength: 40 }),
       status: normalizeOptionalString(req.body?.status, { maxLength: 20 }).toLowerCase() || "upcoming",
-      ...validateTaxonomy(req.body),
+      taxonomy: validateTaxonomy(req.body),
     };
     return next();
   } catch (error) {

@@ -19,7 +19,7 @@ export function PublicLayout() {
               ExamNova AI
             </Link>
             <p className="brand-subcopy">
-              AI document parsing, compact rendering, and premium marketplace discovery in one surface.
+              Buy, upload, generate, and sell premium study PDFs from one AI-powered marketplace platform.
             </p>
           </div>
         </div>
@@ -30,9 +30,9 @@ export function PublicLayout() {
           <Link className="nav-link-pill" to="/resources"><i className="bi bi-journal-richtext" />Resources</Link>
           <Link className="nav-link-pill" to="/faq"><i className="bi bi-patch-question" />FAQ</Link>
           {isAuthenticated ? (
-            <Link className="nav-link-pill nav-cta" to={role === "admin" ? "/admin/dashboard" : "/app/dashboard"}>
-              <i className="bi bi-command" />
-              Dashboard
+            <Link className="nav-link-pill nav-cta" to={role === "admin" ? "/admin/profile" : "/app/profile"}>
+              <i className="bi bi-person-badge" />
+              {role === "admin" ? "Admin center" : "My account"}
             </Link>
           ) : (
             <Link className="nav-link-pill nav-cta" to="/login">

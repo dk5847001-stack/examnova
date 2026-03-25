@@ -84,7 +84,7 @@ export function DocumentDetailPage() {
       <SectionHeader
         eyebrow="Document detail"
         title={document.documentTitle || document.originalName}
-        description="Review parsing status, extracted content, and prepare for the next question detection phase."
+        description="Review parsing status, academic context, and extracted content before moving into question detection and answer generation."
         action={<StatusBadge tone={getTone(document.parsingStatus)}>{document.parsingStatus}</StatusBadge>}
       />
       {error ? <p className="form-error">{error}</p> : null}
@@ -108,6 +108,26 @@ export function DocumentDetailPage() {
             <div>
               <span className="info-label">Source category</span>
               <strong>{document.sourceCategory}</strong>
+            </div>
+            <div>
+              <span className="info-label">University</span>
+              <strong>{document.academicTaxonomy?.university || "-"}</strong>
+            </div>
+            <div>
+              <span className="info-label">Branch</span>
+              <strong>{document.academicTaxonomy?.branch || "-"}</strong>
+            </div>
+            <div>
+              <span className="info-label">Year</span>
+              <strong>{document.academicTaxonomy?.year || "-"}</strong>
+            </div>
+            <div>
+              <span className="info-label">Semester</span>
+              <strong>{document.academicTaxonomy?.semester ? `Semester ${document.academicTaxonomy.semester}` : "-"}</strong>
+            </div>
+            <div>
+              <span className="info-label">Subject</span>
+              <strong>{document.academicTaxonomy?.subject || "-"}</strong>
             </div>
           </div>
           <div className="hero-actions">
@@ -143,6 +163,22 @@ export function DocumentDetailPage() {
             <div>
               <span className="info-label">Last parsed</span>
               <strong>{document.lastParsedAt ? new Date(document.lastParsedAt).toLocaleString() : "-"}</strong>
+            </div>
+            <div>
+              <span className="info-label">Exam focus</span>
+              <strong>{document.studyMetadata?.examFocus || "-"}</strong>
+            </div>
+            <div>
+              <span className="info-label">Question type</span>
+              <strong>{document.studyMetadata?.questionType || "-"}</strong>
+            </div>
+            <div>
+              <span className="info-label">Difficulty</span>
+              <strong>{document.studyMetadata?.difficultyLevel || "-"}</strong>
+            </div>
+            <div>
+              <span className="info-label">Audience</span>
+              <strong>{document.studyMetadata?.intendedAudience || "-"}</strong>
             </div>
           </div>
           {document.parsingError ? <p className="form-error">{document.parsingError}</p> : null}

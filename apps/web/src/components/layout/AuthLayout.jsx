@@ -9,7 +9,7 @@ export function AuthLayout() {
             <p className="eyebrow">Secure access</p>
             <h1>Secure access for next-generation exam prep.</h1>
             <p className="support-copy">
-              Move from signup to verified workspace with a premium identity flow designed for a serious AI platform.
+              Move from signup to verified access with a premium identity flow, then land directly in the marketplace or the page you were trying to reach.
             </p>
           </div>
           <div className="auth-feature-list">
@@ -28,7 +28,7 @@ export function AuthLayout() {
               </div>
               <div>
                 <strong>Immersive AI workspace</strong>
-                <p className="support-copy">The same premium system carries from auth into uploads, generation, wallet, and admin control.</p>
+                <p className="support-copy">The same premium system carries from auth into marketplace discovery, uploads, generation, wallet, and admin control.</p>
               </div>
             </article>
             <article className="auth-feature-item">

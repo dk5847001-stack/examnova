@@ -20,9 +20,10 @@ export function LoginPage() {
 
     try {
       const response = await login(form);
-      const role = response.data.user.role;
-      const redirectTo = location.state?.from?.pathname;
-      navigate(redirectTo || (role === "admin" ? "/admin/dashboard" : "/app/dashboard"), {
+      const redirectTarget = location.state?.from
+        ? `${location.state.from.pathname || ""}${location.state.from.search || ""}${location.state.from.hash || ""}`
+        : "/marketplace";
+      navigate(redirectTarget, {
         replace: true,
       });
     } catch (requestError) {
@@ -35,7 +36,7 @@ export function LoginPage() {
   return (
     <form className="form-card" onSubmit={handleSubmit}>
       <h2>Login</h2>
-      <p className="support-copy">Login with your verified email and continue to your dashboard.</p>
+      <p className="support-copy">Login with your verified email and continue to the marketplace, your library, or the page you were trying to open.</p>
       <label className="field">
         <span>Email</span>
         <input

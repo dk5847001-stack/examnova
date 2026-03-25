@@ -7,6 +7,7 @@ import {
 import { createStorageClient } from "../../lib/index.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { slugify } from "../../utils/slugify.js";
+import { normalizeAcademicTaxonomy, normalizeStudyMetadata } from "../../utils/academicTaxonomy.js";
 
 const storageClient = createStorageClient();
 const ADMIN_UPLOAD_VISIBILITY = new Set(["draft", "published", "unlisted", "archived"]);
@@ -33,23 +34,7 @@ function normalizeTags(value) {
 }
 
 function normalizeTaxonomy(payload) {
-  const taxonomy = {
-    university: normalizeText(payload.university),
-    branch: normalizeText(payload.branch),
-    year: normalizeText(payload.year),
-    semester: normalizeText(payload.semester),
-    subject: normalizeText(payload.subject),
-  };
-
-  const missing = Object.entries(taxonomy)
-    .filter(([, value]) => !value)
-    .map(([key]) => key);
-
-  if (missing.length) {
-    throw new ApiError(422, `Missing required taxonomy fields: ${missing.join(", ")}.`);
-  }
-
-  return taxonomy;
+  return normalizeAcademicTaxonomy(payload || {});
 }
 
 function ensurePrice(priceInr) {
@@ -76,7 +61,7 @@ function ensureUpcomingStatus(status) {
   return normalized;
 }
 
-function buildSearchText({ title, description, taxonomy, tags }) {
+function buildSearchText({ title, description, taxonomy, studyMetadata, tags }) {
   return [
     title,
     description,
@@ -84,6 +69,10 @@ function buildSearchText({ title, description, taxonomy, tags }) {
     taxonomy?.semester,
     taxonomy?.branch,
     taxonomy?.university,
+    studyMetadata?.examFocus,
+    studyMetadata?.questionType,
+    studyMetadata?.difficultyLevel,
+    studyMetadata?.intendedAudience,
     ...(tags || []),
   ]
     .filter(Boolean)
@@ -145,6 +134,7 @@ function serializeAdminUpload(record) {
     priceInr: record.priceInr,
     currency: record.currency || "INR",
     taxonomy: record.taxonomy,
+    studyMetadata: record.studyMetadata || {},
     tags: record.tags || [],
     coverImageUrl: record.coverImageUrl || "",
     seoTitle: record.seoTitle || "",
@@ -202,6 +192,7 @@ async function syncListingFromAdminUpload(record) {
     moderationStatus: "clear",
     isPublished: visibility === "published",
     taxonomy: record.taxonomy,
+    studyMetadata: record.studyMetadata || {},
     coverImageUrl: record.coverImageUrl || "",
     tags: record.tags || [],
     seoTitle: record.seoTitle || record.title,
@@ -210,6 +201,7 @@ async function syncListingFromAdminUpload(record) {
       title: record.title,
       description: record.description,
       taxonomy: record.taxonomy,
+      studyMetadata: record.studyMetadata,
       tags: record.tags,
     }),
     publishedAt: visibility === "published" ? record.publishedAt || new Date() : null,
@@ -257,7 +249,7 @@ export const adminContentService = {
       throw new ApiError(422, "A PDF file is required.");
     }
 
-    const taxonomy = normalizeTaxonomy(payload);
+    const taxonomy = payload.taxonomy || normalizeTaxonomy(payload);
     const visibility = ensureVisibility(payload.visibility);
     const uploadedFile = await storageClient.upload({
       originalName: file.originalname,
@@ -277,6 +269,7 @@ export const adminContentService = {
       priceInr: ensurePrice(payload.priceInr),
       currency: "INR",
       taxonomy,
+      studyMetadata: payload.studyMetadata || normalizeStudyMetadata(payload),
       tags: normalizeTags(payload.tags),
       coverImageUrl: normalizeText(payload.coverImageUrl),
       seoTitle: normalizeText(payload.seoTitle),
@@ -305,8 +298,9 @@ export const adminContentService = {
     record.title = normalizeText(payload.title);
     record.description = normalizeText(payload.description);
     record.priceInr = ensurePrice(payload.priceInr);
-    record.taxonomy = normalizeTaxonomy(payload);
-    record.tags = normalizeTags(payload.tags);
+    record.taxonomy = payload.taxonomy || normalizeTaxonomy(payload);
+    record.studyMetadata = payload.studyMetadata || normalizeStudyMetadata(payload);
+    record.tags = Array.isArray(payload.tags) ? payload.tags : normalizeTags(payload.tags);
     record.coverImageUrl = normalizeText(payload.coverImageUrl);
     record.seoTitle = normalizeText(payload.seoTitle);
     record.seoDescription = normalizeText(payload.seoDescription);
@@ -372,7 +366,7 @@ export const adminContentService = {
   },
 
   async createUpcomingItem(actor, payload, req) {
-    const taxonomy = normalizeTaxonomy(payload);
+    const taxonomy = payload.taxonomy || normalizeTaxonomy(payload);
     const adminUploadId = normalizeText(payload.adminUploadId);
     let linkedUpload = null;
     let linkedListingId = null;
@@ -394,7 +388,7 @@ export const adminContentService = {
       slug: await buildUniqueUpcomingSlug(`${title}-${taxonomy.subject}-${taxonomy.semester}`),
       summary: normalizeText(payload.summary),
       taxonomy,
-      tags: normalizeTags(payload.tags),
+      tags: Array.isArray(payload.tags) ? payload.tags : normalizeTags(payload.tags),
       coverImageUrl: normalizeText(payload.coverImageUrl) || linkedUpload?.coverImageUrl || "",
       isFeatured: normalizeBoolean(payload.isFeatured),
       visibility: payload.visibility === undefined ? true : normalizeBoolean(payload.visibility),
@@ -437,13 +431,13 @@ export const adminContentService = {
       throw new ApiError(404, "Upcoming locked PDF not found.");
     }
 
-    const taxonomy = normalizeTaxonomy(payload);
+    const taxonomy = payload.taxonomy || normalizeTaxonomy(payload);
     const title = normalizeText(payload.title);
     item.title = title;
     item.slug = await buildUniqueUpcomingSlug(`${title}-${taxonomy.subject}-${taxonomy.semester}`, item._id);
     item.summary = normalizeText(payload.summary);
     item.taxonomy = taxonomy;
-    item.tags = normalizeTags(payload.tags);
+    item.tags = Array.isArray(payload.tags) ? payload.tags : normalizeTags(payload.tags);
     item.coverImageUrl = normalizeText(payload.coverImageUrl);
     item.isFeatured = normalizeBoolean(payload.isFeatured);
     item.visibility = payload.visibility === undefined ? item.visibility : normalizeBoolean(payload.visibility);

@@ -16,6 +16,9 @@ function serializeDocument(document) {
     parsingStatus: document.parsingStatus,
     status: document.status,
     sourceCategory: document.sourceCategory,
+    description: document.description || "",
+    academicTaxonomy: document.academicTaxonomy || {},
+    studyMetadata: document.studyMetadata || {},
     extractedTextPreview: document.extractedTextPreview || "",
     parsedMetadata: document.parsedMetadata || {},
     parsingError: document.parsingError || "",
@@ -58,7 +61,7 @@ async function parseAndPersist(document, absolutePath) {
 }
 
 export const uploadService = {
-  async uploadDocument({ file, userId, sourceCategory }) {
+  async uploadDocument({ file, userId, sourceCategory, description, academicTaxonomy, studyMetadata }) {
     if (!file) {
       throw new ApiError(400, "A file upload is required.");
     }
@@ -80,6 +83,9 @@ export const uploadService = {
       storageKey: storedFile.storageKey,
       storageUrl: storedFile.url,
       sourceCategory: sourceCategory || "notes",
+      description: description || "",
+      academicTaxonomy: academicTaxonomy || {},
+      studyMetadata: studyMetadata || {},
       documentType: "study_material",
       uploadStatus: "uploaded",
       parsingStatus: "pending",
@@ -109,6 +115,9 @@ export const uploadService = {
       parsingStatus: document.parsingStatus,
       status: document.status,
       sourceCategory: document.sourceCategory,
+      description: document.description || "",
+      academicTaxonomy: document.academicTaxonomy || {},
+      studyMetadata: document.studyMetadata || {},
       extractedTextPreview: document.extractedTextPreview || "",
       parsedMetadata: document.parsedMetadata || {},
       parsingError: document.parsingError || "",

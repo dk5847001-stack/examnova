@@ -15,11 +15,14 @@ function getTone(parsingStatus) {
 }
 
 export function DocumentCard({ document, onDelete, onRetry }) {
+  const academicTaxonomy = document.academicTaxonomy || {};
+  const studyMetadata = document.studyMetadata || {};
+
   return (
     <article className="document-card">
       <div className="document-card-header">
         <div>
-          <p className="eyebrow">{document.sourceCategory || "Study material"}</p>
+          <p className="eyebrow">{academicTaxonomy.subject || document.sourceCategory || "Study material"}</p>
           <h3>{document.documentTitle || document.originalName}</h3>
           <p className="support-copy">
             {document.mimeType} - {new Date(document.createdAt).toLocaleString()}
@@ -28,9 +31,15 @@ export function DocumentCard({ document, onDelete, onRetry }) {
         <StatusBadge tone={getTone(document.parsingStatus)}>{document.parsingStatus}</StatusBadge>
       </div>
       <p className="support-copy">{document.extractedTextPreview || "No extracted text preview available yet."}</p>
+      <div className="marketplace-taxonomy">
+        {academicTaxonomy.branch ? <span>{academicTaxonomy.branch}</span> : null}
+        {academicTaxonomy.year ? <span>{academicTaxonomy.year}</span> : null}
+        {academicTaxonomy.semester ? <span>Semester {academicTaxonomy.semester}</span> : null}
+        {studyMetadata.examFocus ? <span>{studyMetadata.examFocus}</span> : null}
+      </div>
       <div className="document-meta-row">
         <span>{Math.ceil((document.sizeInBytes || 0) / 1024)} KB</span>
-        <span>{document.sourceCategory}</span>
+        <span>{academicTaxonomy.university || document.sourceCategory}</span>
       </div>
       <div className="hero-actions">
         <Link className="button secondary" to={`/app/documents/${document.id}`}>

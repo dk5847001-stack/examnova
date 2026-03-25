@@ -35,7 +35,10 @@ export function VerifyOtpPage() {
     try {
       const response = await verifyOtp(form);
       setSuccess("Email verified successfully.");
-      navigate(response.data.user.role === "admin" ? "/admin/dashboard" : "/app/dashboard", {
+      const redirectTarget = location.state?.from
+        ? `${location.state.from.pathname || ""}${location.state.from.search || ""}${location.state.from.hash || ""}`
+        : "/marketplace";
+      navigate(redirectTarget, {
         replace: true,
       });
     } catch (requestError) {
@@ -67,7 +70,7 @@ export function VerifyOtpPage() {
   return (
     <form className="form-card" onSubmit={handleSubmit}>
       <h2>Verify OTP</h2>
-      <p className="support-copy">Enter the OTP sent to your email to activate your account.</p>
+      <p className="support-copy">Enter the OTP sent to your email to activate your account and continue into ExamNova AI.</p>
       <label className="field">
         <span>Email</span>
         <input

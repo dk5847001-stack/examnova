@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { EmptyStateCard } from "../../components/ui/EmptyStateCard.jsx";
 import { InternalLinkGrid } from "../../components/ui/InternalLinkGrid.jsx";
 import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
@@ -32,12 +32,16 @@ function createTaxonomyLink(prefix, value) {
 
 export function PdfDetailPage() {
   const { slug } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { accessToken, isAuthenticated } = useAuth();
   const [state, setState] = useState({ listing: null, relatedListings: [] });
   const [isLoading, setIsLoading] = useState(true);
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [error, setError] = useState("");
   const [feedback, setFeedback] = useState({ type: "", message: "" });
+  const autoPurchaseAttemptedRef = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -103,9 +107,42 @@ export function PdfDetailPage() {
       })
     : null;
 
+  useEffect(() => {
+    if (
+      !searchParams.get("buy") ||
+      !isAuthenticated ||
+      !accessToken ||
+      !listing?.id ||
+      isLoading ||
+      autoPurchaseAttemptedRef.current
+    ) {
+      return;
+    }
+
+    autoPurchaseAttemptedRef.current = true;
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("buy");
+    setSearchParams(nextParams, { replace: true });
+    handlePurchase();
+  }, [accessToken, isAuthenticated, isLoading, listing?.id, searchParams, setSearchParams]);
+
   async function handlePurchase() {
+    if (!listing?.id) {
+      return;
+    }
+
     if (!isAuthenticated || !accessToken) {
-      setFeedback({ type: "error", message: "Please log in to buy this marketplace PDF." });
+      const nextParams = new URLSearchParams(location.search);
+      nextParams.set("buy", "1");
+      navigate("/login", {
+        replace: false,
+        state: {
+          from: {
+            pathname: location.pathname,
+            search: `?${nextParams.toString()}`,
+          },
+        },
+      });
       return;
     }
 
@@ -119,9 +156,11 @@ export function PdfDetailPage() {
       ]);
 
       if (orderResponse.data.alreadyOwned) {
-        setFeedback({
-          type: "success",
-          message: "You already own this PDF. It is available in your library.",
+        navigate("/app/purchased-pdfs", {
+          replace: true,
+          state: {
+            message: "You already own this PDF. It is available in your purchased library.",
+          },
         });
         return;
       }
@@ -146,9 +185,11 @@ export function PdfDetailPage() {
                 orderId: response.razorpay_order_id,
                 signature: response.razorpay_signature,
               });
-              setFeedback({
-                type: "success",
-                message: "Marketplace purchase completed successfully. The PDF is now in your library.",
+              navigate("/app/purchased-pdfs", {
+                replace: true,
+                state: {
+                  message: `Purchase completed successfully. "${listing.title}" is now available in your library.`,
+                },
               });
               resolve();
             } catch (requestError) {
@@ -188,7 +229,7 @@ export function PdfDetailPage() {
               <>
                 <button className="button primary" disabled={isPurchasing} onClick={handlePurchase} type="button">
                   <i className="bi bi-bag-check" />
-                  {isPurchasing ? "Opening checkout..." : `Buy for Rs. ${listing?.priceInr || 0}`}
+                  {isPurchasing ? "Opening checkout..." : isAuthenticated ? `Buy for Rs. ${listing?.priceInr || 0}` : "Login to buy"}
                 </button>
                 {isAuthenticated ? <Link className="button ghost" to="/app/purchased-pdfs"><i className="bi bi-collection" />Open library</Link> : null}
                 <Link className="button secondary" to="/marketplace"><i className="bi bi-arrow-left" />Back to marketplace</Link>
@@ -210,9 +251,13 @@ export function PdfDetailPage() {
                 <div><span className="info-label">University</span><strong>{listing?.taxonomy?.university}</strong></div>
                 <div><span className="info-label">Branch</span><strong>{listing?.taxonomy?.branch}</strong></div>
                 <div><span className="info-label">Year</span><strong>{listing?.taxonomy?.year}</strong></div>
-                <div><span className="info-label">Semester</span><strong>{listing?.taxonomy?.semester}</strong></div>
+                <div><span className="info-label">Semester</span><strong>{listing?.taxonomy?.semester ? `Semester ${listing.taxonomy.semester}` : "-"}</strong></div>
                 <div><span className="info-label">Subject</span><strong>{listing?.taxonomy?.subject}</strong></div>
                 <div><span className="info-label">Price</span><strong>Rs. {listing?.priceInr}</strong></div>
+                <div><span className="info-label">Exam focus</span><strong>{listing?.studyMetadata?.examFocus || "-"}</strong></div>
+                <div><span className="info-label">Question type</span><strong>{listing?.studyMetadata?.questionType || "-"}</strong></div>
+                <div><span className="info-label">Difficulty</span><strong>{listing?.studyMetadata?.difficultyLevel || "-"}</strong></div>
+                <div><span className="info-label">Audience</span><strong>{listing?.studyMetadata?.intendedAudience || "-"}</strong></div>
               </div>
               <div className="marketplace-taxonomy">
                 {universityLink ? <Link to={universityLink.href}>{universityLink.label}</Link> : null}
@@ -228,15 +273,21 @@ export function PdfDetailPage() {
               <div className="section-header">
                 <div>
                   <p className="eyebrow">Why this PDF</p>
-                  <h2>Compact exam-note positioning</h2>
+                  <h2>What a first-time buyer should know</h2>
                 </div>
               </div>
               <p className="support-copy">{listing?.description}</p>
               <div className="marketplace-taxonomy">
-                {(listing?.tags || []).length
-                  ? listing.tags.map((tag) => <span key={tag}>{tag}</span>)
-                  : <span>Focused revision</span>}
+                {listing?.studyMetadata?.examFocus ? <span>{listing.studyMetadata.examFocus}</span> : null}
+                {listing?.studyMetadata?.questionType ? <span>{listing.studyMetadata.questionType}</span> : null}
+                {listing?.studyMetadata?.difficultyLevel ? <span>{listing.studyMetadata.difficultyLevel}</span> : null}
+                {listing?.studyMetadata?.intendedAudience ? <span>{listing.studyMetadata.intendedAudience}</span> : null}
+                {(listing?.tags || []).map((tag) => <span key={tag}>{tag}</span>)}
+                {!(listing?.tags || []).length && !listing?.studyMetadata?.examFocus ? <span>Focused revision</span> : null}
               </div>
+              <p className="support-copy">
+                Purchase takes you through a secure payment step, then your PDF is added directly to your purchased library for future download.
+              </p>
               <div className="hero-actions">
                 <Link className="button ghost" to={examPreparationLink?.href || "/marketplace"}>
                   Explore exam preparation

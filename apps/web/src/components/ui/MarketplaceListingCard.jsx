@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { StatusBadge } from "./StatusBadge.jsx";
 
 export function MarketplaceListingCard({ listing, sellerView = false, action = null }) {
+  const studyMetadata = listing.studyMetadata || {};
+
   return (
     <article className="marketplace-card">
       <div className="marketplace-card-header">
@@ -25,9 +27,11 @@ export function MarketplaceListingCard({ listing, sellerView = false, action = n
       <p className="support-copy">{listing.description || "Compact exam-ready notes prepared for public marketplace discovery."}</p>
 
       <div className="marketplace-taxonomy">
-        <span>{listing.taxonomy?.year}</span>
-        <span>{listing.taxonomy?.semester}</span>
-        <span>{listing.taxonomy?.subject}</span>
+        {listing.taxonomy?.year ? <span>{listing.taxonomy.year}</span> : null}
+        {listing.taxonomy?.semester ? <span>Semester {listing.taxonomy.semester}</span> : null}
+        {studyMetadata.examFocus ? <span>{studyMetadata.examFocus}</span> : null}
+        {studyMetadata.questionType ? <span>{studyMetadata.questionType}</span> : null}
+        {studyMetadata.difficultyLevel ? <span>{studyMetadata.difficultyLevel}</span> : null}
       </div>
 
       <div className="document-meta-row">
@@ -36,13 +40,13 @@ export function MarketplaceListingCard({ listing, sellerView = false, action = n
             ? `Views ${listing.viewCount || 0} - Sales ${listing.salesCount || 0}`
             : `${listing.sellerSourceLabel || "Seller"}: ${listing.sellerName || "ExamNova Seller"}`}
         </span>
-        <span>{listing.isPublished ? "Published" : "Draft/Unlisted"}</span>
+        <span>{sellerView ? (listing.isPublished ? "Published" : "Draft/Unlisted") : "Permanent library access"}</span>
       </div>
 
       <div className="hero-actions card-actions">
-        <Link className="button secondary" to={`/pdf/${listing.slug}`}>
+        <Link className={sellerView ? "button secondary" : "button primary"} to={`/pdf/${listing.slug}`}>
           <i className="bi bi-arrow-up-right" />
-          View detail
+          {sellerView ? "View detail" : "View & buy"}
         </Link>
         {action}
       </div>

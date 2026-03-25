@@ -7,6 +7,9 @@ export const uploadController = {
       file: req.file,
       userId: req.auth.userId,
       sourceCategory: req.body.sourceCategory,
+      description: req.body.description,
+      academicTaxonomy: req.body.academicTaxonomy,
+      studyMetadata: req.body.studyMetadata,
     });
 
     return sendSuccess(res, { document }, "Document uploaded and parsed successfully.", 201);

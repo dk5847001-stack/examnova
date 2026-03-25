@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { EmptyStateCard } from "../../components/ui/EmptyStateCard.jsx";
 import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { SectionHeader } from "../../components/ui/SectionHeader.jsx";
@@ -7,9 +8,21 @@ import { downloadLibraryItem, fetchLibrary } from "../../services/api/index.js";
 
 export function PurchasedPdfsPage() {
   const { accessToken } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [feedback, setFeedback] = useState("");
+
+  useEffect(() => {
+    if (!location.state?.message) {
+      return;
+    }
+
+    setFeedback(location.state.message);
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.pathname, location.state, navigate]);
 
   useEffect(() => {
     let active = true;
@@ -64,6 +77,7 @@ export function PurchasedPdfsPage() {
         title="Purchased PDFs"
         description="Your paid marketplace PDFs stay here permanently with re-download access and academic metadata."
       />
+      {feedback ? <p className="form-success">{feedback}</p> : null}
       {error ? <p className="form-error">{error}</p> : null}
       {isLoading ? (
         <LoadingCard message="Loading purchased PDFs..." />
@@ -85,13 +99,15 @@ export function PurchasedPdfsPage() {
                 </div>
               </div>
               <div className="marketplace-taxonomy">
-                <span>{item.taxonomy?.university}</span>
-                <span>{item.taxonomy?.branch}</span>
-                <span>{item.taxonomy?.semester}</span>
-                <span>{item.taxonomy?.subject}</span>
+                {item.taxonomy?.university ? <span>{item.taxonomy.university}</span> : null}
+                {item.taxonomy?.branch ? <span>{item.taxonomy.branch}</span> : null}
+                {item.taxonomy?.semester ? <span>Semester {item.taxonomy.semester}</span> : null}
+                {item.taxonomy?.subject ? <span>{item.taxonomy.subject}</span> : null}
+                {item.studyMetadata?.examFocus ? <span>{item.studyMetadata.examFocus}</span> : null}
               </div>
               <div className="hero-actions">
                 <button className="button primary" onClick={() => handleDownload(item.id, item.title)} type="button">
+                  <i className="bi bi-download" />
                   Download PDF
                 </button>
               </div>
@@ -102,6 +118,12 @@ export function PurchasedPdfsPage() {
         <EmptyStateCard
           title="No purchases yet"
           description="When you buy exam-ready PDFs from the marketplace, they will appear here for permanent re-download."
+          action={
+            <Link className="button secondary" to="/marketplace">
+              <i className="bi bi-shop" />
+              Browse marketplace
+            </Link>
+          }
         />
       )}
     </section>

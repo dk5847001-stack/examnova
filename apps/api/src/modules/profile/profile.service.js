@@ -34,10 +34,10 @@ export const profileService = {
     user.avatarUrl = payload.avatarUrl?.trim() || "";
     user.bio = payload.bio?.trim() || "";
     user.academicProfile = {
-      university: payload.university?.trim() || "",
-      branch: payload.branch?.trim() || "",
-      year: payload.year?.trim() || "",
-      semester: payload.semester?.trim() || "",
+      university: payload.university || "",
+      branch: payload.branch || "",
+      year: payload.year || "",
+      semester: payload.semester || "",
     };
 
     await user.save();

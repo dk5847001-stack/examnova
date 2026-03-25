@@ -1,5 +1,6 @@
 import { ApiError } from "../utils/ApiError.js";
 import { normalizeOptionalString, ensureRequiredString } from "./common.js";
+import { normalizeAcademicProfile } from "../utils/academicTaxonomy.js";
 
 export function validateProfileUpdate(req, _res, next) {
   try {
@@ -13,15 +14,17 @@ export function validateProfileUpdate(req, _res, next) {
       throw new ApiError(422, "avatarUrl must be a valid http or https URL.");
     }
 
+    const academicProfile = normalizeAcademicProfile(req.body || {});
+
     req.body = {
       name: ensureRequiredString(req.body?.name, "name", { maxLength: 80 }),
       phone,
       avatarUrl,
       bio: normalizeOptionalString(req.body?.bio, { maxLength: 500, collapseWhitespace: false }),
-      university: normalizeOptionalString(req.body?.university, { maxLength: 120 }),
-      branch: normalizeOptionalString(req.body?.branch, { maxLength: 120 }),
-      year: normalizeOptionalString(req.body?.year, { maxLength: 40 }),
-      semester: normalizeOptionalString(req.body?.semester, { maxLength: 40 }),
+      university: academicProfile.university,
+      branch: academicProfile.branch,
+      year: academicProfile.year,
+      semester: academicProfile.semester,
     };
 
     return next();

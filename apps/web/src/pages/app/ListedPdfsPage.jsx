@@ -84,6 +84,10 @@ export function ListedPdfsPage() {
       year: form.year,
       semester: form.semester,
       subject: form.subject,
+      examFocus: form.examFocus,
+      questionType: form.questionType,
+      difficultyLevel: form.difficultyLevel,
+      intendedAudience: form.intendedAudience,
       visibility: form.visibility,
       tags: form.tags.split(",").map((item) => item.trim()).filter(Boolean),
     };

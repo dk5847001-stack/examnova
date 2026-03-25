@@ -87,15 +87,21 @@ function buildCheckoutPayload(paymentClient, { amountInr, currency, orderId, des
   };
 }
 
-async function createProviderOrder({ entityId, amountInr, notes, userMessage }) {
+async function createProviderOrder({ entityId, amountInr, notes, userMessage, contextType }) {
   const paymentClient = getPaymentClient();
 
   try {
-    const order = await paymentClient.createPrivatePdfOrder({
-      generationId: entityId,
-      amountInr,
-      notes,
-    });
+    const order = contextType === PURCHASE_TYPES.MARKETPLACE
+      ? await paymentClient.createMarketplaceOrder({
+        listingId: entityId,
+        amountInr,
+        notes,
+      })
+      : await paymentClient.createPrivatePdfOrder({
+        generationId: entityId,
+        amountInr,
+        notes,
+      });
 
     return { order, paymentClient };
   } catch (error) {
@@ -243,6 +249,7 @@ export const paymentService = {
     const { order, paymentClient } = await createProviderOrder({
       entityId: generation._id,
       amountInr: PRIVATE_PDF_PRICE,
+      contextType: PURCHASE_TYPES.PRIVATE_PDF,
       notes: {
         contextType: PURCHASE_TYPES.PRIVATE_PDF,
         generatedPdfId: generation._id.toString(),
@@ -388,7 +395,7 @@ export const paymentService = {
       status: "completed",
       buyerAccessState: "granted",
     })
-      .populate("listingId", "title slug taxonomy priceInr")
+      .populate("listingId", "title slug taxonomy studyMetadata priceInr")
       .populate("sellerId", "name sellerProfile");
 
     if (existingPurchase) {
@@ -429,6 +436,7 @@ export const paymentService = {
     const { order, paymentClient } = await createProviderOrder({
       entityId: listing._id,
       amountInr: listing.priceInr,
+      contextType: PURCHASE_TYPES.MARKETPLACE,
       notes: {
         contextType: PURCHASE_TYPES.MARKETPLACE,
         listingId: listing._id.toString(),
@@ -488,7 +496,7 @@ export const paymentService = {
       status: "completed",
       buyerAccessState: "granted",
     })
-      .populate("listingId", "title slug taxonomy priceInr")
+      .populate("listingId", "title slug taxonomy studyMetadata priceInr")
       .populate("sellerId", "name sellerProfile");
 
     if (existingPurchase && payment.status === PAYMENT_STATUS.PAID) {
@@ -608,7 +616,7 @@ export const paymentService = {
     await listing.save();
 
     const populatedPurchase = await Purchase.findById(purchase._id)
-      .populate("listingId", "title slug taxonomy priceInr")
+      .populate("listingId", "title slug taxonomy studyMetadata priceInr")
       .populate("sellerId", "name sellerProfile");
 
     await notificationService.create({

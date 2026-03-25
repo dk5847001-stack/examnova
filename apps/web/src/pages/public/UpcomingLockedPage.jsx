@@ -3,11 +3,23 @@ import { PageHero } from "../../components/ui/PageHero.jsx";
 import { EmptyStateCard } from "../../components/ui/EmptyStateCard.jsx";
 import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { UpcomingLockedCard } from "../../components/ui/UpcomingLockedCard.jsx";
+import {
+  BRANCH_OPTIONS,
+  DEFAULT_UNIVERSITY,
+  SEMESTER_OPTIONS,
+  YEAR_OPTIONS,
+  withAllOption,
+} from "../../features/academic/academicTaxonomy.js";
 import { SeoHead } from "../../seo/SeoHead.jsx";
 import { fetchUpcomingLockedPdfs } from "../../services/api/index.js";
 import { buildPageTitle } from "../../utils/seo.js";
 
 export function UpcomingLockedPage() {
+  const universityOptions = withAllOption([DEFAULT_UNIVERSITY], "All universities");
+  const branchOptions = withAllOption(BRANCH_OPTIONS, "All branches");
+  const yearOptions = withAllOption(YEAR_OPTIONS, "All years");
+  const semesterOptions = withAllOption(SEMESTER_OPTIONS, "All semesters");
+
   const [filters, setFilters] = useState({
     university: "",
     branch: "",
@@ -66,7 +78,7 @@ export function UpcomingLockedPage() {
       <PageHero
         eyebrow="Upcoming releases"
         title="See what premium exam content is coming next."
-        description="Locked upcoming PDFs help students track what is about to drop for their semester and subject before the content is released into the marketplace."
+        description="Locked upcoming PDFs help students understand what is about to drop for their semester and subject before the content is released into the marketplace."
         metrics={[
           { label: "Visibility", value: "Preview Mode" },
           { label: "Targeting", value: "Semester Smart" },
@@ -79,17 +91,63 @@ export function UpcomingLockedPage() {
             <div>
               <p className="eyebrow">Locked filters</p>
               <h2>Find relevant upcoming drops</h2>
+              <p className="support-copy">Use the same academic structure as the live marketplace so the public catalog feels consistent and easy to browse.</p>
             </div>
           </div>
           <div className="two-column-grid compact">
-            <label className="field"><span>University</span><input className="input" onChange={(event) => handleFilterChange("university", event.target.value)} value={filters.university} /></label>
-            <label className="field"><span>Branch</span><input className="input" onChange={(event) => handleFilterChange("branch", event.target.value)} value={filters.branch} /></label>
-            <label className="field"><span>Year</span><input className="input" onChange={(event) => handleFilterChange("year", event.target.value)} value={filters.year} /></label>
-            <label className="field"><span>Semester</span><input className="input" onChange={(event) => handleFilterChange("semester", event.target.value)} value={filters.semester} /></label>
+            <label className="field">
+              <span>University</span>
+              <select className="input" onChange={(event) => handleFilterChange("university", event.target.value)} value={filters.university}>
+                {universityOptions.map((option) => (
+                  <option key={option.value || "all-university"} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Branch</span>
+              <select className="input" onChange={(event) => handleFilterChange("branch", event.target.value)} value={filters.branch}>
+                {branchOptions.map((option) => (
+                  <option key={option.value || "all-branch"} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Year</span>
+              <select className="input" onChange={(event) => handleFilterChange("year", event.target.value)} value={filters.year}>
+                {yearOptions.map((option) => (
+                  <option key={option.value || "all-year"} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Semester</span>
+              <select className="input" onChange={(event) => handleFilterChange("semester", event.target.value)} value={filters.semester}>
+                {semesterOptions.map((option) => (
+                  <option key={option.value || "all-semester"} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
           <div className="two-column-grid compact">
-            <label className="field"><span>Subject</span><input className="input" onChange={(event) => handleFilterChange("subject", event.target.value)} value={filters.subject} /></label>
-            <label className="field"><span>Current semester highlight</span><input className="input" onChange={(event) => handleFilterChange("currentSemester", event.target.value)} placeholder="Example: Semester 6" value={filters.currentSemester} /></label>
+            <label className="field"><span>Subject</span><input className="input" onChange={(event) => handleFilterChange("subject", event.target.value)} placeholder="Example: Software Engineering" value={filters.subject} /></label>
+            <label className="field">
+              <span>Current semester highlight</span>
+              <select className="input" onChange={(event) => handleFilterChange("currentSemester", event.target.value)} value={filters.currentSemester}>
+                {semesterOptions.map((option) => (
+                  <option key={`current-${option.value || "all"}`} value={option.value}>
+                    {option.label === "All semesters" ? "No highlight" : option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
         </form>
 

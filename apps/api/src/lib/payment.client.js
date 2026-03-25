@@ -33,6 +33,16 @@ export function createPaymentClient() {
         notes,
       });
     },
+    async createMarketplaceOrder({ listingId, amountInr, notes = {} }) {
+      const receipt = createReceipt("mkt", listingId);
+
+      return razorpay.orders.create({
+        amount: amountInr * 100,
+        currency: "INR",
+        receipt,
+        notes,
+      });
+    },
     verifySignature({ orderId, paymentId, signature }) {
       const expectedSignature = crypto
         .createHmac("sha256", env.razorpayKeySecret)

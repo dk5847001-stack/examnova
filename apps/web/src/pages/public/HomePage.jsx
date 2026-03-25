@@ -86,8 +86,8 @@ export function HomePage() {
       <SeoHead {...seoPayload} />
       <PageHero
         eyebrow="Premium exam-tech"
-        title="From raw study material to compact exam-ready PDFs."
-        description="ExamNova AI is built for structured uploads, AI-assisted answer generation, clean PDF output, and a search-friendly PDF marketplace."
+        title="A study marketplace and AI PDF platform that makes sense fast."
+        description="ExamNova AI helps first-time users discover premium study PDFs, upload source material, generate answer PDFs, and sell useful notes through one clear product flow."
         metrics={[
           { label: "Private unlock", value: `Rs. ${import.meta.env.VITE_PRIVATE_PDF_PRICE || 4}` },
           { label: "Marketplace", value: "Rs. 4 to Rs. 10" },
@@ -95,13 +95,13 @@ export function HomePage() {
         ]}
         actions={
           <>
-            <Link className="button primary" to="/signup">
-              <i className="bi bi-rocket-takeoff" />
-              Create account
-            </Link>
-            <Link className="button secondary" to="/marketplace">
+            <Link className="button primary" to="/marketplace">
               <i className="bi bi-grid-1x2" />
               Explore marketplace
+            </Link>
+            <Link className="button secondary" to="/signup">
+              <i className="bi bi-rocket-takeoff" />
+              Create account
             </Link>
             <Link className="button ghost" to="/upcoming">
               <i className="bi bi-hourglass-split" />

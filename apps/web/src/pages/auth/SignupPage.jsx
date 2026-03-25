@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth.js";
 
 export function SignupPage() {
   const { signup } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -27,6 +28,7 @@ export function SignupPage() {
         state: {
           email: form.email,
           purpose: "email_verification",
+          from: location.state?.from || null,
         },
       });
     } catch (requestError) {
@@ -39,7 +41,7 @@ export function SignupPage() {
   return (
     <form className="form-card" onSubmit={handleSubmit}>
       <h2>Signup</h2>
-      <p className="support-copy">Create your account and continue into the email OTP verification flow.</p>
+      <p className="support-copy">Create your account, verify your email, and land directly in the marketplace so you can buy, upload, or sell without confusion.</p>
       <label className="field">
         <span>Full name</span>
         <input

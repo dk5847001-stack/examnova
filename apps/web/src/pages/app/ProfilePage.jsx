@@ -1,9 +1,28 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { PageHero } from "../../components/ui/PageHero.jsx";
 import { InfoGridCard } from "../../components/ui/InfoGridCard.jsx";
 import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { SectionHeader } from "../../components/ui/SectionHeader.jsx";
+import {
+  BRANCH_OPTIONS,
+  DEFAULT_UNIVERSITY,
+  SEMESTER_OPTIONS,
+  YEAR_OPTIONS,
+} from "../../features/academic/academicTaxonomy.js";
 import { useAuth } from "../../hooks/useAuth.js";
+
+const controlLinks = [
+  { to: "/marketplace", label: "Marketplace", description: "Discover and buy premium PDFs." },
+  { to: "/app/purchased-pdfs", label: "Purchased PDFs", description: "Open your buyer library." },
+  { to: "/app/listed-pdfs", label: "Listed PDFs", description: "Manage what you sell publicly." },
+  { to: "/app/generated-pdfs", label: "Generated PDFs", description: "Review AI-generated output." },
+  { to: "/app/upload-generate", label: "Upload & Generate", description: "Start a new document workflow." },
+  { to: "/app/wallet", label: "Wallet", description: "Track credits and balance." },
+  { to: "/app/withdrawals", label: "Withdrawals", description: "Request and review payouts." },
+  { to: "/app/notifications", label: "Notifications", description: "Check system and purchase updates." },
+  { to: "/app/settings", label: "Settings", description: "Control your preferences." },
+];
 
 export function ProfilePage() {
   const { user, accessToken, refreshProfile, updateProfile } = useAuth();
@@ -59,21 +78,33 @@ export function ProfilePage() {
   return (
     <section className="stack-section">
       <PageHero
-        eyebrow="Profile"
-        title="Account overview"
-        description="View and edit your profile basics, academic details, and account identity in one place."
+        eyebrow="Profile control center"
+        title="Account overview and control"
+        description="This is your main account hub. Update identity details here, then jump into purchases, listings, generated PDFs, wallet activity, withdrawals, notifications, and settings from one clear surface."
         metrics={[
           { label: "Role", value: user?.role || "student" },
           { label: "Status", value: user?.status || "active" },
           { label: "Verified", value: user?.isEmailVerified ? "Yes" : "Pending" },
         ]}
+        actions={
+          <>
+            <Link className="button primary" to="/marketplace">
+              <i className="bi bi-shop" />
+              Open marketplace
+            </Link>
+            <Link className="button secondary" to="/app/purchased-pdfs">
+              <i className="bi bi-collection" />
+              Open my library
+            </Link>
+          </>
+        }
       />
       <div className="two-column-grid">
         <form className="detail-card profile-form" onSubmit={handleSubmit}>
           <SectionHeader
             eyebrow="Edit"
             title="Profile details"
-            description="These details shape your account identity and academic categorization."
+            description="Keep your identity and academic profile accurate so uploads, marketplace listings, and personalized discovery stay understandable."
           />
           <label className="field">
             <span>Full name</span>
@@ -94,19 +125,43 @@ export function ProfilePage() {
           <div className="two-column-grid compact">
             <label className="field">
               <span>University</span>
-              <input className="input" value={form.university} onChange={(event) => setForm((current) => ({ ...current, university: event.target.value }))} />
+              <select className="input" value={form.university} onChange={(event) => setForm((current) => ({ ...current, university: event.target.value }))}>
+                <option value="">Not set yet</option>
+                <option value={DEFAULT_UNIVERSITY}>{DEFAULT_UNIVERSITY}</option>
+              </select>
             </label>
             <label className="field">
               <span>Branch</span>
-              <input className="input" value={form.branch} onChange={(event) => setForm((current) => ({ ...current, branch: event.target.value }))} />
+              <select className="input" value={form.branch} onChange={(event) => setForm((current) => ({ ...current, branch: event.target.value }))}>
+                <option value="">Select branch</option>
+                {BRANCH_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
             </label>
             <label className="field">
               <span>Year</span>
-              <input className="input" value={form.year} onChange={(event) => setForm((current) => ({ ...current, year: event.target.value }))} />
+              <select className="input" value={form.year} onChange={(event) => setForm((current) => ({ ...current, year: event.target.value }))}>
+                <option value="">Select year</option>
+                {YEAR_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
             </label>
             <label className="field">
               <span>Semester</span>
-              <input className="input" value={form.semester} onChange={(event) => setForm((current) => ({ ...current, semester: event.target.value }))} />
+              <select className="input" value={form.semester} onChange={(event) => setForm((current) => ({ ...current, semester: event.target.value }))}>
+                <option value="">Select semester</option>
+                {SEMESTER_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    Semester {option}
+                  </option>
+                ))}
+              </select>
             </label>
           </div>
           {feedback.message ? (
@@ -130,14 +185,29 @@ export function ProfilePage() {
           <InfoGridCard
             title="Academic profile"
             items={[
-              { label: "University", value: user.academicProfile?.university },
-              { label: "Branch", value: user.academicProfile?.branch },
-              { label: "Year", value: user.academicProfile?.year },
-              { label: "Semester", value: user.academicProfile?.semester },
+              { label: "University", value: user.academicProfile?.university || "-" },
+              { label: "Branch", value: user.academicProfile?.branch || "-" },
+              { label: "Year", value: user.academicProfile?.year || "-" },
+              { label: "Semester", value: user.academicProfile?.semester ? `Semester ${user.academicProfile.semester}` : "-" },
             ]}
           />
         </div>
       </div>
+      <section className="stack-section">
+        <SectionHeader
+          eyebrow="Account controls"
+          title="Everything important in one place"
+          description="Use this hub to move between the actions that matter most without hunting through scattered screens."
+        />
+        <div className="shortcut-grid">
+          {controlLinks.map((item) => (
+            <Link className="shortcut-card" key={item.to} to={item.to}>
+              <strong>{item.label}</strong>
+              <span className="support-copy">{item.description}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
     </section>
   );
 }

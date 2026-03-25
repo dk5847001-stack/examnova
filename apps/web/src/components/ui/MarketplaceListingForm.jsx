@@ -1,22 +1,38 @@
 import { MARKETPLACE_PRICE_RANGE } from "../../features/marketplace/marketplace.constants.js";
+import {
+  BRANCH_OPTIONS,
+  DEFAULT_UNIVERSITY,
+  DIFFICULTY_LEVEL_OPTIONS,
+  EXAM_FOCUS_OPTIONS,
+  INTENDED_AUDIENCE_OPTIONS,
+  QUESTION_TYPE_OPTIONS,
+  SEMESTER_OPTIONS,
+  YEAR_OPTIONS,
+} from "../../features/academic/academicTaxonomy.js";
 
-const initialFormState = {
-  generatedPdfId: "",
-  title: "",
-  description: "",
-  priceInr: MARKETPLACE_PRICE_RANGE.min,
-  university: "",
-  branch: "",
-  year: "",
-  semester: "",
-  subject: "",
-  tags: "",
-  visibility: "draft",
-};
+function createBlankMarketplaceForm() {
+  return {
+    generatedPdfId: "",
+    title: "",
+    description: "",
+    priceInr: MARKETPLACE_PRICE_RANGE.min,
+    university: DEFAULT_UNIVERSITY,
+    branch: "",
+    year: "",
+    semester: "",
+    subject: "",
+    examFocus: "",
+    questionType: "",
+    difficultyLevel: "",
+    intendedAudience: "",
+    tags: "",
+    visibility: "draft",
+  };
+}
 
 export function createInitialMarketplaceForm(listing = null) {
   if (!listing) {
-    return initialFormState;
+    return createBlankMarketplaceForm();
   }
 
   return {
@@ -24,11 +40,15 @@ export function createInitialMarketplaceForm(listing = null) {
     title: listing.title || "",
     description: listing.description || "",
     priceInr: listing.priceInr || MARKETPLACE_PRICE_RANGE.min,
-    university: listing.taxonomy?.university || "",
+    university: listing.taxonomy?.university || DEFAULT_UNIVERSITY,
     branch: listing.taxonomy?.branch || "",
     year: listing.taxonomy?.year || "",
     semester: listing.taxonomy?.semester || "",
     subject: listing.taxonomy?.subject || "",
+    examFocus: listing.studyMetadata?.examFocus || "",
+    questionType: listing.studyMetadata?.questionType || "",
+    difficultyLevel: listing.studyMetadata?.difficultyLevel || "",
+    intendedAudience: listing.studyMetadata?.intendedAudience || "",
     tags: (listing.tags || []).join(", "),
     visibility: listing.visibility || "draft",
   };
@@ -48,9 +68,9 @@ export function MarketplaceListingForm({
       <div className="section-header">
         <div>
           <p className="eyebrow">{isEditing ? "Edit listing" : "Create listing"}</p>
-          <h3>{isEditing ? "Update marketplace metadata" : "Publish a generated PDF"}</h3>
+          <h3>{isEditing ? "Update marketplace metadata" : "Publish a marketplace-ready PDF"}</h3>
           <p className="support-copy">
-            Choose an eligible generated PDF, add academic categorization, and set a price between Rs. {MARKETPLACE_PRICE_RANGE.min} and Rs. {MARKETPLACE_PRICE_RANGE.max}.
+            Choose a finished generated PDF, classify it with the controlled Sandip University taxonomy, and add buyer-facing details that make the listing easy to understand.
           </p>
         </div>
       </div>
@@ -61,6 +81,7 @@ export function MarketplaceListingForm({
           className="input"
           disabled={isEditing}
           onChange={(event) => onChange("generatedPdfId", event.target.value)}
+          required
           value={form.generatedPdfId}
         >
           <option value="">Select a generated PDF</option>
@@ -75,10 +96,10 @@ export function MarketplaceListingForm({
       <div className="two-column-grid compact">
         <label className="field">
           <span>Title</span>
-          <input className="input" onChange={(event) => onChange("title", event.target.value)} value={form.title} />
+          <input className="input" onChange={(event) => onChange("title", event.target.value)} placeholder="Example: Operating Systems Unit 3 Important Questions" required value={form.title} />
         </label>
         <label className="field">
-          <span>Price</span>
+          <span>Price (Rs.)</span>
           <input
             className="input"
             max={MARKETPLACE_PRICE_RANGE.max}
@@ -87,38 +108,62 @@ export function MarketplaceListingForm({
             step="1"
             type="number"
             value={form.priceInr}
+            required
           />
         </label>
       </div>
 
       <label className="field">
         <span>Description</span>
-        <textarea className="input textarea" onChange={(event) => onChange("description", event.target.value)} value={form.description} />
+        <textarea className="input textarea" onChange={(event) => onChange("description", event.target.value)} placeholder="Tell buyers what they will get, which exam it helps with, and why it is useful." value={form.description} />
       </label>
 
       <div className="two-column-grid compact">
         <label className="field">
           <span>University</span>
-          <input className="input" onChange={(event) => onChange("university", event.target.value)} value={form.university} />
+          <select className="input" onChange={(event) => onChange("university", event.target.value)} value={form.university} required>
+            <option value={DEFAULT_UNIVERSITY}>{DEFAULT_UNIVERSITY}</option>
+          </select>
         </label>
         <label className="field">
           <span>Branch</span>
-          <input className="input" onChange={(event) => onChange("branch", event.target.value)} value={form.branch} />
+          <select className="input" onChange={(event) => onChange("branch", event.target.value)} value={form.branch} required>
+            <option value="">Select branch</option>
+            {BRANCH_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </label>
         <label className="field">
           <span>Year</span>
-          <input className="input" onChange={(event) => onChange("year", event.target.value)} value={form.year} />
+          <select className="input" onChange={(event) => onChange("year", event.target.value)} value={form.year} required>
+            <option value="">Select year</option>
+            {YEAR_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </label>
         <label className="field">
           <span>Semester</span>
-          <input className="input" onChange={(event) => onChange("semester", event.target.value)} value={form.semester} />
+          <select className="input" onChange={(event) => onChange("semester", event.target.value)} value={form.semester} required>
+            <option value="">Select semester</option>
+            {SEMESTER_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                Semester {option}
+              </option>
+            ))}
+          </select>
         </label>
       </div>
 
       <div className="two-column-grid compact">
         <label className="field">
           <span>Subject</span>
-          <input className="input" onChange={(event) => onChange("subject", event.target.value)} value={form.subject} />
+          <input className="input" onChange={(event) => onChange("subject", event.target.value)} placeholder="Example: Operating Systems" required value={form.subject} />
         </label>
         <label className="field">
           <span>Visibility</span>
@@ -130,12 +175,59 @@ export function MarketplaceListingForm({
         </label>
       </div>
 
+      <div className="two-column-grid compact">
+        <label className="field">
+          <span>Exam focus</span>
+          <select className="input" onChange={(event) => onChange("examFocus", event.target.value)} value={form.examFocus}>
+            <option value="">Select exam focus</option>
+            {EXAM_FOCUS_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
+          <span>Question type</span>
+          <select className="input" onChange={(event) => onChange("questionType", event.target.value)} value={form.questionType}>
+            <option value="">Select question type</option>
+            {QUESTION_TYPE_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
+          <span>Difficulty level</span>
+          <select className="input" onChange={(event) => onChange("difficultyLevel", event.target.value)} value={form.difficultyLevel}>
+            <option value="">Select difficulty</option>
+            {DIFFICULTY_LEVEL_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
+          <span>Intended audience</span>
+          <select className="input" onChange={(event) => onChange("intendedAudience", event.target.value)} value={form.intendedAudience}>
+            <option value="">Select intended audience</option>
+            {INTENDED_AUDIENCE_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       <label className="field">
         <span>Tags</span>
         <input
           className="input"
           onChange={(event) => onChange("tags", event.target.value)}
-          placeholder="os, unit 3, revision"
+          placeholder="os, unit 3, revision, viva"
           value={form.tags}
         />
       </label>

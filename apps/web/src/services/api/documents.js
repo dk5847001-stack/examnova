@@ -18,10 +18,22 @@ export function getDocument(accessToken, documentId) {
   });
 }
 
-export async function uploadDocument(accessToken, { file, sourceCategory }) {
+export async function uploadDocument(accessToken, uploadPayload) {
   const formData = new FormData();
-  formData.append("document", file);
-  formData.append("sourceCategory", sourceCategory);
+  formData.append("document", uploadPayload.file);
+
+  Object.entries(uploadPayload).forEach(([key, value]) => {
+    if (key === "file" || value === undefined || value === null || value === "") {
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      formData.append(key, value.join(","));
+      return;
+    }
+
+    formData.append(key, typeof value === "boolean" ? String(value) : value);
+  });
 
   const response = await fetch(`${API_BASE_URL}/uploads`, {
     method: "POST",

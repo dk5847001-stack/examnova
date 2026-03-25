@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { SectionHeader } from "../../components/ui/SectionHeader.jsx";
 import { StatusBadge } from "../../components/ui/StatusBadge.jsx";
+import {
+  BRANCH_OPTIONS,
+  DEFAULT_UNIVERSITY,
+  SEMESTER_OPTIONS,
+  YEAR_OPTIONS,
+} from "../../features/academic/academicTaxonomy.js";
 import { useAuth } from "../../hooks/useAuth.js";
 import {
   createAdminUpcoming,
@@ -15,7 +21,7 @@ const initialForm = {
   adminUploadId: "",
   title: "",
   summary: "",
-  university: "",
+  university: DEFAULT_UNIVERSITY,
   branch: "",
   year: "",
   semester: "",
@@ -90,7 +96,7 @@ export function AdminUpcomingPdfsPage() {
       adminUploadId: uploadId,
       title: current.title || selected.title || "",
       summary: current.summary || selected.description || "",
-      university: current.university || selected.taxonomy?.university || "",
+      university: current.university || selected.taxonomy?.university || DEFAULT_UNIVERSITY,
       branch: current.branch || selected.taxonomy?.branch || "",
       year: current.year || selected.taxonomy?.year || "",
       semester: current.semester || selected.taxonomy?.semester || "",
@@ -106,7 +112,7 @@ export function AdminUpcomingPdfsPage() {
       adminUploadId: item.adminUploadId || "",
       title: item.title || "",
       summary: item.summary || "",
-      university: item.taxonomy?.university || "",
+      university: item.taxonomy?.university || DEFAULT_UNIVERSITY,
       branch: item.taxonomy?.branch || "",
       year: item.taxonomy?.year || "",
       semester: item.taxonomy?.semester || "",
@@ -200,15 +206,50 @@ export function AdminUpcomingPdfsPage() {
               ))}
             </select>
           </label>
-          <label className="field"><span>Title</span><input className="input" onChange={(event) => handleChange("title", event.target.value)} value={form.title} /></label>
-          <label className="field"><span>Summary</span><textarea className="input" onChange={(event) => handleChange("summary", event.target.value)} rows={4} value={form.summary} /></label>
+          <label className="field"><span>Title</span><input className="input" onChange={(event) => handleChange("title", event.target.value)} placeholder="Example: Semester 6 OS Smart Revision Pack" required value={form.title} /></label>
+          <label className="field"><span>Summary</span><textarea className="input" onChange={(event) => handleChange("summary", event.target.value)} placeholder="Tell students what is coming and why they should watch for the release." rows={4} value={form.summary} /></label>
           <div className="two-column-grid compact">
-            <label className="field"><span>University</span><input className="input" onChange={(event) => handleChange("university", event.target.value)} value={form.university} /></label>
-            <label className="field"><span>Branch</span><input className="input" onChange={(event) => handleChange("branch", event.target.value)} value={form.branch} /></label>
-            <label className="field"><span>Year</span><input className="input" onChange={(event) => handleChange("year", event.target.value)} value={form.year} /></label>
-            <label className="field"><span>Semester</span><input className="input" onChange={(event) => handleChange("semester", event.target.value)} value={form.semester} /></label>
+            <label className="field">
+              <span>University</span>
+              <select className="input" onChange={(event) => handleChange("university", event.target.value)} value={form.university} required>
+                <option value={DEFAULT_UNIVERSITY}>{DEFAULT_UNIVERSITY}</option>
+              </select>
+            </label>
+            <label className="field">
+              <span>Branch</span>
+              <select className="input" onChange={(event) => handleChange("branch", event.target.value)} value={form.branch} required>
+                <option value="">Select branch</option>
+                {BRANCH_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Year</span>
+              <select className="input" onChange={(event) => handleChange("year", event.target.value)} value={form.year} required>
+                <option value="">Select year</option>
+                {YEAR_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Semester</span>
+              <select className="input" onChange={(event) => handleChange("semester", event.target.value)} value={form.semester} required>
+                <option value="">Select semester</option>
+                {SEMESTER_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    Semester {option}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
-          <label className="field"><span>Subject</span><input className="input" onChange={(event) => handleChange("subject", event.target.value)} value={form.subject} /></label>
+          <label className="field"><span>Subject</span><input className="input" onChange={(event) => handleChange("subject", event.target.value)} placeholder="Example: Computer Networks" required value={form.subject} /></label>
           <label className="field"><span>Tags</span><input className="input" onChange={(event) => handleChange("tags", event.target.value)} value={form.tags} /></label>
           <label className="field"><span>Cover image URL</span><input className="input" onChange={(event) => handleChange("coverImageUrl", event.target.value)} value={form.coverImageUrl} /></label>
           <div className="two-column-grid compact">

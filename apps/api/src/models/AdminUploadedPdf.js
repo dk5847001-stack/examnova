@@ -12,6 +12,16 @@ const taxonomySchema = new mongoose.Schema(
   { _id: false },
 );
 
+const studyMetadataSchema = new mongoose.Schema(
+  {
+    examFocus: { type: String, default: "", trim: true },
+    questionType: { type: String, default: "", trim: true },
+    difficultyLevel: { type: String, default: "", trim: true },
+    intendedAudience: { type: String, default: "", trim: true },
+  },
+  { _id: false },
+);
+
 const adminUploadedPdfSchema = new mongoose.Schema(
   {
     adminId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
@@ -26,6 +36,7 @@ const adminUploadedPdfSchema = new mongoose.Schema(
     priceInr: { type: Number, required: true },
     currency: { type: String, default: "INR" },
     taxonomy: { type: taxonomySchema, required: true },
+    studyMetadata: { type: studyMetadataSchema, default: () => ({}) },
     tags: [{ type: String, trim: true }],
     coverImageUrl: { type: String, default: "" },
     seoTitle: { type: String, default: "" },

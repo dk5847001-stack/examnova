@@ -24,6 +24,7 @@ function serializePurchase(record) {
     accessGrantedAt: record.accessGrantedAt,
     purchasedAt: record.createdAt,
     taxonomy: record.listingId?.taxonomy || null,
+    studyMetadata: record.listingId?.studyMetadata || {},
   };
 }
 
@@ -36,7 +37,7 @@ export const purchaseService = {
       status: "completed",
       buyerAccessState: "granted",
     })
-      .populate("listingId", "title slug taxonomy priceInr")
+      .populate("listingId", "title slug taxonomy studyMetadata priceInr")
       .populate("sellerId", "name sellerProfile")
       .sort({ createdAt: -1 });
 
@@ -50,7 +51,7 @@ export const purchaseService = {
       status: "completed",
       buyerAccessState: "granted",
     })
-      .populate("listingId", "title slug taxonomy priceInr sourcePdfId")
+      .populate("listingId", "title slug taxonomy studyMetadata priceInr sourcePdfId")
       .populate("sellerId", "name sellerProfile");
 
     if (!purchase) {
