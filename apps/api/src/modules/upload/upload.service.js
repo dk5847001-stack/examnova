@@ -175,7 +175,14 @@ export const uploadService = {
       throw new ApiError(404, "Uploaded document not found.");
     }
 
-    const absolutePath = storageClient.resolve(document.storageKey);
+    let absolutePath;
+
+    try {
+      absolutePath = await storageClient.resolveExisting(document.storageKey);
+    } catch {
+      throw new ApiError(404, "The uploaded source file is missing on the server. Please upload the document again.");
+    }
+
     await parseAndPersist(document, absolutePath);
 
     return this.getDocumentForUser(documentId, userId);

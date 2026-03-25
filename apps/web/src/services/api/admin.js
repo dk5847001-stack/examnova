@@ -86,7 +86,7 @@ export function updateAdminUpload(accessToken, uploadId, payload) {
   return apiRequest(`/admin-content/uploads/${uploadId}`, {
     method: "PATCH",
     headers: authHeaders(accessToken),
-    body: JSON.stringify(payload),
+    body: payload instanceof FormData ? payload : JSON.stringify(payload),
   });
 }
 

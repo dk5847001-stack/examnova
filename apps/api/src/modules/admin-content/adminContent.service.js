@@ -289,10 +289,32 @@ export const adminContentService = {
     return serializeAdminUpload(populated);
   },
 
-  async updateAdminUpload(uploadId, actor, payload, req) {
+  async updateAdminUpload(uploadId, actor, payload, req, file = null) {
     const record = await AdminUploadedPdf.findById(uploadId).populate("adminId", "name");
     if (!record) {
       throw new ApiError(404, "Admin-uploaded PDF not found.");
+    }
+
+    if (file) {
+      try {
+        if (record.storageKey) {
+          await storageClient.remove(record.storageKey);
+        }
+      } catch {
+        // If the old file is already missing, continue with replacement.
+      }
+
+      const uploadedFile = await storageClient.upload({
+        originalName: file.originalname,
+        buffer: file.buffer,
+        ownerDirectory: "admin-content",
+      });
+
+      record.originalName = file.originalname;
+      record.mimeType = file.mimetype;
+      record.sizeInBytes = file.size;
+      record.storageKey = uploadedFile.storageKey;
+      record.storageUrl = uploadedFile.url;
     }
 
     record.title = normalizeText(payload.title);

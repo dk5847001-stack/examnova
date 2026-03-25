@@ -85,8 +85,21 @@ export const purchaseService = {
       throw new ApiError(404, "Purchased PDF file is not available.");
     }
 
+    let absolutePath;
+
+    try {
+      absolutePath = await storageClient.resolveExisting(storageKey);
+    } catch {
+      throw new ApiError(
+        404,
+        listing?.sourceType === "admin_upload"
+          ? "This purchased PDF file is missing on the server. Please re-upload the admin PDF and republish the listing."
+          : "This purchased PDF file is missing on the server. Please regenerate the PDF and try again.",
+      );
+    }
+
     return {
-      absolutePath: storageClient.resolve(storageKey),
+      absolutePath,
       downloadName:
         (listing?.sourceType === "admin_upload"
           ? listing?.adminUploadId?.originalName

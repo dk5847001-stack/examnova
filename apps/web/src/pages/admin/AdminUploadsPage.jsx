@@ -127,9 +127,22 @@ export function AdminUploadsPage() {
 
     try {
       if (editingId) {
-        const response = await updateAdminUpload(accessToken, editingId, form);
+        const payload = new FormData();
+        Object.entries(form).forEach(([key, value]) => {
+          payload.append(key, typeof value === "boolean" ? String(value) : value);
+        });
+        if (selectedFile) {
+          payload.append("pdf", selectedFile);
+        }
+
+        const response = await updateAdminUpload(accessToken, editingId, payload);
         setItems((current) => current.map((item) => (item.id === editingId ? response.data.item : item)));
-        setFeedback({ type: "success", message: "Admin-uploaded PDF updated successfully." });
+        setFeedback({
+          type: "success",
+          message: selectedFile
+            ? "Admin-uploaded PDF and file source updated successfully."
+            : "Admin-uploaded PDF updated successfully.",
+        });
       } else {
         const formData = new FormData();
         Object.entries(form).forEach(([key, value]) => {
@@ -173,16 +186,20 @@ export function AdminUploadsPage() {
             title={formTitle}
             description="Use this for admin-owned PDFs that should go directly into the marketplace catalog with strong buyer-facing metadata."
           />
-          {!editingId ? (
-            <label className="field">
-              <span>PDF file</span>
-              <input
-                accept="application/pdf"
-                className="input"
-                onChange={(event) => setSelectedFile(event.target.files?.[0] || null)}
-                type="file"
-              />
-            </label>
+          <label className="field">
+            <span>{editingId ? "Replace PDF file (optional)" : "PDF file"}</span>
+            <input
+              accept="application/pdf"
+              className="input"
+              onChange={(event) => setSelectedFile(event.target.files?.[0] || null)}
+              required={!editingId}
+              type="file"
+            />
+          </label>
+          {editingId ? (
+            <p className="support-copy">
+              Upload a replacement PDF here if an existing marketplace file is missing or needs to be repaired without changing old purchases.
+            </p>
           ) : null}
           <label className="field"><span>Title</span><input className="input" onChange={(event) => handleChange("title", event.target.value)} placeholder="Example: DBMS End-Sem Important Questions" required value={form.title} /></label>
           <label className="field"><span>Description</span><textarea className="input" onChange={(event) => handleChange("description", event.target.value)} placeholder="Explain what this PDF covers and why a student should buy it." rows={4} value={form.description} /></label>

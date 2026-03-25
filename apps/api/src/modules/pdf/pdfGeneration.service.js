@@ -154,7 +154,13 @@ export const pdfGenerationService = {
       throw new ApiError(403, "PDF download is locked until payment is completed.");
     }
 
-    const absolutePath = storageClient.resolve(generation.storageKey);
+    let absolutePath;
+
+    try {
+      absolutePath = await storageClient.resolveExisting(generation.storageKey);
+    } catch {
+      throw new ApiError(404, "Final PDF file is missing on the server. Please render the PDF again.");
+    }
 
     return {
       absolutePath,

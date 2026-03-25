@@ -25,6 +25,7 @@ router.post(
 );
 router.patch(
   "/uploads/:id",
+  singleAdminPdfUpload,
   validateAdminUploadUpdate,
   asyncHandler(adminContentController.updateAdminUpload),
 );

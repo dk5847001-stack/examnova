@@ -16,7 +16,7 @@ export const adminContentController = {
     return sendSuccess(res, { item }, "Admin PDF uploaded successfully.", 201);
   },
   async updateAdminUpload(req, res) {
-    const item = await adminContentService.updateAdminUpload(req.params.id, req.user, req.body, req);
+    const item = await adminContentService.updateAdminUpload(req.params.id, req.user, req.body, req, req.file);
     return sendSuccess(res, { item }, "Admin uploaded PDF updated successfully.");
   },
   async listUpcomingItems(req, res) {

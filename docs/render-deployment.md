@@ -64,6 +64,9 @@ Critical ones:
 - Set `REFRESH_TOKEN_COOKIE_SAME_SITE=none` when frontend and backend are on separate Render domains
 - Keep `PUBLIC_SITE_URL` aligned with the frontend public domain for sitemap and canonical URLs
 - Keep `WEB_APP_URL` aligned with the frontend domain for CORS
+- Render's default filesystem is ephemeral across deploys/restarts, so PDF uploads/downloads should use a persistent disk mount for `LOCAL_UPLOAD_DIR`
+- Recommended example: mount a persistent disk and set `LOCAL_UPLOAD_DIR=/var/data/examnova-uploads`
+- If existing admin-uploaded or generated PDFs were saved only on ephemeral local disk, those specific files may need to be re-uploaded or re-rendered once after switching storage
 
 ## Frontend Service
 
