@@ -93,10 +93,12 @@ export function VerifyOtpPage() {
       {error ? <p className="form-error">{error}</p> : null}
       {success ? <p className="form-success">{success}</p> : null}
       <button className="button primary full-width" disabled={isSubmitting} type="submit">
+        <i className="bi bi-shield-check" />
         {isSubmitting ? "Verifying..." : "Verify email"}
       </button>
       <div className="inline-actions">
         <button className="button secondary" disabled={isResending || countdown > 0} onClick={handleResend} type="button">
+          <i className="bi bi-arrow-repeat" />
           {countdown > 0 ? `Resend in ${countdown}s` : isResending ? "Sending..." : "Resend OTP"}
         </button>
         <Link to="/login">Back to login</Link>

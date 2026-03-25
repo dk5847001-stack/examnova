@@ -96,6 +96,7 @@ export function ResetPasswordPage() {
       {error ? <p className="form-error">{error}</p> : null}
       {success ? <p className="form-success">{success}</p> : null}
       <button className="button primary full-width" disabled={isSubmitting} type="submit">
+        <i className="bi bi-key-fill" />
         {isSubmitting ? "Resetting..." : "Reset password"}
       </button>
       <p className="text-link-row">

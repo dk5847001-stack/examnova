@@ -38,6 +38,11 @@ export function FaqPage() {
         eyebrow="Support content"
         title="Frequently asked questions"
         description="Answers about public PDF discovery, academic categorization, locked releases, and how ExamNova AI organizes exam-preparation content."
+        metrics={[
+          { label: "Clarity", value: "Instant" },
+          { label: "Coverage", value: "Public Routes" },
+          { label: "Signals", value: "Release Aware" },
+        ]}
       />
       <section className="stack-section">
         {faqItems.map((item) => (

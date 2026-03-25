@@ -88,15 +88,23 @@ export function HomePage() {
         eyebrow="Premium exam-tech"
         title="From raw study material to compact exam-ready PDFs."
         description="ExamNova AI is built for structured uploads, AI-assisted answer generation, clean PDF output, and a search-friendly PDF marketplace."
+        metrics={[
+          { label: "Private unlock", value: `Rs. ${import.meta.env.VITE_PRIVATE_PDF_PRICE || 4}` },
+          { label: "Marketplace", value: "Rs. 4 to Rs. 10" },
+          { label: "Seller share", value: "70%" },
+        ]}
         actions={
           <>
             <Link className="button primary" to="/signup">
+              <i className="bi bi-rocket-takeoff" />
               Create account
             </Link>
             <Link className="button secondary" to="/marketplace">
+              <i className="bi bi-grid-1x2" />
               Explore marketplace
             </Link>
             <Link className="button ghost" to="/upcoming">
+              <i className="bi bi-hourglass-split" />
               View upcoming locks
             </Link>
           </>

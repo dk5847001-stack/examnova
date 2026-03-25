@@ -85,12 +85,19 @@ export function SeoLandingPage({ forcedType = "" }) {
             eyebrow={`${state.type} discovery`}
             title={state.heading}
             description={state.intro}
+            metrics={[
+              { label: "Listings", value: `${state.stats?.listingCount || 0}` },
+              { label: "Upcoming", value: `${state.stats?.upcomingCount || 0}` },
+              { label: "Focus", value: state.label },
+            ]}
             actions={
               <>
                 <Link className="button secondary" to="/marketplace">
+                  <i className="bi bi-grid-1x2" />
                   Browse marketplace
                 </Link>
                 <Link className="button ghost" to="/upcoming">
+                  <i className="bi bi-hourglass-split" />
                   Explore upcoming PDFs
                 </Link>
               </>

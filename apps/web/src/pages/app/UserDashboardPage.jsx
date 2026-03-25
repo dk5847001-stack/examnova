@@ -50,12 +50,19 @@ export function UserDashboardPage() {
         eyebrow="Dashboard"
         title={`Welcome, ${user?.name || "Student"}`}
         description="This overview is designed to become the command center for uploads, generated PDFs, marketplace activity, wallet movement, and notifications."
+        metrics={[
+          { label: "Completion", value: `${dashboardSummary?.overview?.profileCompletionPercent ?? 0}%` },
+          { label: "Wallet", value: `Rs ${dashboardSummary?.wallet?.availableBalance ?? 0}` },
+          { label: "Unread", value: `${dashboardSummary?.counters?.unreadNotifications ?? 0}` },
+        ]}
         actions={
           <>
             <Link className="button primary" to="/app/upload-generate">
+              <i className="bi bi-cloud-arrow-up" />
               Upload document
             </Link>
             <Link className="button secondary" to="/marketplace">
+              <i className="bi bi-shop" />
               Explore marketplace
             </Link>
           </>

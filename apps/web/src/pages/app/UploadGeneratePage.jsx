@@ -106,12 +106,19 @@ export function UploadGeneratePage() {
         eyebrow="Upload and generate"
         title="Turn raw study material into AI-ready parsed documents."
         description="Upload question banks, notes, assignments, and study material. ExamNova AI validates, stores, and parses the content so the next phase can detect questions cleanly."
+        metrics={[
+          { label: "Formats", value: supportedTypes.join(" / ") },
+          { label: "Pipeline", value: "Validated" },
+          { label: "Output", value: "Question Ready" },
+        ]}
         actions={
           <>
             <button className="button primary" onClick={() => fileInputRef.current?.click()} type="button">
+              <i className="bi bi-cloud-arrow-up" />
               Choose document
             </button>
             <Link className="button secondary" to="/app/generated-pdfs">
+              <i className="bi bi-file-earmark-pdf" />
               View generated PDFs
             </Link>
           </>

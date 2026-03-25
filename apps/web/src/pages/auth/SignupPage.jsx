@@ -77,6 +77,7 @@ export function SignupPage() {
       {error ? <p className="form-error">{error}</p> : null}
       {success ? <p className="form-success">{success}</p> : null}
       <button className="button primary full-width" disabled={isSubmitting} type="submit">
+        <i className="bi bi-person-plus-fill" />
         {isSubmitting ? "Creating account..." : "Create account"}
       </button>
       <p className="text-link-row">

@@ -7,11 +7,13 @@ export function InternalLinkGrid({ title, links = [] }) {
 
   return (
     <article className="detail-card">
+      <p className="eyebrow">Discovery path</p>
       <h3>{title}</h3>
       <div className="marketplace-taxonomy">
         {links.map((item) => (
           <Link className="inline-link-chip" key={item.href} to={item.href}>
-            {item.text}
+            <i className="bi bi-arrow-up-right" />
+            {item.text || item.label}
           </Link>
         ))}
       </div>

@@ -67,6 +67,11 @@ export function UpcomingLockedPage() {
         eyebrow="Upcoming releases"
         title="See what premium exam content is coming next."
         description="Locked upcoming PDFs help students track what is about to drop for their semester and subject before the content is released into the marketplace."
+        metrics={[
+          { label: "Visibility", value: "Preview Mode" },
+          { label: "Targeting", value: "Semester Smart" },
+          { label: "Release", value: "Admin Controlled" },
+        ]}
       />
       <section className="two-column-grid marketplace-shell">
         <form className="detail-card marketplace-filters">

@@ -64,6 +64,7 @@ export function GeneratedPdfResultCard({
 
       <div className="hero-actions">
         <button className="button primary" disabled={isRendering} onClick={onRender} type="button">
+          <i className="bi bi-file-earmark-richtext" />
           {isRendering
             ? "Generating final PDF..."
             : pdfReady
@@ -76,6 +77,7 @@ export function GeneratedPdfResultCard({
           onClick={onUnlock}
           type="button"
         >
+          <i className="bi bi-unlock" />
           {isPaying ? "Opening checkout..." : "Unlock for Rs. 4"}
         </button>
         <button
@@ -84,6 +86,7 @@ export function GeneratedPdfResultCard({
           onClick={onDownload}
           type="button"
         >
+          <i className="bi bi-download" />
           {locked ? "Unlock required" : "Download PDF"}
         </button>
       </div>

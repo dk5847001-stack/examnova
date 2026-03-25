@@ -39,6 +39,7 @@ export function UpcomingLockedCard({ item }) {
 
       <div className="hero-actions">
         <Link className="button secondary" to={`/upcoming/${item.slug}`}>
+          <i className="bi bi-hourglass-split" />
           View locked detail
         </Link>
       </div>

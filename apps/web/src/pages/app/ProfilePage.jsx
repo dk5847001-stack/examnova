@@ -62,6 +62,11 @@ export function ProfilePage() {
         eyebrow="Profile"
         title="Account overview"
         description="View and edit your profile basics, academic details, and account identity in one place."
+        metrics={[
+          { label: "Role", value: user?.role || "student" },
+          { label: "Status", value: user?.status || "active" },
+          { label: "Verified", value: user?.isEmailVerified ? "Yes" : "Pending" },
+        ]}
       />
       <div className="two-column-grid">
         <form className="detail-card profile-form" onSubmit={handleSubmit}>

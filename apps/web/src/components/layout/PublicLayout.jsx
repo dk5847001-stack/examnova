@@ -9,22 +9,36 @@ export function PublicLayout() {
     <div className="site-shell public-shell">
       <SeoHead title="ExamNova AI" description="AI-powered exam preparation platform and PDF marketplace." />
       <header className="topbar">
-        <div className="topbar-brand-cluster">
-          <Link to="/" className="brand">
-            ExamNova AI
-          </Link>
-          <span className="layout-kicker">Exam-tech workspace and marketplace</span>
+        <div className="topbar-brand-wrap">
+          <div className="brand-mark" aria-hidden="true">
+            <i className="bi bi-stars" />
+          </div>
+          <div className="topbar-brand-cluster">
+            <span className="layout-kicker">Futuristic Exam Intelligence</span>
+            <Link to="/" className="brand">
+              ExamNova AI
+            </Link>
+            <p className="brand-subcopy">
+              AI document parsing, compact rendering, and premium marketplace discovery in one surface.
+            </p>
+          </div>
         </div>
-        <nav className="nav-links">
-          <Link to="/">Home</Link>
-          <Link to="/marketplace">Marketplace</Link>
-          <Link to="/upcoming">Upcoming</Link>
-          <Link to="/resources">Resources</Link>
-          <Link to="/faq">FAQ</Link>
+        <nav className="nav-links nav nav-pills">
+          <Link className="nav-link-pill" to="/"><i className="bi bi-house-door" />Home</Link>
+          <Link className="nav-link-pill" to="/marketplace"><i className="bi bi-grid-1x2" />Marketplace</Link>
+          <Link className="nav-link-pill" to="/upcoming"><i className="bi bi-hourglass-split" />Upcoming</Link>
+          <Link className="nav-link-pill" to="/resources"><i className="bi bi-journal-richtext" />Resources</Link>
+          <Link className="nav-link-pill" to="/faq"><i className="bi bi-patch-question" />FAQ</Link>
           {isAuthenticated ? (
-            <Link className="nav-cta" to={role === "admin" ? "/admin/dashboard" : "/app/dashboard"}>Dashboard</Link>
+            <Link className="nav-link-pill nav-cta" to={role === "admin" ? "/admin/dashboard" : "/app/dashboard"}>
+              <i className="bi bi-command" />
+              Dashboard
+            </Link>
           ) : (
-            <Link className="nav-cta" to="/login">Login</Link>
+            <Link className="nav-link-pill nav-cta" to="/login">
+              <i className="bi bi-box-arrow-in-right" />
+              Login
+            </Link>
           )}
         </nav>
       </header>
@@ -32,14 +46,33 @@ export function PublicLayout() {
         <Outlet />
       </main>
       <footer className="footer-bar">
-        <div>
-          <strong>ExamNova AI</strong>
-          <p>Compact exam PDFs, structured marketplace listings, and premium student workflows.</p>
-        </div>
-        <div className="footer-links">
-          <Link to="/marketplace">Marketplace</Link>
-          <Link to="/resources">Resources</Link>
-          <Link to="/faq">FAQ</Link>
+        <div className="footer-grid">
+          <section className="footer-block">
+            <h3>ExamNova AI</h3>
+            <p className="support-copy">
+              A cinematic AI workspace for exam prep, premium PDFs, marketplace commerce, and release discovery.
+            </p>
+            <div className="footer-stat-row">
+              <span className="footer-stat"><i className="bi bi-cpu" />AI workflow</span>
+              <span className="footer-stat"><i className="bi bi-file-earmark-pdf" />Compact render</span>
+              <span className="footer-stat"><i className="bi bi-shop" />Marketplace ready</span>
+            </div>
+          </section>
+          <section className="footer-block">
+            <h4>Explore</h4>
+            <div className="footer-links">
+              <Link className="footer-link-pill" to="/marketplace">Marketplace</Link>
+              <Link className="footer-link-pill" to="/resources">Resources</Link>
+              <Link className="footer-link-pill" to="/upcoming">Upcoming</Link>
+              <Link className="footer-link-pill" to="/faq">FAQ</Link>
+            </div>
+          </section>
+          <section className="footer-block">
+            <h4>Platform Focus</h4>
+            <p className="support-copy">
+              Built for serious students who want sharper workflows, stronger visual feedback, and exam-ready output.
+            </p>
+          </section>
         </div>
       </footer>
     </div>

@@ -60,10 +60,15 @@ export function UpcomingLockedDetailPage() {
             eyebrow="Locked release"
             title={item?.title || "Upcoming PDF"}
             description={item?.summary || "This premium exam PDF is visible now and will unlock later for full marketplace availability."}
+            metrics={[
+              { label: "Status", value: item?.status || "upcoming" },
+              { label: "Semester", value: item?.taxonomy?.semester || "TBA" },
+              { label: "Release", value: item?.expectedReleaseAt ? new Date(item.expectedReleaseAt).toLocaleDateString() : "Soon" },
+            ]}
             actions={
               <>
-                <Link className="button secondary" to="/upcoming">Browse upcoming PDFs</Link>
-                <Link className="button ghost" to="/marketplace">Go to marketplace</Link>
+                <Link className="button secondary" to="/upcoming"><i className="bi bi-hourglass-split" />Browse upcoming PDFs</Link>
+                <Link className="button ghost" to="/marketplace"><i className="bi bi-shop" />Go to marketplace</Link>
               </>
             }
           />

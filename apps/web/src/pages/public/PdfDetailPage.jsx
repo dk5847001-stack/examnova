@@ -179,13 +179,19 @@ export function PdfDetailPage() {
             eyebrow={listing?.taxonomy?.subject || "PDF detail"}
             title={listing?.title || slug || "Listing"}
             description={listing?.description || "Compact exam-ready PDF listing for focused revision."}
+            metrics={[
+              { label: "Price", value: `Rs. ${listing?.priceInr || 0}` },
+              { label: "Views", value: `${listing?.viewCount || 0}` },
+              { label: "Access", value: "Permanent" },
+            ]}
             actions={
               <>
                 <button className="button primary" disabled={isPurchasing} onClick={handlePurchase} type="button">
+                  <i className="bi bi-bag-check" />
                   {isPurchasing ? "Opening checkout..." : `Buy for Rs. ${listing?.priceInr || 0}`}
                 </button>
-                {isAuthenticated ? <Link className="button ghost" to="/app/purchased-pdfs">Open library</Link> : null}
-                <Link className="button secondary" to="/marketplace">Back to marketplace</Link>
+                {isAuthenticated ? <Link className="button ghost" to="/app/purchased-pdfs"><i className="bi bi-collection" />Open library</Link> : null}
+                <Link className="button secondary" to="/marketplace"><i className="bi bi-arrow-left" />Back to marketplace</Link>
               </>
             }
           />

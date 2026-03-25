@@ -142,6 +142,7 @@ export function MarketplaceListingForm({
 
       <div className="hero-actions">
         <button className="button primary" disabled={isSubmitting} type="submit">
+          <i className={`bi ${isEditing ? "bi-pencil-square" : "bi-rocket-takeoff"}`} />
           {isSubmitting ? "Saving..." : submitLabel}
         </button>
       </div>

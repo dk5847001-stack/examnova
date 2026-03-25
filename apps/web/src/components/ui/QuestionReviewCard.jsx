@@ -19,7 +19,7 @@ export function QuestionReviewCard({ question, onToggle }) {
           <StatusBadge tone="success">{question.inferredQuestionType}</StatusBadge>
         </div>
       </div>
-      <p>{question.questionText}</p>
+      <p className="support-copy">{question.questionText}</p>
       <div className="document-meta-row">
         <span>{question.inferredUnit || "No unit inferred"}</span>
         <span>{question.inferredTopic || "Topic pending"}</span>

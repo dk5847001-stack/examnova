@@ -60,6 +60,7 @@ export function LoginPage() {
       </label>
       {error ? <p className="form-error">{error}</p> : null}
       <button className="button primary full-width" disabled={isSubmitting} type="submit">
+        <i className="bi bi-box-arrow-in-right" />
         {isSubmitting ? "Logging in..." : "Login"}
       </button>
       <p className="text-link-row">

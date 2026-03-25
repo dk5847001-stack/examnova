@@ -139,6 +139,11 @@ export function MarketplacePage() {
         eyebrow="Public marketplace"
         title="Find compact exam PDFs by subject and semester."
         description="Browse clean, searchable exam-prep PDFs listed by university, branch, year, semester, and subject. Each listing is structured for public discovery and later purchase flow."
+        metrics={[
+          { label: "Discovery", value: "SEO Ready" },
+          { label: "Filtering", value: "Subject Smart" },
+          { label: "Surface", value: "Premium Cards" },
+        ]}
       />
       {discoveryIndex ? (
         <section className="three-column-grid">

@@ -34,15 +34,19 @@ export function DocumentCard({ document, onDelete, onRetry }) {
       </div>
       <div className="hero-actions">
         <Link className="button secondary" to={`/app/documents/${document.id}`}>
+          <i className="bi bi-eye" />
           View details
         </Link>
         <Link className="button secondary" to={`/app/documents/${document.id}/questions`}>
+          <i className="bi bi-search" />
           Detect questions
         </Link>
         <button className="button ghost" onClick={() => onRetry(document.id)} type="button">
+          <i className="bi bi-arrow-clockwise" />
           Retry parsing
         </button>
         <button className="button ghost danger" onClick={() => onDelete(document.id)} type="button">
+          <i className="bi bi-archive" />
           Archive
         </button>
       </div>

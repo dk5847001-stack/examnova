@@ -46,6 +46,11 @@ export function ResourcesPage() {
         eyebrow="Study resources"
         title="Public discovery routes for exam preparation"
         description="Use these public entry points to explore semester, subject, and university-based exam resources with strong internal linking."
+        metrics={[
+          { label: "Routes", value: "Linked" },
+          { label: "Discovery", value: "Structured" },
+          { label: "Depth", value: "Search Ready" },
+        ]}
       />
       <section className="card-grid">
         {resourceGroups.map((item) => (
