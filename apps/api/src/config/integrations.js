@@ -7,8 +7,8 @@ export const integrationConfig = {
     enabled: Boolean(env.aiApiKey),
   },
   email: {
-    provider: "smtp",
-    enabled: Boolean(env.smtpUser && env.smtpPass),
+    provider: "brevo",
+    enabled: Boolean(env.brevoApiKey && env.brevoSenderEmail),
   },
   payments: {
     provider: "razorpay",

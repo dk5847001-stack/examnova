@@ -49,7 +49,9 @@ Critical ones:
 - `JWT_REFRESH_SECRET=<long-random-secret>`
 - `REFRESH_TOKEN_COOKIE_SECURE=true`
 - `REFRESH_TOKEN_COOKIE_SAME_SITE=none`
-- `SMTP_*`
+- `BREVO_API_KEY=<your-brevo-api-key>`
+- `BREVO_SENDER_EMAIL=<your-verified-brevo-sender-email>`
+- `BREVO_SENDER_NAME=ExamNova AI`
 - `RAZORPAY_*`
 - `AI_*`
 - `TRUST_PROXY=true`
@@ -117,10 +119,10 @@ Optional pricing display vars:
 - The current code supports order creation and backend signature verification
 - Webhook reconciliation is still a future hardening step, so verify purchase/payment flows manually after deploy
 
-## SMTP Notes
+## Email Notes
 
-- `SMTP_JSON_TRANSPORT` should usually be `false` in production
-- Confirm OTP emails and password reset emails work on the deployed backend
+- Use a verified Brevo transactional sender email in production
+- Confirm signup OTP emails and password reset OTP emails work on the deployed backend
 
 ## Post-Deploy Smoke Test
 

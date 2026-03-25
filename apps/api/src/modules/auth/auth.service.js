@@ -24,7 +24,9 @@ function getSessionContext(req) {
 async function createOtpRecord({ user, purpose, currentOtpRecord = null }) {
   const otp = generateOtp();
   const now = new Date();
-  const expiresAt = addMinutes(now, purpose === OTP_PURPOSES.PASSWORD_RESET ? env.resetPasswordTtlMinutes : env.otpTtlMinutes);
+  const expiresInMinutes =
+    purpose === OTP_PURPOSES.PASSWORD_RESET ? env.resetPasswordTtlMinutes : env.otpTtlMinutes;
+  const expiresAt = addMinutes(now, expiresInMinutes);
 
   const otpDocument =
     currentOtpRecord ||
@@ -49,6 +51,7 @@ async function createOtpRecord({ user, purpose, currentOtpRecord = null }) {
     name: user.name,
     otp,
     purpose,
+    expiresInMinutes,
   });
 
   user.authMeta = {
