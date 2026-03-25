@@ -34,9 +34,10 @@ export function logout() {
   });
 }
 
-export function refreshSession() {
+export function refreshSession(options = {}) {
   return apiRequest("/auth/refresh", {
     method: "POST",
+    ...options,
   });
 }
 
@@ -54,10 +55,11 @@ export function resetPassword(payload) {
   });
 }
 
-export function fetchProfile(accessToken) {
+export function fetchProfile(accessToken, options = {}) {
   return apiRequest("/profile/me", {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
+    ...options,
   });
 }

@@ -23,19 +23,62 @@ function getApiBaseUrl() {
 
 export const API_BASE_URL = getApiBaseUrl();
 
+function createRequestSignal(timeoutMs, externalSignal) {
+  if (!timeoutMs && !externalSignal) {
+    return { signal: undefined, cleanup: () => {} };
+  }
+
+  if (!timeoutMs) {
+    return { signal: externalSignal, cleanup: () => {} };
+  }
+
+  const controller = new AbortController();
+  const timeoutId = globalThis.setTimeout(() => controller.abort(), timeoutMs);
+
+  if (externalSignal) {
+    if (externalSignal.aborted) {
+      controller.abort();
+    } else {
+      externalSignal.addEventListener("abort", () => controller.abort(), { once: true });
+    }
+  }
+
+  return {
+    signal: controller.signal,
+    cleanup: () => globalThis.clearTimeout(timeoutId),
+  };
+}
+
 export async function apiRequest(path, options = {}) {
-  const { headers: optionHeaders = {}, ...restOptions } = options;
+  const { headers: optionHeaders = {}, timeoutMs, signal: optionSignal, ...restOptions } = options;
   const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
   const hasBody = options.body !== undefined && options.body !== null;
+  const { signal, cleanup } = createRequestSignal(timeoutMs, optionSignal);
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    credentials: "include",
-    headers: {
-      ...(hasBody && !isFormData ? { "Content-Type": "application/json" } : {}),
-      ...optionHeaders,
-    },
-    ...restOptions,
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      credentials: "include",
+      headers: {
+        ...(hasBody && !isFormData ? { "Content-Type": "application/json" } : {}),
+        ...optionHeaders,
+      },
+      signal,
+      ...restOptions,
+    });
+  } catch (error) {
+    cleanup();
+
+    if (error?.name === "AbortError") {
+      const timeoutError = new Error("Request timed out.");
+      timeoutError.status = 408;
+      throw timeoutError;
+    }
+
+    throw error;
+  }
+
+  cleanup();
 
   const payload = await response.json().catch(() => ({}));
 

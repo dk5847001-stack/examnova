@@ -16,6 +16,7 @@ import {
 
 const AppContext = createContext(null);
 const ACCESS_TOKEN_KEY = "examnova_access_token";
+const AUTH_BOOTSTRAP_TIMEOUT_MS = 6000;
 
 export function AppProvider({ children }) {
   const [authState, setAuthState] = useState({
@@ -36,7 +37,9 @@ export function AppProvider({ children }) {
 
       if (storedToken) {
         try {
-          const profileResponse = await fetchProfile(storedToken);
+          const profileResponse = await fetchProfile(storedToken, {
+            timeoutMs: AUTH_BOOTSTRAP_TIMEOUT_MS,
+          });
 
           if (!isMounted) {
             return;
@@ -58,7 +61,9 @@ export function AppProvider({ children }) {
       }
 
       try {
-        const refreshResponse = await refreshSession();
+        const refreshResponse = await refreshSession({
+          timeoutMs: AUTH_BOOTSTRAP_TIMEOUT_MS,
+        });
 
         if (!isMounted) {
           return;
