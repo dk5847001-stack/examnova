@@ -86,6 +86,8 @@ export async function apiRequest(path, options = {}) {
     const error = new Error(payload.message || "Request failed.");
     error.status = response.status;
     error.details = payload.details || null;
+    error.meta = payload.meta || null;
+    error.requestId = payload.meta?.requestId || null;
     if (response.status === 401 && typeof window !== "undefined") {
       window.dispatchEvent(
         new CustomEvent("examnova:unauthorized", {
@@ -114,6 +116,9 @@ export async function apiDownload(path, accessToken) {
     const payload = await response.json().catch(() => ({}));
     const error = new Error(payload.message || "Download failed.");
     error.status = response.status;
+    error.details = payload.details || null;
+    error.meta = payload.meta || null;
+    error.requestId = payload.meta?.requestId || null;
     if (response.status === 401 && typeof window !== "undefined") {
       window.dispatchEvent(
         new CustomEvent("examnova:unauthorized", {

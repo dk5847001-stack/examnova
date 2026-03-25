@@ -17,6 +17,40 @@ import {
 } from "../../services/api/index.js";
 import { loadRazorpayCheckout } from "../../utils/loadRazorpayCheckout.js";
 
+function getUnlockErrorMessage(error) {
+  const requestIdSuffix = error?.requestId ? ` Reference: ${error.requestId}.` : "";
+
+  if (error?.status === 401) {
+    return "Your session expired. Please log in again and retry the PDF unlock." + requestIdSuffix;
+  }
+
+  if (error?.status === 403) {
+    return "This generated PDF is not available for unlock under your current account." + requestIdSuffix;
+  }
+
+  if (error?.status === 404) {
+    return "This generated PDF could not be found for your account. Reload the page and try again." + requestIdSuffix;
+  }
+
+  if (error?.status === 409) {
+    return (error.message || "This payment order is no longer valid. Please retry the unlock flow.") + requestIdSuffix;
+  }
+
+  if (error?.status === 422) {
+    return "The unlock request was invalid. Reload the page once and try again." + requestIdSuffix;
+  }
+
+  if (error?.status === 502 || error?.status === 503) {
+    return (error.message || "Payment checkout is temporarily unavailable.") + requestIdSuffix;
+  }
+
+  if (error?.status >= 500) {
+    return "The backend could not start the private PDF payment. Please try again shortly." + requestIdSuffix;
+  }
+
+  return (error?.message || "Unable to complete PDF unlock payment.") + requestIdSuffix;
+}
+
 export function GeneratedAnswerDetailPage() {
   const { id } = useParams();
   const { accessToken } = useAuth();
@@ -131,6 +165,11 @@ export function GeneratedAnswerDetailPage() {
   }
 
   async function handleUnlockPdf() {
+    if (!accessToken) {
+      setFeedback({ type: "error", message: "Your session expired. Please log in again to unlock this PDF." });
+      return;
+    }
+
     setFeedback({ type: "", message: "" });
     setIsPaying(true);
 
@@ -184,9 +223,17 @@ export function GeneratedAnswerDetailPage() {
         razorpay.open();
       });
 
-      await refreshPaymentState();
+      try {
+        await refreshPaymentState();
+      } catch (error) {
+        setFeedback((current) =>
+          current.type === "success" && current.message
+            ? current
+            : { type: "error", message: getUnlockErrorMessage(error) },
+        );
+      }
     } catch (error) {
-      setFeedback({ type: "error", message: error.message || "Unable to complete PDF unlock payment." });
+      setFeedback({ type: "error", message: getUnlockErrorMessage(error) });
     } finally {
       setIsPaying(false);
     }

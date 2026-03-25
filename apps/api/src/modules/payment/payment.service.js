@@ -11,6 +11,7 @@ import {
   Purchase,
   WalletTransaction,
 } from "../../models/index.js";
+import { env } from "../../config/index.js";
 import { createPaymentClient } from "../../lib/index.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { notificationService } from "../../services/notification.service.js";
@@ -20,11 +21,90 @@ import { purchaseService } from "../purchase/purchase.service.js";
 const PRIVATE_PDF_PRICE = 4;
 let paymentClientInstance = null;
 
+function getMissingPaymentEnvVars() {
+  const missing = [];
+
+  if (!env.razorpayKeyId) {
+    missing.push("RAZORPAY_KEY_ID");
+  }
+  if (!env.razorpayKeySecret) {
+    missing.push("RAZORPAY_KEY_SECRET");
+  }
+
+  return missing;
+}
+
+function createPaymentConfigurationError() {
+  const missingEnvVars = getMissingPaymentEnvVars();
+
+  return new ApiError(
+    503,
+    "Payment checkout is temporarily unavailable because Razorpay is not configured on the backend.",
+    {
+      code: "PAYMENT_PROVIDER_NOT_CONFIGURED",
+      provider: "razorpay",
+      missingEnvVars,
+    },
+  );
+}
+
+function extractProviderErrorMessage(error) {
+  const providerMessage =
+    error?.error?.description ||
+    error?.description ||
+    error?.error?.message ||
+    error?.message ||
+    "";
+
+  return typeof providerMessage === "string" ? providerMessage.trim() : "";
+}
+
 function getPaymentClient() {
+  if (getMissingPaymentEnvVars().length > 0) {
+    throw createPaymentConfigurationError();
+  }
+
   if (!paymentClientInstance) {
-    paymentClientInstance = createPaymentClient();
+    try {
+      paymentClientInstance = createPaymentClient();
+    } catch (_error) {
+      throw createPaymentConfigurationError();
+    }
   }
   return paymentClientInstance;
+}
+
+function buildCheckoutPayload(paymentClient, { amountInr, currency, orderId, description, notes }) {
+  return {
+    key: paymentClient.getPublicConfig().keyId,
+    amount: amountInr * 100,
+    currency,
+    orderId,
+    name: APP_NAME,
+    description,
+    prefill: {},
+    notes,
+  };
+}
+
+async function createProviderOrder({ entityId, amountInr, notes, userMessage }) {
+  const paymentClient = getPaymentClient();
+
+  try {
+    const order = await paymentClient.createPrivatePdfOrder({
+      generationId: entityId,
+      amountInr,
+      notes,
+    });
+
+    return { order, paymentClient };
+  } catch (error) {
+    throw new ApiError(502, userMessage, {
+      code: "PAYMENT_ORDER_CREATION_FAILED",
+      provider: "razorpay",
+      providerMessage: extractProviderErrorMessage(error) || null,
+    });
+  }
 }
 
 function serializePayment(record) {
@@ -141,34 +221,35 @@ export const paymentService = {
     }).sort({ createdAt: -1 });
 
     if (existingPendingPayment?.razorpayOrderId) {
+      const paymentClient = getPaymentClient();
+
       return {
         alreadyUnlocked: false,
         generation: pdfGenerationService.serializeGeneration(generation),
         payment: serializePayment(existingPendingPayment),
-        checkout: {
-          key: getPaymentClient().getPublicConfig().keyId,
-          amount: existingPendingPayment.amountInr * 100,
+        checkout: buildCheckoutPayload(paymentClient, {
+          amountInr: existingPendingPayment.amountInr,
           currency: existingPendingPayment.currency,
           orderId: existingPendingPayment.razorpayOrderId,
-          name: APP_NAME,
           description: `Private PDF unlock for ${generation.title}`,
-          prefill: {},
           notes: {
             contextType: PURCHASE_TYPES.PRIVATE_PDF,
             generatedPdfId: generation._id.toString(),
           },
-        },
+        }),
       };
     }
 
-    const order = await getPaymentClient().createPrivatePdfOrder({
-      generationId: generation._id,
+    const { order, paymentClient } = await createProviderOrder({
+      entityId: generation._id,
       amountInr: PRIVATE_PDF_PRICE,
       notes: {
         contextType: PURCHASE_TYPES.PRIVATE_PDF,
         generatedPdfId: generation._id.toString(),
         userId: userId.toString(),
       },
+      userMessage:
+        "Unable to start the private PDF payment right now. Please try again in a moment.",
     });
 
     const payment = await Payment.create({
@@ -190,19 +271,16 @@ export const paymentService = {
       alreadyUnlocked: false,
       generation: pdfGenerationService.serializeGeneration(generation),
       payment: serializePayment(payment),
-      checkout: {
-        key: getPaymentClient().getPublicConfig().keyId,
-        amount: PRIVATE_PDF_PRICE * 100,
+      checkout: buildCheckoutPayload(paymentClient, {
+        amountInr: PRIVATE_PDF_PRICE,
         currency: order.currency || "INR",
         orderId: order.id,
-        name: APP_NAME,
         description: `Private PDF unlock for ${generation.title}`,
-        prefill: {},
         notes: {
           contextType: PURCHASE_TYPES.PRIVATE_PDF,
           generatedPdfId: generation._id.toString(),
         },
-      },
+      }),
     };
   },
 
@@ -329,34 +407,35 @@ export const paymentService = {
     }).sort({ createdAt: -1 });
 
     if (existingPendingPayment?.razorpayOrderId) {
+      const paymentClient = getPaymentClient();
+
       return {
         alreadyOwned: false,
         purchase: null,
         payment: serializePayment(existingPendingPayment),
-        checkout: {
-          key: getPaymentClient().getPublicConfig().keyId,
-          amount: existingPendingPayment.amountInr * 100,
+        checkout: buildCheckoutPayload(paymentClient, {
+          amountInr: existingPendingPayment.amountInr,
           currency: existingPendingPayment.currency,
           orderId: existingPendingPayment.razorpayOrderId,
-          name: APP_NAME,
           description: `Marketplace purchase for ${listing.title}`,
-          prefill: {},
           notes: {
             contextType: PURCHASE_TYPES.MARKETPLACE,
             listingId: listing._id.toString(),
           },
-        },
+        }),
       };
     }
 
-    const order = await getPaymentClient().createPrivatePdfOrder({
-      generationId: listing._id,
+    const { order, paymentClient } = await createProviderOrder({
+      entityId: listing._id,
       amountInr: listing.priceInr,
       notes: {
         contextType: PURCHASE_TYPES.MARKETPLACE,
         listingId: listing._id.toString(),
         buyerId: userId.toString(),
       },
+      userMessage:
+        "Unable to start the marketplace payment right now. Please try again in a moment.",
     });
 
     const payment = await Payment.create({
@@ -381,19 +460,16 @@ export const paymentService = {
       alreadyOwned: false,
       purchase: null,
       payment: serializePayment(payment),
-      checkout: {
-        key: getPaymentClient().getPublicConfig().keyId,
-        amount: listing.priceInr * 100,
+      checkout: buildCheckoutPayload(paymentClient, {
+        amountInr: listing.priceInr,
         currency: order.currency || "INR",
         orderId: order.id,
-        name: APP_NAME,
         description: `Marketplace purchase for ${listing.title}`,
-        prefill: {},
         notes: {
           contextType: PURCHASE_TYPES.MARKETPLACE,
           listingId: listing._id.toString(),
         },
-      },
+      }),
     };
   },
 
