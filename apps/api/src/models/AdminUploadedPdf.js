@@ -1,26 +1,9 @@
 import mongoose from "mongoose";
 import { COLLECTION_NAMES } from "../constants/db.constants.js";
-
-const taxonomySchema = new mongoose.Schema(
-  {
-    university: { type: String, required: true, trim: true, index: true },
-    branch: { type: String, required: true, trim: true, index: true },
-    year: { type: String, required: true, trim: true },
-    semester: { type: String, required: true, trim: true, index: true },
-    subject: { type: String, required: true, trim: true, index: true },
-  },
-  { _id: false },
-);
-
-const studyMetadataSchema = new mongoose.Schema(
-  {
-    examFocus: { type: String, default: "", trim: true },
-    questionType: { type: String, default: "", trim: true },
-    difficultyLevel: { type: String, default: "", trim: true },
-    intendedAudience: { type: String, default: "", trim: true },
-  },
-  { _id: false },
-);
+import {
+  requiredAcademicTaxonomySchema,
+  studyMetadataSchema,
+} from "./schemas/academicSchemas.js";
 
 const adminUploadedPdfSchema = new mongoose.Schema(
   {
@@ -35,7 +18,7 @@ const adminUploadedPdfSchema = new mongoose.Schema(
     storageUrl: { type: String, default: "" },
     priceInr: { type: Number, required: true },
     currency: { type: String, default: "INR" },
-    taxonomy: { type: taxonomySchema, required: true },
+    taxonomy: { type: requiredAcademicTaxonomySchema, required: true },
     studyMetadata: { type: studyMetadataSchema, default: () => ({}) },
     tags: [{ type: String, trim: true }],
     coverImageUrl: { type: String, default: "" },

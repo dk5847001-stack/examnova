@@ -35,6 +35,24 @@ function ensureControlledChoice(value, field, options, { required = true, fallba
   return matched;
 }
 
+export function normalizeControlledFilterValue(value, field) {
+  const normalized = normalizeOptionalString(value, {
+    maxLength: 120,
+    collapseWhitespace: false,
+  });
+
+  if (!normalized) {
+    return "";
+  }
+
+  const options = CONTROLLED_ACADEMIC_OPTIONS[field];
+  if (!options) {
+    return normalized;
+  }
+
+  return findCanonicalOption(normalized, options) || "";
+}
+
 export function normalizeAcademicTaxonomy(payload = {}, { requireSubject = true } = {}) {
   return {
     university: ensureControlledChoice(

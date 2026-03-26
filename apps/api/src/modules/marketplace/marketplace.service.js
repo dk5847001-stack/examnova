@@ -1,7 +1,11 @@
 import { GeneratedPdf, MarketplaceListing } from "../../models/index.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { slugify } from "../../utils/slugify.js";
-import { normalizeAcademicTaxonomy, normalizeStudyMetadata } from "../../utils/academicTaxonomy.js";
+import {
+  normalizeAcademicTaxonomy,
+  normalizeControlledFilterValue,
+  normalizeStudyMetadata,
+} from "../../utils/academicTaxonomy.js";
 
 const MIN_PRICE = 4;
 const MAX_PRICE = 10;
@@ -120,7 +124,10 @@ function serializeListing(record) {
 }
 
 async function ensureEligibleGeneratedPdf(userId, generatedPdfId) {
-  const generation = await GeneratedPdf.findOne({ _id: generatedPdfId, userId });
+  const generation = await GeneratedPdf.findOne({ _id: generatedPdfId, userId }).populate(
+    "sourceDocumentId",
+    "documentTitle academicTaxonomy studyMetadata",
+  );
   if (!generation) {
     throw new ApiError(404, "Eligible generated PDF was not found.");
   }
@@ -139,15 +146,23 @@ export const marketplaceService = {
       pdfGenerationStatus: "completed",
       storageKey: { $exists: true, $ne: "" },
       listedInMarketplace: false,
-    }).sort({ updatedAt: -1 });
+    })
+      .populate("sourceDocumentId", "documentTitle academicTaxonomy studyMetadata")
+      .sort({ updatedAt: -1 });
 
     return generations.map((generation) => ({
       id: generation._id.toString(),
       title: generation.title,
+      sourceDocumentTitle: generation.sourceDocumentId?.documentTitle || "",
       pageCount: generation.pageCount || 0,
       pdfGeneratedAt: generation.pdfGeneratedAt || null,
       listedInMarketplace: Boolean(generation.listedInMarketplace),
       questionCount: generation.answerItems?.length || 0,
+      taxonomy: generation.sourceDocumentId?.academicTaxonomy || {},
+      studyMetadata: generation.sourceDocumentId?.studyMetadata || {},
+      suggestedListingTitle: String(generation.title || "")
+        .replace(/\s*-\s*answer draft$/i, "")
+        .trim(),
     }));
   },
 
@@ -257,12 +272,16 @@ export const marketplaceService = {
       query.searchText = { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" };
     }
 
-    ["university", "branch", "year", "semester", "subject"].forEach((key) => {
-      const value = normalizeText(filters[key]);
+    ["university", "branch", "year", "semester"].forEach((key) => {
+      const value = normalizeControlledFilterValue(filters[key], key);
       if (value) {
         query[`taxonomy.${key}`] = value;
       }
     });
+    const subject = normalizeText(filters.subject);
+    if (subject) {
+      query["taxonomy.subject"] = subject;
+    }
 
     const sortKey = ALLOWED_SORTS.has(filters.sort) ? filters.sort : "latest";
     const sort =
@@ -293,11 +312,11 @@ export const marketplaceService = {
       },
       filters: {
         search,
-        university: normalizeText(filters.university),
-        branch: normalizeText(filters.branch),
-        year: normalizeText(filters.year),
-        semester: normalizeText(filters.semester),
-        subject: normalizeText(filters.subject),
+        university: normalizeControlledFilterValue(filters.university, "university"),
+        branch: normalizeControlledFilterValue(filters.branch, "branch"),
+        year: normalizeControlledFilterValue(filters.year, "year"),
+        semester: normalizeControlledFilterValue(filters.semester, "semester"),
+        subject,
         sort: sortKey,
       },
     };

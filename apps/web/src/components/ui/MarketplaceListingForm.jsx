@@ -1,14 +1,9 @@
 import { MARKETPLACE_PRICE_RANGE } from "../../features/marketplace/marketplace.constants.js";
 import {
-  BRANCH_OPTIONS,
   DEFAULT_UNIVERSITY,
-  DIFFICULTY_LEVEL_OPTIONS,
-  EXAM_FOCUS_OPTIONS,
-  INTENDED_AUDIENCE_OPTIONS,
-  QUESTION_TYPE_OPTIONS,
-  SEMESTER_OPTIONS,
-  YEAR_OPTIONS,
 } from "../../features/academic/academicTaxonomy.js";
+import { AcademicTaxonomyFieldset } from "./AcademicTaxonomyFieldset.jsx";
+import { StudyMetadataFieldset } from "./StudyMetadataFieldset.jsx";
 
 function createBlankMarketplaceForm() {
   return {
@@ -63,6 +58,10 @@ export function MarketplaceListingForm({
   submitLabel,
   isEditing = false,
 }) {
+  const selectedEligiblePdf = eligiblePdfs.find((item) => item.id === form.generatedPdfId);
+  const hasEligiblePdfs = eligiblePdfs.length > 0;
+  const submitDisabled = isSubmitting || (!isEditing && !hasEligiblePdfs);
+
   return (
     <form className="detail-card marketplace-form" onSubmit={onSubmit}>
       <div className="section-header">
@@ -75,6 +74,21 @@ export function MarketplaceListingForm({
         </div>
       </div>
 
+      <article className="guided-inline-card">
+        <div className="guided-inline-card-copy">
+          <strong>{isEditing ? "This listing is already linked to its source PDF." : "Listings start from a completed generated PDF."}</strong>
+          <p className="support-copy">
+            {isEditing
+              ? "You can update buyer-facing details and academic classification here, but the original generated PDF source stays locked."
+              : "Pick a finalized generated PDF and ExamNova will prefill the academic taxonomy from its source document so your public listing stays clean and searchable."}
+          </p>
+        </div>
+        <div className="guided-pill-row">
+          <span className="guided-pill">Controlled categories</span>
+          <span className="guided-pill">Public-safe metadata</span>
+        </div>
+      </article>
+
       <label className="field">
         <span>Eligible generated PDF</span>
         <select
@@ -85,13 +99,52 @@ export function MarketplaceListingForm({
           value={form.generatedPdfId}
         >
           <option value="">Select a generated PDF</option>
+          {isEditing && form.generatedPdfId && !selectedEligiblePdf ? (
+            <option value={form.generatedPdfId}>Current linked generated PDF</option>
+          ) : null}
           {eligiblePdfs.map((item) => (
             <option key={item.id} value={item.id}>
-              {item.title} - {item.pageCount || 0} pages
+              {item.suggestedListingTitle || item.title} - {item.taxonomy?.subject || item.sourceDocumentTitle || "Academic PDF"} - {item.pageCount || 0} pages
             </option>
           ))}
         </select>
       </label>
+
+      {!hasEligiblePdfs && !isEditing ? (
+        <article className="guided-inline-card">
+          <div className="guided-inline-card-copy">
+            <strong>No finalized generated PDFs are ready to list yet.</strong>
+            <p className="support-copy">
+              Complete one PDF in Professional or Developer Mode first. Only finished generated PDFs can be published as marketplace listings.
+            </p>
+          </div>
+        </article>
+      ) : null}
+
+      {selectedEligiblePdf ? (
+        <article className="guided-source-preview">
+          <div className="guided-source-preview-header">
+            <div>
+              <p className="eyebrow">Autofill source</p>
+              <h3>{selectedEligiblePdf.sourceDocumentTitle || selectedEligiblePdf.title}</h3>
+            </div>
+            <div className="guided-pill-row">
+              <span className="guided-pill">{selectedEligiblePdf.pageCount || 0} pages</span>
+              <span className="guided-pill">{selectedEligiblePdf.questionCount || 0} questions</span>
+            </div>
+          </div>
+          <div className="marketplace-taxonomy">
+            {selectedEligiblePdf.taxonomy?.university ? <span>{selectedEligiblePdf.taxonomy.university}</span> : null}
+            {selectedEligiblePdf.taxonomy?.branch ? <span>{selectedEligiblePdf.taxonomy.branch}</span> : null}
+            {selectedEligiblePdf.taxonomy?.year ? <span>{selectedEligiblePdf.taxonomy.year}</span> : null}
+            {selectedEligiblePdf.taxonomy?.semester ? <span>Semester {selectedEligiblePdf.taxonomy.semester}</span> : null}
+            {selectedEligiblePdf.taxonomy?.subject ? <span>{selectedEligiblePdf.taxonomy.subject}</span> : null}
+          </div>
+          <p className="support-copy">
+            ExamNova will prefill title suggestions and academic taxonomy from this source. You can still refine the buyer-facing title, description, price, and optional study tags below.
+          </p>
+        </article>
+      ) : null}
 
       <div className="two-column-grid compact">
         <label className="field">
@@ -111,60 +164,6 @@ export function MarketplaceListingForm({
             required
           />
         </label>
-      </div>
-
-      <label className="field">
-        <span>Description</span>
-        <textarea className="input textarea" onChange={(event) => onChange("description", event.target.value)} placeholder="Tell buyers what they will get, which exam it helps with, and why it is useful." value={form.description} />
-      </label>
-
-      <div className="two-column-grid compact">
-        <label className="field">
-          <span>University</span>
-          <select className="input" onChange={(event) => onChange("university", event.target.value)} value={form.university} required>
-            <option value={DEFAULT_UNIVERSITY}>{DEFAULT_UNIVERSITY}</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Branch</span>
-          <select className="input" onChange={(event) => onChange("branch", event.target.value)} value={form.branch} required>
-            <option value="">Select branch</option>
-            {BRANCH_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="field">
-          <span>Year</span>
-          <select className="input" onChange={(event) => onChange("year", event.target.value)} value={form.year} required>
-            <option value="">Select year</option>
-            {YEAR_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="field">
-          <span>Semester</span>
-          <select className="input" onChange={(event) => onChange("semester", event.target.value)} value={form.semester} required>
-            <option value="">Select semester</option>
-            {SEMESTER_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                Semester {option}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-
-      <div className="two-column-grid compact">
-        <label className="field">
-          <span>Subject</span>
-          <input className="input" onChange={(event) => onChange("subject", event.target.value)} placeholder="Example: Operating Systems" required value={form.subject} />
-        </label>
         <label className="field">
           <span>Visibility</span>
           <select className="input" onChange={(event) => onChange("visibility", event.target.value)} value={form.visibility}>
@@ -175,65 +174,39 @@ export function MarketplaceListingForm({
         </label>
       </div>
 
-      <div className="two-column-grid compact">
-        <label className="field">
-          <span>Exam focus</span>
-          <select className="input" onChange={(event) => onChange("examFocus", event.target.value)} value={form.examFocus}>
-            <option value="">Select exam focus</option>
-            {EXAM_FOCUS_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="field">
-          <span>Question type</span>
-          <select className="input" onChange={(event) => onChange("questionType", event.target.value)} value={form.questionType}>
-            <option value="">Select question type</option>
-            {QUESTION_TYPE_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="field">
-          <span>Difficulty level</span>
-          <select className="input" onChange={(event) => onChange("difficultyLevel", event.target.value)} value={form.difficultyLevel}>
-            <option value="">Select difficulty</option>
-            {DIFFICULTY_LEVEL_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="field">
-          <span>Intended audience</span>
-          <select className="input" onChange={(event) => onChange("intendedAudience", event.target.value)} value={form.intendedAudience}>
-            <option value="">Select intended audience</option>
-            {INTENDED_AUDIENCE_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-
       <label className="field">
-        <span>Tags</span>
-        <input
-          className="input"
-          onChange={(event) => onChange("tags", event.target.value)}
-          placeholder="os, unit 3, revision, viva"
-          value={form.tags}
-        />
+        <span>Description</span>
+        <textarea className="input textarea" onChange={(event) => onChange("description", event.target.value)} placeholder="Tell buyers what they will get, which exam it helps with, and why it is useful." value={form.description} />
       </label>
 
+      <AcademicTaxonomyFieldset
+        description="These fields are the public marketplace filters students actually browse. Keeping them normalized makes your listing easier to find."
+        onChange={onChange}
+        values={form}
+      />
+
+      <StudyMetadataFieldset onChange={onChange} values={form} />
+
+      <details className="guided-disclosure">
+        <summary>Optional marketplace polish</summary>
+        <div className="stack-section">
+          <label className="field">
+            <span>Tags</span>
+            <input
+              className="input"
+              onChange={(event) => onChange("tags", event.target.value)}
+              placeholder="os, unit 3, revision, viva"
+              value={form.tags}
+            />
+          </label>
+          <p className="support-copy">
+            Use short comma-separated tags only when they genuinely help search clarity. Avoid repeating branch, semester, or university because those are already controlled above.
+          </p>
+        </div>
+      </details>
+
       <div className="hero-actions">
-        <button className="button primary" disabled={isSubmitting} type="submit">
+        <button className="button primary" disabled={submitDisabled} type="submit">
           <i className={`bi ${isEditing ? "bi-pencil-square" : "bi-rocket-takeoff"}`} />
           {isSubmitting ? "Saving..." : submitLabel}
         </button>

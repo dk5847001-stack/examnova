@@ -16,7 +16,7 @@ export function MarketplaceListingCard({ listing, sellerView = false, action = n
           <p className="eyebrow">{listing.taxonomy?.subject || "Marketplace PDF"}</p>
           <h3>{listing.title}</h3>
           <p className="support-copy">
-            {listing.taxonomy?.university} - {listing.taxonomy?.branch} - {listing.taxonomy?.semester}
+            {listing.taxonomy?.university} - {listing.taxonomy?.branch} - {listing.taxonomy?.semester ? `Semester ${listing.taxonomy.semester}` : "Semester pending"}
           </p>
         </div>
         <div className="topbar-chip-group">
@@ -35,6 +35,7 @@ export function MarketplaceListingCard({ listing, sellerView = false, action = n
       <div className="marketplace-taxonomy">
         {listing.taxonomy?.year ? <span>{listing.taxonomy.year}</span> : null}
         {listing.taxonomy?.semester ? <span>Semester {listing.taxonomy.semester}</span> : null}
+        {listing.taxonomy?.branch ? <span>{listing.taxonomy.branch}</span> : null}
         {studyMetadata.examFocus ? <span>{studyMetadata.examFocus}</span> : null}
         {studyMetadata.questionType ? <span>{studyMetadata.questionType}</span> : null}
         {studyMetadata.difficultyLevel ? <span>{studyMetadata.difficultyLevel}</span> : null}

@@ -1,17 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
+import { AcademicTaxonomyFieldset } from "../../components/ui/AcademicTaxonomyFieldset.jsx";
 import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { SectionHeader } from "../../components/ui/SectionHeader.jsx";
 import { StatusBadge } from "../../components/ui/StatusBadge.jsx";
+import { StudyMetadataFieldset } from "../../components/ui/StudyMetadataFieldset.jsx";
 import {
-  BRANCH_OPTIONS,
   DEFAULT_UNIVERSITY,
-  DIFFICULTY_LEVEL_OPTIONS,
-  EXAM_FOCUS_OPTIONS,
-  INTENDED_AUDIENCE_OPTIONS,
-  QUESTION_TYPE_OPTIONS,
-  SEMESTER_OPTIONS,
-  YEAR_OPTIONS,
 } from "../../features/academic/academicTaxonomy.js";
+import { MARKETPLACE_PRICE_RANGE } from "../../features/marketplace/marketplace.constants.js";
 import { useAuth } from "../../hooks/useAuth.js";
 import {
   createAdminUpload,
@@ -19,31 +15,60 @@ import {
   updateAdminUpload,
 } from "../../services/api/index.js";
 
-const initialForm = {
-  title: "",
-  description: "",
-  priceInr: "4",
-  university: DEFAULT_UNIVERSITY,
-  branch: "",
-  year: "",
-  semester: "",
-  subject: "",
-  examFocus: "",
-  questionType: "",
-  difficultyLevel: "",
-  intendedAudience: "",
-  tags: "",
-  coverImageUrl: "",
-  seoTitle: "",
-  seoDescription: "",
-  visibility: "draft",
-  isFeatured: false,
-};
+function createBlankAdminUploadForm() {
+  return {
+    title: "",
+    description: "",
+    priceInr: String(MARKETPLACE_PRICE_RANGE.min),
+    university: DEFAULT_UNIVERSITY,
+    branch: "",
+    year: "",
+    semester: "",
+    subject: "",
+    examFocus: "",
+    questionType: "",
+    difficultyLevel: "",
+    intendedAudience: "",
+    tags: "",
+    coverImageUrl: "",
+    seoTitle: "",
+    seoDescription: "",
+    visibility: "draft",
+    isFeatured: false,
+  };
+}
+
+function createAdminUploadForm(item = null) {
+  if (!item) {
+    return createBlankAdminUploadForm();
+  }
+
+  return {
+    title: item.title || "",
+    description: item.description || "",
+    priceInr: String(item.priceInr || MARKETPLACE_PRICE_RANGE.min),
+    university: item.taxonomy?.university || DEFAULT_UNIVERSITY,
+    branch: item.taxonomy?.branch || "",
+    year: item.taxonomy?.year || "",
+    semester: item.taxonomy?.semester || "",
+    subject: item.taxonomy?.subject || "",
+    examFocus: item.studyMetadata?.examFocus || "",
+    questionType: item.studyMetadata?.questionType || "",
+    difficultyLevel: item.studyMetadata?.difficultyLevel || "",
+    intendedAudience: item.studyMetadata?.intendedAudience || "",
+    tags: (item.tags || []).join(", "),
+    coverImageUrl: item.coverImageUrl || "",
+    seoTitle: item.seoTitle || "",
+    seoDescription: item.seoDescription || "",
+    visibility: item.visibility || "draft",
+    isFeatured: Boolean(item.isFeatured),
+  };
+}
 
 export function AdminUploadsPage() {
   const { accessToken } = useAuth();
   const [items, setItems] = useState([]);
-  const [form, setForm] = useState(initialForm);
+  const [form, setForm] = useState(createBlankAdminUploadForm);
   const [selectedFile, setSelectedFile] = useState(null);
   const [editingId, setEditingId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -92,32 +117,13 @@ export function AdminUploadsPage() {
   function startEditing(item) {
     setEditingId(item.id);
     setSelectedFile(null);
-    setForm({
-      title: item.title || "",
-      description: item.description || "",
-      priceInr: String(item.priceInr || 4),
-      university: item.taxonomy?.university || DEFAULT_UNIVERSITY,
-      branch: item.taxonomy?.branch || "",
-      year: item.taxonomy?.year || "",
-      semester: item.taxonomy?.semester || "",
-      subject: item.taxonomy?.subject || "",
-      examFocus: item.studyMetadata?.examFocus || "",
-      questionType: item.studyMetadata?.questionType || "",
-      difficultyLevel: item.studyMetadata?.difficultyLevel || "",
-      intendedAudience: item.studyMetadata?.intendedAudience || "",
-      tags: (item.tags || []).join(", "),
-      coverImageUrl: item.coverImageUrl || "",
-      seoTitle: item.seoTitle || "",
-      seoDescription: item.seoDescription || "",
-      visibility: item.visibility || "draft",
-      isFeatured: Boolean(item.isFeatured),
-    });
+    setForm(createAdminUploadForm(item));
   }
 
   function resetForm() {
     setEditingId("");
     setSelectedFile(null);
-    setForm(initialForm);
+    setForm(createBlankAdminUploadForm());
   }
 
   async function handleSubmit(event) {
@@ -184,8 +190,21 @@ export function AdminUploadsPage() {
           <SectionHeader
             eyebrow={editingId ? "Edit mode" : "New upload"}
             title={formTitle}
-            description="Use this for admin-owned PDFs that should go directly into the marketplace catalog with strong buyer-facing metadata."
+            description="Use this for admin-owned PDFs that should go directly into the marketplace catalog with controlled academic taxonomy and premium buyer-facing metadata."
           />
+          <article className="guided-inline-card">
+            <div className="guided-inline-card-copy">
+              <strong>Admin uploads publish from a tightly controlled academic catalog.</strong>
+              <p className="support-copy">
+                University, branch, year, and semester stay locked to approved Sandip University options so the public marketplace remains clean for first-time students.
+              </p>
+            </div>
+            <div className="guided-pill-row">
+              <span className="guided-pill">Admin owned</span>
+              <span className="guided-pill">Marketplace synced</span>
+              <span className="guided-pill">Controlled taxonomy</span>
+            </div>
+          </article>
           <label className="field">
             <span>{editingId ? "Replace PDF file (optional)" : "PDF file"}</span>
             <input
@@ -204,7 +223,7 @@ export function AdminUploadsPage() {
           <label className="field"><span>Title</span><input className="input" onChange={(event) => handleChange("title", event.target.value)} placeholder="Example: DBMS End-Sem Important Questions" required value={form.title} /></label>
           <label className="field"><span>Description</span><textarea className="input" onChange={(event) => handleChange("description", event.target.value)} placeholder="Explain what this PDF covers and why a student should buy it." rows={4} value={form.description} /></label>
           <div className="two-column-grid compact">
-            <label className="field"><span>Price (Rs.)</span><input className="input" max="10" min="4" onChange={(event) => handleChange("priceInr", event.target.value)} type="number" value={form.priceInr} /></label>
+            <label className="field"><span>Price (Rs.)</span><input className="input" max={MARKETPLACE_PRICE_RANGE.max} min={MARKETPLACE_PRICE_RANGE.min} onChange={(event) => handleChange("priceInr", event.target.value)} type="number" value={form.priceInr} /></label>
             <label className="field">
               <span>Visibility</span>
               <select className="input" onChange={(event) => handleChange("visibility", event.target.value)} value={form.visibility}>
@@ -215,102 +234,25 @@ export function AdminUploadsPage() {
               </select>
             </label>
           </div>
-          <div className="two-column-grid compact">
-            <label className="field">
-              <span>University</span>
-              <select className="input" onChange={(event) => handleChange("university", event.target.value)} value={form.university} required>
-                <option value={DEFAULT_UNIVERSITY}>{DEFAULT_UNIVERSITY}</option>
-              </select>
-            </label>
-            <label className="field">
-              <span>Branch</span>
-              <select className="input" onChange={(event) => handleChange("branch", event.target.value)} value={form.branch} required>
-                <option value="">Select branch</option>
-                {BRANCH_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="field">
-              <span>Year</span>
-              <select className="input" onChange={(event) => handleChange("year", event.target.value)} value={form.year} required>
-                <option value="">Select year</option>
-                {YEAR_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="field">
-              <span>Semester</span>
-              <select className="input" onChange={(event) => handleChange("semester", event.target.value)} value={form.semester} required>
-                <option value="">Select semester</option>
-                {SEMESTER_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    Semester {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <label className="field"><span>Subject</span><input className="input" onChange={(event) => handleChange("subject", event.target.value)} placeholder="Example: Operating Systems" required value={form.subject} /></label>
-          <div className="two-column-grid compact">
-            <label className="field">
-              <span>Exam focus</span>
-              <select className="input" onChange={(event) => handleChange("examFocus", event.target.value)} value={form.examFocus}>
-                <option value="">Select exam focus</option>
-                {EXAM_FOCUS_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="field">
-              <span>Question type</span>
-              <select className="input" onChange={(event) => handleChange("questionType", event.target.value)} value={form.questionType}>
-                <option value="">Select question type</option>
-                {QUESTION_TYPE_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="field">
-              <span>Difficulty level</span>
-              <select className="input" onChange={(event) => handleChange("difficultyLevel", event.target.value)} value={form.difficultyLevel}>
-                <option value="">Select difficulty</option>
-                {DIFFICULTY_LEVEL_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="field">
-              <span>Intended audience</span>
-              <select className="input" onChange={(event) => handleChange("intendedAudience", event.target.value)} value={form.intendedAudience}>
-                <option value="">Select intended audience</option>
-                {INTENDED_AUDIENCE_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <label className="field"><span>Tags</span><input className="input" onChange={(event) => handleChange("tags", event.target.value)} placeholder="exam, important, revision" value={form.tags} /></label>
-          <label className="field"><span>Cover image URL</span><input className="input" onChange={(event) => handleChange("coverImageUrl", event.target.value)} value={form.coverImageUrl} /></label>
-          <label className="field"><span>SEO title</span><input className="input" onChange={(event) => handleChange("seoTitle", event.target.value)} value={form.seoTitle} /></label>
-          <label className="field"><span>SEO description</span><textarea className="input" onChange={(event) => handleChange("seoDescription", event.target.value)} rows={3} value={form.seoDescription} /></label>
-          <label className="checkbox-row">
-            <input checked={form.isFeatured} onChange={(event) => handleChange("isFeatured", event.target.checked)} type="checkbox" />
-            <span>Feature this admin upload in public discovery</span>
-          </label>
+          <AcademicTaxonomyFieldset
+            description="These normalized academic fields drive marketplace filters and keep the public catalog consistent across admin and seller uploads."
+            onChange={handleChange}
+            values={form}
+          />
+          <StudyMetadataFieldset onChange={handleChange} values={form} />
+          <details className="guided-disclosure" open={Boolean(editingId)}>
+            <summary>Optional marketplace polish</summary>
+            <div className="stack-section">
+              <label className="field"><span>Tags</span><input className="input" onChange={(event) => handleChange("tags", event.target.value)} placeholder="exam, important, revision" value={form.tags} /></label>
+              <label className="field"><span>Cover image URL</span><input className="input" onChange={(event) => handleChange("coverImageUrl", event.target.value)} value={form.coverImageUrl} /></label>
+              <label className="field"><span>SEO title</span><input className="input" onChange={(event) => handleChange("seoTitle", event.target.value)} value={form.seoTitle} /></label>
+              <label className="field"><span>SEO description</span><textarea className="input" onChange={(event) => handleChange("seoDescription", event.target.value)} rows={3} value={form.seoDescription} /></label>
+              <label className="checkbox-row">
+                <input checked={form.isFeatured} onChange={(event) => handleChange("isFeatured", event.target.checked)} type="checkbox" />
+                <span>Feature this admin upload in public discovery</span>
+              </label>
+            </div>
+          </details>
           <div className="hero-actions">
             <button className="button primary" disabled={isSaving} type="submit">
               {isSaving ? "Saving..." : editingId ? "Save changes" : "Upload PDF"}
@@ -330,8 +272,14 @@ export function AdminUploadsPage() {
               <article className="activity-item" key={item.id}>
                 <strong>{item.title}</strong>
                 <span className="support-copy">
-                  {item.taxonomy?.subject} - Semester {item.taxonomy?.semester} - Rs. {item.priceInr}
+                  {item.taxonomy?.subject || "Marketplace PDF"} - Rs. {item.priceInr}
                 </span>
+                <div className="marketplace-taxonomy">
+                  {item.taxonomy?.university ? <span>{item.taxonomy.university}</span> : null}
+                  {item.taxonomy?.branch ? <span>{item.taxonomy.branch}</span> : null}
+                  {item.taxonomy?.year ? <span>{item.taxonomy.year}</span> : null}
+                  {item.taxonomy?.semester ? <span>Semester {item.taxonomy.semester}</span> : null}
+                </div>
                 <div className="topbar-chip-group">
                   <StatusBadge tone={item.visibility === "published" ? "success" : "warning"}>
                     {item.visibility}

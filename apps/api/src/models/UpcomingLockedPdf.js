@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { COLLECTION_NAMES } from "../constants/db.constants.js";
+import { requiredAcademicTaxonomySchema } from "./schemas/academicSchemas.js";
 
 const upcomingLockedPdfSchema = new mongoose.Schema(
   {
@@ -9,13 +10,7 @@ const upcomingLockedPdfSchema = new mongoose.Schema(
     title: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, index: true },
     summary: { type: String, default: "" },
-    taxonomy: {
-      university: { type: String, required: true, index: true },
-      branch: { type: String, required: true, index: true },
-      year: { type: String, required: true },
-      semester: { type: String, required: true, index: true },
-      subject: { type: String, required: true, index: true },
-    },
+    taxonomy: { type: requiredAcademicTaxonomySchema, required: true },
     tags: [{ type: String, trim: true }],
     coverImageUrl: { type: String, default: "" },
     isFeatured: { type: Boolean, default: false, index: true },

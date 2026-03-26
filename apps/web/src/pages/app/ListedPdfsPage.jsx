@@ -7,6 +7,7 @@ import {
 import { MarketplaceListingCard } from "../../components/ui/MarketplaceListingCard.jsx";
 import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { SectionHeader } from "../../components/ui/SectionHeader.jsx";
+import { DEFAULT_UNIVERSITY } from "../../features/academic/academicTaxonomy.js";
 import { useAuth } from "../../hooks/useAuth.js";
 import {
   createMarketplaceListing,
@@ -14,6 +15,27 @@ import {
   fetchMyListings,
   updateMarketplaceListing,
 } from "../../services/api/index.js";
+
+function applyEligiblePdfDefaults(currentForm, selectedPdf) {
+  if (!selectedPdf) {
+    return currentForm;
+  }
+
+  return {
+    ...currentForm,
+    generatedPdfId: selectedPdf.id,
+    title: selectedPdf.suggestedListingTitle || selectedPdf.title || currentForm.title,
+    university: selectedPdf.taxonomy?.university || DEFAULT_UNIVERSITY,
+    branch: selectedPdf.taxonomy?.branch || "",
+    year: selectedPdf.taxonomy?.year || "",
+    semester: selectedPdf.taxonomy?.semester || "",
+    subject: selectedPdf.taxonomy?.subject || "",
+    examFocus: selectedPdf.studyMetadata?.examFocus || "",
+    questionType: selectedPdf.studyMetadata?.questionType || "",
+    difficultyLevel: selectedPdf.studyMetadata?.difficultyLevel || "",
+    intendedAudience: selectedPdf.studyMetadata?.intendedAudience || "",
+  };
+}
 
 export function ListedPdfsPage() {
   const { accessToken } = useAuth();
@@ -63,10 +85,24 @@ export function ListedPdfsPage() {
   }, [accessToken]);
 
   function handleChange(field, value) {
-    setForm((current) => ({
-      ...current,
-      [field]: value,
-    }));
+    setForm((current) => {
+      if (field !== "generatedPdfId" || editingId) {
+        return {
+          ...current,
+          [field]: value,
+        };
+      }
+
+      const selectedPdf = eligiblePdfs.find((item) => item.id === value);
+      if (!selectedPdf) {
+        return {
+          ...current,
+          generatedPdfId: value,
+        };
+      }
+
+      return applyEligiblePdfDefaults(current, selectedPdf);
+    });
   }
 
   async function handleSubmit(event) {
@@ -102,6 +138,9 @@ export function ListedPdfsPage() {
         const filtered = current.filter((item) => item.id !== listing.id);
         return [listing, ...filtered];
       });
+      if (!editingId && listing.sourcePdfId) {
+        setEligiblePdfs((current) => current.filter((item) => item.id !== listing.sourcePdfId));
+      }
       setForm(createInitialMarketplaceForm());
       setEditingId("");
       setFeedback({
@@ -129,7 +168,7 @@ export function ListedPdfsPage() {
       <SectionHeader
         eyebrow="Marketplace"
         title="Listed PDFs"
-        description="Publish eligible generated PDFs with full academic categorization, manage pricing, and monitor listing readiness for public discovery."
+        description="Publish eligible generated PDFs with controlled Sandip University taxonomy, guided seller metadata, and a cleaner public marketplace presentation."
       />
       {feedback.message ? (
         <p className={feedback.type === "error" ? "form-error" : "form-success"}>{feedback.message}</p>
@@ -152,7 +191,7 @@ export function ListedPdfsPage() {
               <p className="eyebrow">Seller listings</p>
               <h2>Your public PDF catalogue</h2>
               <p className="support-copy">
-                Draft and published listings stay connected to your generated PDFs so later sales, wallet credits, and purchase analytics can plug in cleanly.
+                Draft and published listings stay connected to your generated PDFs while keeping university, branch, year, and semester normalized for cleaner browsing.
               </p>
             </div>
           </div>
@@ -175,7 +214,7 @@ export function ListedPdfsPage() {
           ) : (
             <EmptyStateCard
               title="No listings yet"
-              description="Choose one of your finalized generated PDFs and publish your first public marketplace listing."
+              description="Choose one finalized generated PDF, let ExamNova autofill the academic taxonomy, and publish your first public marketplace listing."
             />
           )}
         </section>
