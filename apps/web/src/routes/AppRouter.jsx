@@ -5,11 +5,6 @@ import { DashboardLayout } from "../components/layout/DashboardLayout.jsx";
 import { AdminLayout } from "../components/layout/AdminLayout.jsx";
 import { MarketplacePage } from "../pages/public/MarketplacePage.jsx";
 import { PdfDetailPage } from "../pages/public/PdfDetailPage.jsx";
-import { UpcomingLockedPage } from "../pages/public/UpcomingLockedPage.jsx";
-import { UpcomingLockedDetailPage } from "../pages/public/UpcomingLockedDetailPage.jsx";
-import { SeoLandingPage } from "../pages/public/SeoLandingPage.jsx";
-import { FaqPage } from "../pages/public/FaqPage.jsx";
-import { ResourcesPage } from "../pages/public/ResourcesPage.jsx";
 import { LoginPage } from "../pages/auth/LoginPage.jsx";
 import { SignupPage } from "../pages/auth/SignupPage.jsx";
 import { VerifyOtpPage } from "../pages/auth/VerifyOtpPage.jsx";
@@ -57,16 +52,16 @@ export function AppRouter() {
         <Route index element={<Navigate to="/marketplace" replace />} />
         <Route path="/marketplace" element={<MarketplacePage />} />
         <Route path="/pdf/:slug" element={<PdfDetailPage />} />
-        <Route path="/upcoming" element={<UpcomingLockedPage />} />
-        <Route path="/upcoming/:slug" element={<UpcomingLockedDetailPage />} />
-        <Route path="/university/:slug" element={<SeoLandingPage forcedType="university" />} />
-        <Route path="/branch/:slug" element={<SeoLandingPage forcedType="branch" />} />
-        <Route path="/semester/:slug" element={<SeoLandingPage forcedType="semester" />} />
-        <Route path="/subject/:slug" element={<SeoLandingPage forcedType="subject" />} />
-        <Route path="/exam-preparation/:slug" element={<SeoLandingPage forcedType="exam-preparation" />} />
-        <Route path="/important-questions/:slug" element={<SeoLandingPage forcedType="important-questions" />} />
-        <Route path="/faq" element={<FaqPage />} />
-        <Route path="/resources" element={<ResourcesPage />} />
+        <Route path="/upcoming" element={<Navigate to="/marketplace" replace />} />
+        <Route path="/upcoming/:slug" element={<Navigate to="/marketplace" replace />} />
+        <Route path="/university/:slug" element={<Navigate to="/marketplace" replace />} />
+        <Route path="/branch/:slug" element={<Navigate to="/marketplace" replace />} />
+        <Route path="/semester/:slug" element={<Navigate to="/marketplace" replace />} />
+        <Route path="/subject/:slug" element={<Navigate to="/marketplace" replace />} />
+        <Route path="/exam-preparation/:slug" element={<Navigate to="/marketplace" replace />} />
+        <Route path="/important-questions/:slug" element={<Navigate to="/marketplace" replace />} />
+        <Route path="/faq" element={<Navigate to="/marketplace" replace />} />
+        <Route path="/resources" element={<Navigate to="/marketplace" replace />} />
       </Route>
 
       <Route element={<AuthLayout />}>
