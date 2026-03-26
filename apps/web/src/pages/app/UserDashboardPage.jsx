@@ -54,9 +54,9 @@ export function UserDashboardPage() {
   return (
     <section className="stack-section">
       <PageHero
-        eyebrow="Dashboard"
-        title={`Welcome, ${user?.name || "Student"}`}
-        description={`This overview reflects ${MODE_LABELS[modeAccess.currentMode].toLowerCase()} so the workspace stays understandable instead of showing every tool at once.`}
+        eyebrow="Account overview"
+        title={`A clear view of your ExamNova account, ${user?.name || "Student"}`}
+        description={`This overview reflects ${MODE_LABELS[modeAccess.currentMode].toLowerCase()} so zero-knowledge users see the right next steps first instead of a cluttered dashboard.`}
         metrics={[
           { label: "Mode", value: MODE_LABELS[modeAccess.currentMode] },
           { label: "Completion", value: `${dashboardSummary?.overview?.profileCompletionPercent ?? 0}%` },
@@ -65,19 +65,19 @@ export function UserDashboardPage() {
         ]}
         actions={
           <>
-            <Link className="button primary" to="/app/upload-generate">
-              <i className="bi bi-cloud-arrow-up" />
-              Open AI workflow
+            <Link className="button primary" to="/app/profile">
+              <i className="bi bi-person-badge-fill" />
+              Open control center
             </Link>
             {developerActive ? (
               <Link className="button secondary" to="/app/listed-pdfs">
                 <i className="bi bi-shop" />
-                Manage seller listings
+                Open seller workspace
               </Link>
             ) : (
-              <Link className="button secondary" to="/app/settings#mode-access">
-                <i className="bi bi-stars" />
-                Compare modes
+              <Link className="button secondary" to="/app/upload-generate">
+                <i className="bi bi-cloud-arrow-up" />
+                Open AI workflow
               </Link>
             )}
           </>
@@ -99,8 +99,8 @@ export function UserDashboardPage() {
         <section className="detail-card">
           <SectionHeader
             eyebrow="Latest activity"
-            title="Recent account activity"
-            description="Notifications and key account events are summarized here."
+            title="What changed recently"
+            description="Notifications and important account events are summarized here so you know what needs attention first."
           />
           {dashboardSummary?.latestActivity?.length ? (
             <div className="activity-list">
@@ -123,16 +123,16 @@ export function UserDashboardPage() {
 
         <section className="detail-card">
           <SectionHeader
-            eyebrow="Shortcuts"
-            title="Quick actions"
-            description="Jump into the most important account areas from one place."
+            eyebrow="Next steps"
+            title="Open the right area quickly"
+            description="These shortcuts map directly to the profile-centered structure, so buying, generating, and account control stay easy to understand."
           />
           <div className="shortcut-grid">
-            <Link className="shortcut-card" to="/app/upload-generate">Open AI workflow</Link>
+            <Link className="shortcut-card" to="/app/profile">Open control center</Link>
+            <Link className="shortcut-card" to="/app/upload-generate">Generate a PDF</Link>
             <Link className="shortcut-card" to="/app/generated-pdfs">View generated PDFs</Link>
-            <Link className="shortcut-card" to="/app/profile">Edit profile</Link>
             <Link className="shortcut-card" to={developerActive ? "/app/listed-pdfs" : "/app/settings#mode-access"}>
-              {developerActive ? "Manage listings" : "Unlock developer tools"}
+              {developerActive ? "Manage listed PDFs" : "Compare account modes"}
             </Link>
           </div>
         </section>
@@ -141,13 +141,13 @@ export function UserDashboardPage() {
       <div className="three-column-grid">
         <EmptyStateCard
           title="Generated PDFs"
-          description={dashboardSummary?.sections?.generatedPdfs?.emptyMessage || "Generated PDFs will appear here."}
-          action={<Link className="button secondary" to="/app/generated-pdfs">Open section</Link>}
+          description={dashboardSummary?.sections?.generatedPdfs?.emptyMessage || "Generated PDFs will appear here after you run the AI workflow."}
+          action={<Link className="button secondary" to="/app/generated-pdfs">Open generated PDFs</Link>}
         />
         <EmptyStateCard
           title="Purchased PDFs"
-          description={dashboardSummary?.sections?.purchasedPdfs?.emptyMessage || "Purchased PDFs will appear here."}
-          action={<Link className="button secondary" to="/app/purchased-pdfs">Open section</Link>}
+          description={dashboardSummary?.sections?.purchasedPdfs?.emptyMessage || "Purchased PDFs from the marketplace will appear here."}
+          action={<Link className="button secondary" to="/app/purchased-pdfs">Open purchased PDFs</Link>}
         />
         <EmptyStateCard
           title="Listed PDFs"
@@ -158,7 +158,7 @@ export function UserDashboardPage() {
           }
           action={
             <Link className="button secondary" to={developerActive ? "/app/listed-pdfs" : "/app/settings#mode-access"}>
-              {developerActive ? "Open section" : "Open mode settings"}
+              {developerActive ? "Open listed PDFs" : "Open mode settings"}
             </Link>
           }
         />

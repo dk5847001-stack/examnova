@@ -11,23 +11,43 @@ export function DashboardLayout() {
   const userInitial = (user?.name || "S").trim().charAt(0).toUpperCase();
   const modeAccess = normalizeModeAccess(user);
   const developerActive = hasDeveloperAccess(modeAccess);
-  const navItems = [
-    { to: "/marketplace", label: "Marketplace", icon: "bi-shop-window", meta: "Discover and buy PDFs" },
-    { to: "/app/upload-generate", label: "AI Workflow", icon: "bi-cloud-arrow-up-fill", meta: "Upload, detect, generate" },
-    { to: "/app/generated-pdfs", label: "Generated PDFs", icon: "bi-file-earmark-pdf-fill", meta: "Rendered outputs" },
-    { to: "/app/purchased-pdfs", label: "Purchased PDFs", icon: "bi-bag-check-fill", meta: "Buyer library" },
+  const navSections = [
+    {
+      title: "Start here",
+      items: [
+        { to: "/marketplace", label: "Marketplace", icon: "bi-shop-window", meta: "Discover and buy PDFs" },
+        { to: "/app/profile", label: "Control center", icon: "bi-person-badge-fill", meta: "Profile, mode, and shortcuts" },
+        { to: "/app/dashboard", label: "Account overview", icon: "bi-grid-1x2-fill", meta: "Activity and workspace summary" },
+      ],
+    },
+    {
+      title: "Study workspace",
+      items: [
+        { to: "/app/upload-generate", label: "Generate PDFs", icon: "bi-cloud-arrow-up-fill", meta: "Upload, detect, generate" },
+        { to: "/app/generated-pdfs", label: "Generated PDFs", icon: "bi-file-earmark-pdf-fill", meta: "AI output library" },
+        { to: "/app/purchased-pdfs", label: "Purchased PDFs", icon: "bi-bag-check-fill", meta: "Buyer library" },
+      ],
+    },
     ...(developerActive
       ? [
-        { to: "/app/listed-pdfs", label: "Listed PDFs", icon: "bi-shop", meta: "Seller catalogue" },
-        { to: "/app/wallet", label: "Wallet", icon: "bi-wallet2", meta: "Balance and ledger" },
-        { to: "/app/withdrawals", label: "Withdrawals", icon: "bi-cash-stack", meta: "Payout requests" },
+        {
+          title: "Seller workspace",
+          items: [
+            { to: "/app/listed-pdfs", label: "Listed PDFs", icon: "bi-shop", meta: "Public seller catalogue" },
+            { to: "/app/wallet", label: "Wallet", icon: "bi-wallet2", meta: "Balance and earnings ledger" },
+            { to: "/app/withdrawals", label: "Withdrawals", icon: "bi-cash-stack", meta: "Payout requests" },
+          ],
+        },
       ]
       : []),
-    { to: "/app/notifications", label: "Notifications", icon: "bi-bell-fill", meta: "Signals and alerts" },
-    { to: "/app/profile", label: "Profile", icon: "bi-person-badge-fill", meta: "Identity surface" },
-    { to: "/app/settings", label: "Settings", icon: "bi-sliders2-vertical", meta: "Mode and preference control" },
-    { to: "/app/payments", label: "Payments", icon: "bi-credit-card-2-front-fill", meta: "Receipt history" },
-    { to: "/app/dashboard", label: "Overview", icon: "bi-grid-1x2-fill", meta: "Workspace summary" },
+    {
+      title: "Account tools",
+      items: [
+        { to: "/app/notifications", label: "Notifications", icon: "bi-bell-fill", meta: "Signals and updates" },
+        { to: "/app/settings", label: "Settings", icon: "bi-sliders2-vertical", meta: "Mode and preference control" },
+        { to: "/app/payments", label: "Payment history", icon: "bi-credit-card-2-front-fill", meta: "Receipts and payment records" },
+      ],
+    },
   ];
 
   return (
@@ -44,7 +64,7 @@ export function DashboardLayout() {
             </div>
           </div>
           <div className="sidebar-user-card">
-            <p className="eyebrow">Active mode</p>
+            <p className="eyebrow">Control center</p>
             <h2>{user?.name || "Student"}</h2>
             <p className="support-copy">
               {MODE_LABELS[modeAccess.currentMode]} {user?.academicProfile?.semester ? `- Semester ${user.academicProfile.semester}` : ""}
@@ -52,26 +72,31 @@ export function DashboardLayout() {
           </div>
         </div>
         <nav className="sidebar-nav">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              className={({ isActive }) => (isActive ? "sidebar-link active" : "sidebar-link")}
-              to={item.to}
-            >
-              <span className="sidebar-link-icon" aria-hidden="true">
-                <i className={`bi ${item.icon}`} />
-              </span>
-              <span className="sidebar-link-copy">
-                <span>{item.label}</span>
-                <small>{item.meta}</small>
-              </span>
-            </NavLink>
+          {navSections.map((section) => (
+            <div className="sidebar-nav-group" key={section.title}>
+              <p className="sidebar-section-label">{section.title}</p>
+              {section.items.map((item) => (
+                <NavLink
+                  key={item.to}
+                  className={({ isActive }) => (isActive ? "sidebar-link active" : "sidebar-link")}
+                  to={item.to}
+                >
+                  <span className="sidebar-link-icon" aria-hidden="true">
+                    <i className={`bi ${item.icon}`} />
+                  </span>
+                  <span className="sidebar-link-copy">
+                    <span>{item.label}</span>
+                    <small>{item.meta}</small>
+                  </span>
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
         <div className="sidebar-footer">
           <div className="sidebar-footnote">
-            <strong>{developerActive ? "Developer flow" : "Professional flow"}</strong>
-            <span>{developerActive ? "Upload, generate, publish, sell." : "Upload, detect, answer, render."}</span>
+            <strong>{developerActive ? "Developer workspace" : "Professional workspace"}</strong>
+            <span>{developerActive ? "Create, publish, sell, and manage payouts." : "Create PDFs, manage your library, and control your account."}</span>
           </div>
           <button className="button ghost" onClick={logout} type="button">
             <i className="bi bi-box-arrow-left" />
@@ -84,10 +109,10 @@ export function DashboardLayout() {
           <div className="dashboard-identity">
             <div className="identity-orb">{userInitial}</div>
             <div className="dashboard-topbar-copy">
-              <p className="eyebrow">Mode-aware workspace</p>
-              <h1>{user?.name || "User dashboard"}</h1>
+              <p className="eyebrow">Profile-centered workspace</p>
+              <h1>{user?.name || "User control center"}</h1>
               <p className="support-copy">
-                Start in the marketplace, then use {MODE_LABELS[modeAccess.currentMode].toLowerCase()} tools that match your account access without extra clutter.
+                Start in the marketplace, then manage buying, generation, selling, notifications, and settings from a clearer account structure built around your current mode.
               </p>
             </div>
           </div>

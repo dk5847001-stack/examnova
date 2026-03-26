@@ -1,21 +1,36 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth.js";
 
-const adminNavItems = [
-  { to: "/marketplace", label: "Marketplace", icon: "bi-shop-window", meta: "Review public buying flow" },
-  { to: "/admin/dashboard", label: "Admin overview", icon: "bi-grid-1x2-fill", meta: "Platform summary" },
-  { to: "/admin/users", label: "Users", icon: "bi-people-fill", meta: "Account control" },
-  { to: "/admin/listings", label: "Listings", icon: "bi-shop-window", meta: "Marketplace oversight" },
-  { to: "/admin/uploads", label: "Admin uploads", icon: "bi-cloud-upload-fill", meta: "Owned inventory" },
-  { to: "/admin/upcoming", label: "Upcoming locked", icon: "bi-hourglass-split", meta: "Release queue" },
-  { to: "/admin/commerce", label: "Purchases & payments", icon: "bi-credit-card-2-front-fill", meta: "Commerce control" },
-  { to: "/admin/withdrawals", label: "Withdrawals", icon: "bi-cash-coin", meta: "Payout review" },
-  { to: "/admin/analytics", label: "Analytics", icon: "bi-bar-chart-fill", meta: "Growth intelligence" },
-  { to: "/admin/alerts", label: "Notifications", icon: "bi-broadcast-pin", meta: "Operational pulse" },
-  { to: "/admin/profile", label: "Profile", icon: "bi-person-badge-fill", meta: "Admin identity hub" },
-  { to: "/admin/settings", label: "Settings", icon: "bi-sliders2-vertical", meta: "Preference control" },
-  { to: "/admin/moderation", label: "Moderation", icon: "bi-shield-exclamation", meta: "Risk review" },
-  { to: "/admin/audit-logs", label: "Audit logs", icon: "bi-clock-history", meta: "Action history" },
+const adminNavSections = [
+  {
+    title: "Control center",
+    items: [
+      { to: "/admin/profile", label: "Control center", icon: "bi-person-badge-fill", meta: "Admin identity and shortcuts" },
+      { to: "/admin/dashboard", label: "Admin overview", icon: "bi-grid-1x2-fill", meta: "Platform summary" },
+      { to: "/admin/settings", label: "Settings", icon: "bi-sliders2-vertical", meta: "Preference control" },
+      { to: "/admin/alerts", label: "Notifications", icon: "bi-broadcast-pin", meta: "Operational pulse" },
+    ],
+  },
+  {
+    title: "People and content",
+    items: [
+      { to: "/admin/users", label: "Users", icon: "bi-people-fill", meta: "Account control" },
+      { to: "/admin/listings", label: "Listings", icon: "bi-shop-window", meta: "Marketplace oversight" },
+      { to: "/admin/uploads", label: "Admin uploads", icon: "bi-cloud-upload-fill", meta: "Owned inventory" },
+      { to: "/admin/upcoming", label: "Upcoming locked", icon: "bi-hourglass-split", meta: "Release queue" },
+      { to: "/admin/moderation", label: "Moderation", icon: "bi-shield-exclamation", meta: "Risk review" },
+    ],
+  },
+  {
+    title: "Finance and reporting",
+    items: [
+      { to: "/admin/withdrawals", label: "Withdrawals", icon: "bi-cash-coin", meta: "Payout review" },
+      { to: "/admin/commerce", label: "Purchases & payments", icon: "bi-credit-card-2-front-fill", meta: "Commerce control" },
+      { to: "/admin/analytics", label: "Analytics", icon: "bi-bar-chart-fill", meta: "Growth intelligence" },
+      { to: "/admin/audit-logs", label: "Audit logs", icon: "bi-clock-history", meta: "Action history" },
+      { to: "/marketplace", label: "Marketplace", icon: "bi-shop-window", meta: "Review public buying flow" },
+    ],
+  },
 ];
 
 export function AdminLayout() {
@@ -35,30 +50,35 @@ export function AdminLayout() {
             </div>
           </div>
           <div className="sidebar-user-card">
-            <p className="eyebrow">Ops posture</p>
+            <p className="eyebrow">Control center</p>
             <h2>Admin Console</h2>
             <p className="support-copy">
-              Users, listings, commerce, payout review, and release intelligence live here.
+              Users, content, finance, analytics, and settings are organized here instead of being scattered.
             </p>
           </div>
         </div>
         <nav className="sidebar-nav">
-          {adminNavItems.map((item) => (
-            <NavLink className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`} key={item.to} to={item.to}>
-              <span className="sidebar-link-icon" aria-hidden="true">
-                <i className={`bi ${item.icon}`} />
-              </span>
-              <span className="sidebar-link-copy">
-                <span>{item.label}</span>
-                <small>{item.meta}</small>
-              </span>
-            </NavLink>
+          {adminNavSections.map((section) => (
+            <div className="sidebar-nav-group" key={section.title}>
+              <p className="sidebar-section-label">{section.title}</p>
+              {section.items.map((item) => (
+                <NavLink className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`} key={item.to} to={item.to}>
+                  <span className="sidebar-link-icon" aria-hidden="true">
+                    <i className={`bi ${item.icon}`} />
+                  </span>
+                  <span className="sidebar-link-copy">
+                    <span>{item.label}</span>
+                    <small>{item.meta}</small>
+                  </span>
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
         <div className="sidebar-footer">
           <div className="sidebar-footnote">
-            <strong>Ops posture</strong>
-            <span>Content, risk, finance, and user health in one console.</span>
+            <strong>Admin control center</strong>
+            <span>Run users, content, finance, and platform health from one organized console.</span>
           </div>
           <button className="button ghost" onClick={logout} type="button">
             <i className="bi bi-box-arrow-left" />
@@ -71,9 +91,9 @@ export function AdminLayout() {
           <div className="dashboard-identity">
             <div className="identity-orb">A</div>
             <div className="dashboard-topbar-copy">
-              <p className="eyebrow">Admin AI command</p>
+              <p className="eyebrow">Admin control center</p>
               <h1>Operational intelligence</h1>
-              <p className="support-copy">The marketplace stays visible, while admin profile and settings keep operations control organized instead of scattered.</p>
+              <p className="support-copy">Admin overview, users, listings, uploads, withdrawals, analytics, notifications, and settings now sit inside a cleaner, profile-centered control structure.</p>
             </div>
           </div>
           <div className="topbar-chip-group">

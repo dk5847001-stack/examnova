@@ -336,6 +336,27 @@
   gap: 0.45rem;
 }
 
+.sidebar-nav-group {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.sidebar-nav-group + .sidebar-nav-group {
+  margin-top: 0.35rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-section-label {
+  margin: 0;
+  padding: 0 0.2rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
 .sidebar-link {
   display: flex;
   align-items: center;
