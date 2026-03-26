@@ -135,6 +135,7 @@ function serializePayment(record) {
     userId: record.userId?._id?.toString?.() || record.userId?.toString?.() || null,
     buyerMode: record.buyerMode || "account",
     buyerName: record.guestBuyerName || record.userId?.name || "",
+    downloadBuyerName: record.downloadBuyerName || record.guestBuyerName || record.userId?.name || "",
     purpose: record.purpose,
     contextType: record.contextType || "private_pdf",
     generatedPdfId: record.generatedPdfId?._id?.toString?.() || record.generatedPdfId?.toString?.() || null,
@@ -270,7 +271,7 @@ async function issueGuestPurchaseAccess(purchase) {
     token: rawToken,
     expiresAt: purchase.guestAccessExpiresAt,
     downloadPath: `/library/guest/${purchase._id.toString()}/download`,
-    buyerName: purchase.guestBuyerName || "",
+    buyerName: purchase.downloadBuyerName || purchase.guestBuyerName || "",
   };
 }
 
@@ -698,8 +699,9 @@ export const paymentService = {
     };
   },
 
-  async createMarketplaceOrder(userId, listingId) {
+  async createMarketplaceOrder(userId, listingId, fullName) {
     const listing = await findPurchasableListing(listingId);
+    const downloadBuyerName = normalizeBuyerName(fullName);
 
     if (String(listing.sellerId) === String(userId)) {
       throw new ApiError(400, "You cannot buy your own marketplace listing.");
@@ -715,6 +717,11 @@ export const paymentService = {
       .populate("sellerId", "name sellerProfile");
 
     if (existingPurchase) {
+      if (downloadBuyerName && existingPurchase.downloadBuyerName !== downloadBuyerName) {
+        existingPurchase.downloadBuyerName = downloadBuyerName;
+        await existingPurchase.save();
+      }
+
       return {
         alreadyOwned: true,
         purchase: purchaseService.serializePurchase(existingPurchase),
@@ -730,13 +737,18 @@ export const paymentService = {
     }).sort({ createdAt: -1 });
 
     if (existingPendingPayment?.razorpayOrderId) {
+      if (downloadBuyerName && existingPendingPayment.downloadBuyerName !== downloadBuyerName) {
+        existingPendingPayment.downloadBuyerName = downloadBuyerName;
+        await existingPendingPayment.save();
+      }
+
       const paymentClient = getPaymentClient();
 
       return {
         alreadyOwned: false,
         purchase: null,
         payment: serializePayment(existingPendingPayment),
-      checkout: buildCheckoutPayload(paymentClient, {
+        checkout: buildCheckoutPayload(paymentClient, {
           amountInr: existingPendingPayment.amountInr,
           currency: existingPendingPayment.currency,
           orderId: existingPendingPayment.razorpayOrderId,
@@ -744,6 +756,9 @@ export const paymentService = {
           notes: {
             contextType: PURCHASE_TYPES.MARKETPLACE,
             listingId: listing._id.toString(),
+          },
+          prefill: {
+            name: downloadBuyerName,
           },
         }),
       };
@@ -793,6 +808,9 @@ export const paymentService = {
           contextType: PURCHASE_TYPES.MARKETPLACE,
           listingId: listing._id.toString(),
         },
+        prefill: {
+          name: downloadBuyerName,
+        },
       }),
     };
   },
@@ -810,6 +828,11 @@ export const paymentService = {
     }).sort({ createdAt: -1 });
 
     if (existingPendingPayment?.razorpayOrderId) {
+      if (existingPendingPayment.downloadBuyerName !== guestBuyerName) {
+        existingPendingPayment.downloadBuyerName = guestBuyerName;
+        await existingPendingPayment.save();
+      }
+
       const paymentClient = getPaymentClient();
 
       return {
@@ -849,6 +872,7 @@ export const paymentService = {
       userId: guestIdentityId,
       buyerMode: "guest",
       guestBuyerName,
+      downloadBuyerName: guestBuyerName,
       purpose: PURCHASE_TYPES.MARKETPLACE,
       contextType: PURCHASE_TYPES.MARKETPLACE,
       targetId: listing._id,
@@ -959,11 +983,18 @@ export const paymentService = {
         currency: payment.currency,
         paymentStatus: PAYMENT_STATUS.PAID,
         status: "completed",
+        downloadBuyerName: payment.downloadBuyerName || payment.guestBuyerName || "",
         adminCommissionAmount: split.adminCommissionAmount,
         sellerEarningAmount: split.sellerEarningAmount,
         buyerAccessState: "granted",
         accessGrantedAt: new Date(),
       });
+    } else if (
+      (payment.downloadBuyerName || payment.guestBuyerName) &&
+      purchase.downloadBuyerName !== (payment.downloadBuyerName || payment.guestBuyerName)
+    ) {
+      purchase.downloadBuyerName = payment.downloadBuyerName || payment.guestBuyerName || "";
+      await purchase.save();
     }
 
     await ensureSellerCredit(listing, purchase, split);
@@ -1098,11 +1129,15 @@ export const paymentService = {
         currency: payment.currency,
         paymentStatus: PAYMENT_STATUS.PAID,
         status: "completed",
+        downloadBuyerName: payment.downloadBuyerName || "",
         adminCommissionAmount: split.adminCommissionAmount,
         sellerEarningAmount: split.sellerEarningAmount,
         buyerAccessState: "granted",
         accessGrantedAt: new Date(),
       });
+    } else if (payment.downloadBuyerName && purchase.downloadBuyerName !== payment.downloadBuyerName) {
+      purchase.downloadBuyerName = payment.downloadBuyerName;
+      await purchase.save();
     }
 
     await ensureSellerCredit(listing, purchase, split);

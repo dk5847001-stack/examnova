@@ -46,8 +46,15 @@ export function validatePaymentVerification(req, _res, next) {
 
 export function validateMarketplaceOrderRequest(req, _res, next) {
   try {
+    const fullName = ensureMinLength(
+      ensureRequiredString(req.body?.fullName, "fullName", { maxLength: 80 }),
+      "fullName",
+      2,
+    );
+
     req.body = {
       listingId: ensureObjectId(req.body?.listingId, "listingId"),
+      fullName,
     };
     return next();
   } catch (error) {

@@ -6,6 +6,7 @@ const purchaseSchema = new mongoose.Schema(
     buyerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
     buyerMode: { type: String, default: "account", index: true },
     guestBuyerName: { type: String, default: "", trim: true },
+    downloadBuyerName: { type: String, default: "", trim: true },
     sellerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
     purchaseType: { type: String, required: true, index: true },
     targetId: { type: mongoose.Schema.Types.ObjectId, required: true, index: true },

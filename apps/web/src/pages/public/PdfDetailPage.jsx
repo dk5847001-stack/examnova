@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { EmptyStateCard } from "../../components/ui/EmptyStateCard.jsx";
 import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
-import { StatusBadge } from "../../components/ui/StatusBadge.jsx";
 import { SeoHead } from "../../seo/SeoHead.jsx";
 import { useAuth } from "../../hooks/useAuth.js";
 import {
@@ -18,7 +17,6 @@ import { loadRazorpayCheckout } from "../../utils/loadRazorpayCheckout.js";
 import {
   formatMarketplaceDate,
   getCountdownParts,
-  getCoverSealLabel,
   isListingReleaseLocked,
 } from "../../utils/marketplaceAvailability.js";
 import { buildBreadcrumbSchema, buildProductSchema, buildSeoPayload } from "../../utils/seo.js";
@@ -181,6 +179,7 @@ export function PdfDetailPage() {
       !isAuthenticated ||
       !accessToken ||
       !listing?.id ||
+      !normalizeGuestName(guestFullName) ||
       isListingReleaseLocked(listing) ||
       isLoading ||
       autoPurchaseAttemptedRef.current
@@ -193,7 +192,7 @@ export function PdfDetailPage() {
     nextParams.delete("buy");
     setSearchParams(nextParams, { replace: true });
     handlePurchase();
-  }, [accessToken, isAuthenticated, isLoading, listing?.id, searchParams, setSearchParams]);
+  }, [accessToken, guestFullName, isAuthenticated, isLoading, listing?.id, searchParams, setSearchParams]);
 
   useEffect(() => {
     if (!listing?.releaseAt) {
@@ -285,9 +284,14 @@ export function PdfDetailPage() {
       throw new Error("Your session is still loading. Please try again in a moment.");
     }
 
+    const normalizedBuyerName = normalizeGuestName(guestFullName);
+    if (!normalizedBuyerName) {
+      throw new Error("Enter your full name before continuing.");
+    }
+
     const [RazorpayCheckout, orderResponse] = await Promise.all([
       loadRazorpayCheckout(),
-      createMarketplaceOrder(accessToken, listing.id),
+      createMarketplaceOrder(accessToken, listing.id, normalizedBuyerName),
     ]);
 
     if (orderResponse.data.alreadyOwned) {
@@ -329,6 +333,7 @@ export function PdfDetailPage() {
         description: checkout.description,
         order_id: checkout.orderId,
         notes: checkout.notes,
+        prefill: checkout.prefill || { name: normalizedBuyerName },
         theme: { color: "#cc6f29" },
         modal: {
           ondismiss: () => reject(new Error("Payment was cancelled before completion.")),
@@ -561,24 +566,13 @@ export function PdfDetailPage() {
       })
     : null;
 
-  const previewBuyerName = normalizeGuestName(guestFullName) || "Your full name";
-  const sourceLabel = listing?.sellerSourceLabel || "Marketplace Seller";
-  const sourceTone = listing?.sourceType === "admin_upload" ? "warning" : "neutral";
-  const coverSealLabel = getCoverSealLabel(listing?.coverSeal);
   const releaseLocked = isListingReleaseLocked(listing, countdownNow);
   const releaseCountdown = getCountdownParts(listing?.releaseAt, countdownNow);
-  const academicSummary = [
-    listing?.taxonomy?.university,
-    listing?.taxonomy?.branch,
-    listing?.taxonomy?.semester ? `Semester ${listing.taxonomy.semester}` : null,
-  ]
-    .filter(Boolean)
-    .join(" - ");
-  const detailTags = [
-    listing?.taxonomy?.year,
-    listing?.studyMetadata?.examFocus,
-    listing?.studyMetadata?.difficultyLevel,
-  ].filter(Boolean);
+  const selectedBuyerName = normalizeGuestName(guestFullName);
+  const detailSummary =
+    listing?.description ||
+    "Enter your full name, continue to secure payment, and download this PDF from one clean page.";
+  const releaseLabel = formatMarketplaceDate(listing?.releaseAt || listing?.publishedAt || listing?.createdAt);
 
   return (
     <>
@@ -590,63 +584,48 @@ export function PdfDetailPage() {
       ) : (
         <section className="stack-section simple-pdf-detail-page">
           <article className="detail-card simple-pdf-detail-shell">
-            <div className="simple-pdf-detail-copy">
+            <div className="simple-pdf-detail-headline">
               <Link className="inline-link-chip" to="/marketplace">
                 <i className="bi bi-arrow-left" />
                 Back to marketplace
               </Link>
-              <p className="eyebrow">{listing?.taxonomy?.subject || "PDF detail"}</p>
+              <p className="eyebrow">Selected PDF</p>
               <h1>{listing?.title || slug || "PDF"}</h1>
-              <p className="support-copy">
-                {listing?.description || "Enter your full name, continue to secure payment, and download this PDF from one simple page."}
-              </p>
-              <div className="simple-card-chip-row">
-                <StatusBadge tone={sourceTone}>{sourceLabel}</StatusBadge>
-                <StatusBadge tone="success">Rs. {listing?.priceInr || 0}</StatusBadge>
-                {coverSealLabel ? <StatusBadge tone="neutral">{coverSealLabel}</StatusBadge> : null}
-                {releaseLocked ? <StatusBadge tone="warning">Upcoming</StatusBadge> : null}
-              </div>
-              <div className="marketplace-taxonomy simple-card-tags">
-                {detailTags.map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
-              </div>
+              <p className="support-copy">{detailSummary}</p>
             </div>
 
-            <div className="two-column-grid simple-pdf-detail-grid">
-              <article className="detail-card simple-pdf-preview-card">
-                <div className="simple-pdf-placeholder-sheet">
-                  <div className="simple-pdf-placeholder-head">
-                    <span className="simple-preview-chip">PDF placeholder</span>
-                    <span className="simple-preview-price">
-                      {releaseLocked ? formatMarketplaceDate(listing?.releaseAt) : `Rs. ${listing?.priceInr || 0}`}
-                    </span>
+            <div className="simple-pdf-detail-body">
+              <article className="detail-card simple-pdf-detail-summary">
+                <div className="simple-pdf-detail-summary-row">
+                  <div>
+                    <span className="info-label">Price</span>
+                    <strong>Rs. {listing?.priceInr || 0}</strong>
                   </div>
-                  <strong className="simple-placeholder-title">{listing?.title}</strong>
-                  <p className="support-copy">{academicSummary || "Structured academic PDF"}</p>
-                  <div className="simple-placeholder-divider" />
-                  <span className="info-label">Name on placeholder</span>
-                  <strong className="simple-placeholder-name">{previewBuyerName}</strong>
-                  <p className="support-copy">
-                    The name above updates live from the full name field so the page feels personal before download.
-                  </p>
+                  <div>
+                    <span className="info-label">Release</span>
+                    <strong>{releaseLabel || "-"}</strong>
+                  </div>
                 </div>
+                <p className="support-copy">
+                  The name you enter here will be embedded multiple times inside the downloaded PDF after payment verification.
+                </p>
+                {selectedBuyerName ? (
+                  <div className="simple-personalization-note">
+                    <span className="info-label">Personalized for</span>
+                    <strong>{selectedBuyerName}</strong>
+                  </div>
+                ) : null}
               </article>
 
               <article className="detail-card simple-pdf-download-panel">
                 <p className="eyebrow">Download PDF</p>
                 <h2>Enter full name and continue</h2>
-                <p className="support-copy">
-                  This page only keeps the selected PDF details and a simple download flow. No extra sections, no extra distractions.
-                </p>
 
                 {releaseLocked ? (
                   <div className="simple-release-lock-card">
                     <span className="info-label">Scheduled release</span>
                     <strong>{formatMarketplaceDate(listing?.releaseAt)}</strong>
-                    <p className="support-copy">
-                      Download stays locked until the exact go-live time.
-                    </p>
+                    <p className="support-copy">Download stays locked until the exact go-live time.</p>
                     {releaseCountdown ? <strong className="simple-release-countdown">{releaseCountdown.shortLabel}</strong> : null}
                   </div>
                 ) : null}
@@ -663,29 +642,6 @@ export function PdfDetailPage() {
                     value={guestFullName}
                   />
                 </label>
-
-                <div className="simple-pdf-meta-list">
-                  <div>
-                    <span className="info-label">University</span>
-                    <strong>{listing?.taxonomy?.university || "-"}</strong>
-                  </div>
-                  <div>
-                    <span className="info-label">Branch</span>
-                    <strong>{listing?.taxonomy?.branch || "-"}</strong>
-                  </div>
-                  <div>
-                    <span className="info-label">Semester</span>
-                    <strong>{listing?.taxonomy?.semester ? `Semester ${listing.taxonomy.semester}` : "-"}</strong>
-                  </div>
-                  <div>
-                    <span className="info-label">Seller</span>
-                    <strong>{listing?.sellerName || "ExamNova Seller"}</strong>
-                  </div>
-                  <div>
-                    <span className="info-label">Release</span>
-                    <strong>{formatMarketplaceDate(listing?.releaseAt || listing?.publishedAt || listing?.createdAt) || "-"}</strong>
-                  </div>
-                </div>
 
                 {feedback.message ? (
                   <div className="stack-section">
@@ -706,7 +662,7 @@ export function PdfDetailPage() {
 
                 <p className="support-copy">
                   {isAuthenticated
-                    ? "Signed-in purchases download through your secure account library after verification."
+                    ? "Your entered full name will stay attached to this purchase and the downloaded PDF will be personalized from your secure account access."
                     : "Guest download asks only for your full name here. Payment stays inside secure Razorpay checkout and the PDF unlocks only after verification."}
                 </p>
               </article>

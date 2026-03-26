@@ -15,7 +15,11 @@ export const paymentController = {
     return sendSuccess(res, result, "Public marketplace payment order created successfully.", 201);
   },
   async createMarketplaceOrder(req, res) {
-    const result = await paymentService.createMarketplaceOrder(req.auth.userId, req.body.listingId);
+    const result = await paymentService.createMarketplaceOrder(
+      req.auth.userId,
+      req.body.listingId,
+      req.body.fullName,
+    );
     return sendSuccess(res, result, "Marketplace payment order created successfully.", 201);
   },
   async verifyPrivatePdfPayment(req, res) {

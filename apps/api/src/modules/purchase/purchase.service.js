@@ -1,15 +1,21 @@
 import { createStorageClient, hashToken } from "../../lib/index.js";
 import { AdminUploadedPdf, GeneratedPdf, MarketplaceListing, Purchase } from "../../models/index.js";
 import { ApiError } from "../../utils/ApiError.js";
+import { personalizePdfDownload } from "../../utils/pdfPersonalization.js";
 
 const storageClient = createStorageClient();
+
+function getPurchaseBuyerName(record) {
+  return record?.downloadBuyerName || record?.guestBuyerName || record?.buyerId?.name || "";
+}
 
 function serializePurchase(record) {
   return {
     id: record._id.toString(),
     buyerId: record.buyerId?._id?.toString?.() || record.buyerId?.toString?.() || null,
     buyerMode: record.buyerMode || "account",
-    buyerName: record.guestBuyerName || record.buyerId?.name || "",
+    buyerName: getPurchaseBuyerName(record),
+    downloadBuyerName: getPurchaseBuyerName(record),
     sellerId: record.sellerId?._id?.toString?.() || record.sellerId?.toString?.() || null,
     sellerName: record.sellerId?.sellerProfile?.displayName || record.sellerId?.name || "ExamNova Seller",
     listingId: record.listingId?._id?.toString?.() || record.listingId?.toString?.() || null,
@@ -94,6 +100,25 @@ async function buildPurchaseDownloadFile(listing) {
   };
 }
 
+async function buildPersonalizedDownloadFile(file, purchase, listing) {
+  const buyerName = getPurchaseBuyerName(purchase);
+
+  if (!buyerName) {
+    throw new ApiError(400, "Buyer name is missing for this PDF download.");
+  }
+
+  const personalizedBuffer = await personalizePdfDownload(file.absolutePath, {
+    buyerName,
+    title: listing?.title || purchase?.listingId?.title || purchase?.title || file.downloadName,
+  });
+
+  return {
+    ...file,
+    buffer: personalizedBuffer,
+    contentType: "application/pdf",
+  };
+}
+
 export const purchaseService = {
   serializePurchase,
 
@@ -104,6 +129,7 @@ export const purchaseService = {
       buyerAccessState: "granted",
     })
       .populate("listingId", "title slug taxonomy studyMetadata priceInr")
+      .populate("buyerId", "name")
       .populate("sellerId", "name sellerProfile")
       .sort({ createdAt: -1 });
 
@@ -118,6 +144,7 @@ export const purchaseService = {
       buyerAccessState: "granted",
     })
       .populate("listingId", "title slug taxonomy studyMetadata priceInr sourcePdfId")
+      .populate("buyerId", "name")
       .populate("sellerId", "name sellerProfile");
 
     if (!purchase) {
@@ -133,7 +160,9 @@ export const purchaseService = {
       buyerId: userId,
       status: "completed",
       buyerAccessState: "granted",
-    }).populate("listingId");
+    })
+      .populate("listingId")
+      .populate("buyerId", "name");
 
     if (!purchase) {
       throw new ApiError(404, "Purchased PDF not found in your library.");
@@ -142,10 +171,12 @@ export const purchaseService = {
     const listing = await findDownloadableListing(purchase.listingId?._id || purchase.listingId);
 
     if (listing) {
-      return buildPurchaseDownloadFile(listing);
+      const file = await buildPurchaseDownloadFile(listing);
+      return buildPersonalizedDownloadFile(file, purchase, listing);
     }
 
-    return buildDirectSourceDownloadFile(purchase);
+    const file = await buildDirectSourceDownloadFile(purchase);
+    return buildPersonalizedDownloadFile(file, purchase, purchase.listingId);
   },
 
   async getGuestPurchaseDownload(purchaseId, guestToken) {
@@ -180,9 +211,11 @@ export const purchaseService = {
     const listing = await findDownloadableListing(purchase.listingId?._id || purchase.listingId);
 
     if (listing) {
-      return buildPurchaseDownloadFile(listing);
+      const file = await buildPurchaseDownloadFile(listing);
+      return buildPersonalizedDownloadFile(file, purchase, listing);
     }
 
-    return buildDirectSourceDownloadFile(purchase);
+    const file = await buildDirectSourceDownloadFile(purchase);
+    return buildPersonalizedDownloadFile(file, purchase, purchase.listingId);
   },
 };

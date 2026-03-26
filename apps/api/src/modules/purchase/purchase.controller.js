@@ -14,6 +14,11 @@ export const purchaseController = {
     const file = await purchaseService.getPurchaseDownload(req.auth.userId, req.params.id);
     res.setHeader("Cache-Control", "private, no-store, max-age=0");
     res.setHeader("Pragma", "no-cache");
+    if (file.buffer) {
+      res.type(file.contentType || "application/pdf");
+      res.attachment(file.downloadName);
+      return res.send(file.buffer);
+    }
     return res.download(file.absolutePath, file.downloadName);
   },
   async downloadGuestPurchase(req, res) {
@@ -21,6 +26,11 @@ export const purchaseController = {
     const file = await purchaseService.getGuestPurchaseDownload(req.params.id, token);
     res.setHeader("Cache-Control", "private, no-store, max-age=0");
     res.setHeader("Pragma", "no-cache");
+    if (file.buffer) {
+      res.type(file.contentType || "application/pdf");
+      res.attachment(file.downloadName);
+      return res.send(file.buffer);
+    }
     return res.download(file.absolutePath, file.downloadName);
   },
 };

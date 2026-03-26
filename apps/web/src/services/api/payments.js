@@ -43,11 +43,11 @@ export function getPrivatePdfPaymentStatus(accessToken, generationId) {
   });
 }
 
-export function createMarketplaceOrder(accessToken, listingId) {
+export function createMarketplaceOrder(accessToken, listingId, fullName) {
   return apiRequest("/payments/marketplace-order", {
     method: "POST",
     headers: authHeaders(accessToken),
-    body: JSON.stringify({ listingId }),
+    body: JSON.stringify({ listingId, fullName }),
   });
 }
 

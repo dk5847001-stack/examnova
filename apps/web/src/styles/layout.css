@@ -44,9 +44,19 @@
   padding: 0 6px 24px;
 }
 
+.public-shell-detail {
+  width: 100%;
+  padding: 0 0 24px;
+}
+
 .page-shell-wide {
   margin-top: 10px;
   gap: 12px;
+}
+
+.page-shell-detail {
+  margin-top: 0;
+  gap: 0;
 }
 
 .public-utility-bar,
@@ -141,15 +151,22 @@
 }
 
 .bootstrap-nav-shell {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem 1.4rem;
-  flex-wrap: wrap;
 }
 
 .bootstrap-nav-shell .min-w-0 {
   min-width: 0;
+}
+
+.bootstrap-nav-top {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .bootstrap-brand {
@@ -216,12 +233,42 @@
   background: rgba(19, 32, 56, 0.84);
 }
 
-.bootstrap-nav-actions {
+.bootstrap-nav-menu {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
   gap: 0.75rem;
+}
+
+.bootstrap-nav-toggler {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 16px;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-theme-toggle);
+  color: var(--ink);
+  box-shadow: 0 12px 22px rgba(18, 47, 98, 0.08);
+}
+
+.bootstrap-nav-toggler .navbar-toggler-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  display: block;
+  background-image:
+    linear-gradient(currentColor 0 0),
+    linear-gradient(currentColor 0 0),
+    linear-gradient(currentColor 0 0);
+  background-repeat: no-repeat;
+  background-position:
+    center 0.16rem,
+    center center,
+    center calc(100% - 0.16rem);
+  background-size: 100% 2px;
 }
 
 .bootstrap-nav-button,
@@ -1129,10 +1176,37 @@
   }
 
   .bootstrap-nav-shell {
+    grid-template-columns: 1fr;
     align-items: stretch;
   }
 
-  .bootstrap-nav-actions,
+  .bootstrap-nav-top {
+    flex-wrap: wrap;
+  }
+
+  .bootstrap-nav-toggler {
+    display: inline-flex;
+    flex: 0 0 auto;
+  }
+
+  .bootstrap-nav-summary {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .bootstrap-nav-menu {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .bootstrap-nav-menu.open {
+    display: flex;
+  }
+
+  .bootstrap-nav-menu,
   .bootstrap-footer-bottom-actions {
     justify-content: flex-start;
   }
@@ -1207,6 +1281,10 @@
     border-radius: 0 0 24px 24px;
   }
 
+  .public-shell-detail {
+    padding-bottom: 18px;
+  }
+
   .topbar,
   .footer-bar,
   .auth-panel,
@@ -1271,6 +1349,10 @@
   .bootstrap-footer-button {
     width: 100%;
     flex: 1 1 100%;
+  }
+
+  .bootstrap-nav-top {
+    align-items: flex-start;
   }
 
   .bootstrap-footer-card {
