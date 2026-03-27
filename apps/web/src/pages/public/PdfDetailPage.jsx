@@ -556,18 +556,9 @@ export function PdfDetailPage() {
         <div className="pdf-checkout-panel-stack">
           <div className="pdf-checkout-copy-block"><p className="eyebrow">Step 1</p><h2>Enter name, pay, and auto-download</h2><p className="support-copy">One compact secure step for buyer name, Razorpay payment, and automatic PDF download.</p></div>
           <label className="field"><span>Full name</span><input autoComplete="name" className="input" disabled={isPurchasing} onChange={(event) => setGuestFullName(event.target.value)} placeholder="Enter your full name" type="text" value={guestFullName} /></label>
-          <div className="pdf-checkout-inline-hero">
-            <div className="pdf-checkout-inline-metric"><span className="info-label">Selected PDF</span><strong>{listing?.title || "PDF"}</strong></div>
-            <div className="pdf-checkout-inline-metric"><span className="info-label">Amount</span><strong>Rs. {listing?.priceInr || 0}</strong></div>
-          </div>
+         
           {releaseLocked ? <div className="simple-release-lock-card"><span className="info-label">Scheduled release</span><strong>{formatMarketplaceDate(listing?.releaseAt)}</strong>{releaseCountdown ? <strong className="simple-release-countdown">{releaseCountdown.shortLabel}</strong> : null}</div> : null}
-          <div className="pdf-checkout-fibre-note">
-            <span className="pdf-checkout-fibre-dot" />
-            <div>
-              <strong>Secure chain</strong>
-              <p>Name attaches to the PDF, payment verifies securely, and the file starts downloading automatically.</p>
-            </div>
-          </div>
+          
           {feedback.message ? <div className="stack-section"><p className={feedback.type === "error" ? "form-error" : "form-success"}>{feedback.message}</p>{feedback.detail ? <p className="support-copy">{feedback.detail}</p> : null}</div> : null}
           <div className="pdf-checkout-actions">
             <button className="button secondary" onClick={closeCheckoutWizard} type="button"><i className="bi bi-arrow-left" />Back</button>
