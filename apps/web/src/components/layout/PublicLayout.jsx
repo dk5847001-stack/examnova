@@ -10,6 +10,12 @@ import {
   normalizeModeAccess,
 } from "../../utils/modes.js";
 
+const MODE_ICON_MAP = {
+  [PLATFORM_MODES.SIMPLE]: "bi-lightning-charge-fill",
+  [PLATFORM_MODES.PROFESSIONAL]: "bi-briefcase-fill",
+  [PLATFORM_MODES.DEVELOPER]: "bi-code-slash",
+};
+
 function buildSettingsPayload(user, nextMode) {
   return {
     emailNotifications: user?.preferences?.emailNotifications ?? true,
@@ -33,17 +39,10 @@ function createPublicSections({ isAuthenticated, isAdminSession, modeAccess }) {
         },
         {
           type: "anchor",
-          href: "#mode-switcher",
-          icon: "bi-layers-fill",
-          label: "Modes",
-          meta: "Simple, Professional, Developer",
-        },
-        {
-          type: "anchor",
           href: "#public-footer",
           icon: "bi-info-circle-fill",
           label: "How it works",
-          meta: "See the quick PDF flow",
+          meta: "See the simple PDF flow",
         },
       ],
     },
@@ -58,14 +57,14 @@ function createPublicSections({ isAuthenticated, isAdminSession, modeAccess }) {
           to: "/login",
           icon: "bi-box-arrow-in-right",
           label: "Login",
-          meta: "Continue with your existing account",
+          meta: "Continue with your account",
         },
         {
           type: "link",
           to: "/signup",
           icon: "bi-person-plus-fill",
           label: "Register",
-          meta: "Create a new ExamNova account",
+          meta: "Create a new account",
         },
       ],
     });
@@ -89,14 +88,14 @@ function createPublicSections({ isAuthenticated, isAdminSession, modeAccess }) {
           to: "/admin/uploads",
           icon: "bi-cloud-arrow-up-fill",
           label: "Uploads",
-          meta: "Manage admin-owned PDFs",
+          meta: "Manage admin PDFs",
         },
         {
           type: "link",
           to: "/admin/listings",
           icon: "bi-journal-richtext",
           label: "Listings",
-          meta: "Moderate marketplace catalog",
+          meta: "Moderate marketplace items",
         },
       ],
     });
@@ -119,14 +118,14 @@ function createPublicSections({ isAuthenticated, isAdminSession, modeAccess }) {
         to: "/app/purchased-pdfs",
         icon: "bi-bag-check-fill",
         label: "Purchased PDFs",
-        meta: "See downloaded and paid PDFs",
+        meta: "See paid downloads",
       },
       {
         type: "link",
         to: "/app/upload-generate",
         icon: "bi-magic",
         label: "AI workflow",
-        meta: "Upload and generate AI PDFs",
+        meta: "Generate new PDFs",
       },
     ],
   });
@@ -154,7 +153,7 @@ function createPublicSections({ isAuthenticated, isAdminSession, modeAccess }) {
             to: "/app/withdrawals",
             icon: "bi-cash-stack",
             label: "Withdrawals",
-            meta: "Request payout to bank or UPI",
+            meta: "Request seller payout",
           },
         ]
       : [
@@ -163,12 +162,67 @@ function createPublicSections({ isAuthenticated, isAdminSession, modeAccess }) {
             to: "/app/settings#mode-access",
             icon: "bi-lock-fill",
             label: "Unlock developer",
-            meta: "Enable public selling tools",
+            meta: "Enable listing and seller tools",
           },
         ],
   });
 
   return sections;
+}
+
+function getModeActionConfig({
+  activeMode,
+  isAdminSession,
+  isAuthenticated,
+  mode,
+  modeAccess,
+}) {
+  if (!mode) {
+    return {
+      label: "Switch now",
+      icon: "bi-arrow-repeat",
+    };
+  }
+
+  if (mode.id === PLATFORM_MODES.SIMPLE) {
+    return {
+      label: activeMode === PLATFORM_MODES.SIMPLE ? "Open marketplace" : "Switch now",
+      icon: "bi-lightning-charge-fill",
+    };
+  }
+
+  if (!isAuthenticated) {
+    return {
+      label: mode.id === PLATFORM_MODES.DEVELOPER ? "Register to continue" : "Login to continue",
+      icon: mode.id === PLATFORM_MODES.DEVELOPER ? "bi-person-plus-fill" : "bi-box-arrow-in-right",
+    };
+  }
+
+  if (isAdminSession) {
+    return {
+      label: "Open admin center",
+      icon: "bi-speedometer2",
+    };
+  }
+
+  if (mode.id === PLATFORM_MODES.DEVELOPER && !modeAccess.developerUnlocked) {
+    return {
+      label: `Unlock for Rs. ${modeAccess.developerUnlockAmountInr}`,
+      icon: "bi-unlock-fill",
+    };
+  }
+
+  if (mode.id === activeMode) {
+    return {
+      label: "Open current mode",
+      icon: "bi-check-circle-fill",
+    };
+  }
+
+  return {
+    label: "Switch now",
+    icon: "bi-arrow-repeat",
+  };
 }
 
 export function PublicLayout() {
@@ -182,6 +236,8 @@ export function PublicLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isModeModalOpen, setIsModeModalOpen] = useState(false);
+  const [selectedModeId, setSelectedModeId] = useState("");
   const [isModeSwitching, setIsModeSwitching] = useState(false);
   const [modeFeedback, setModeFeedback] = useState({ type: "", message: "" });
 
@@ -201,9 +257,19 @@ export function PublicLayout() {
     () => createPublicSections({ isAuthenticated, isAdminSession, modeAccess }),
     [isAdminSession, isAuthenticated, modeAccess],
   );
+  const selectedMode = MODE_CATALOG.find((mode) => mode.id === selectedModeId) || null;
+  const modeAction = getModeActionConfig({
+    activeMode,
+    isAdminSession,
+    isAuthenticated,
+    mode: selectedMode,
+    modeAccess,
+  });
 
   useEffect(() => {
     setIsSidebarOpen(false);
+    setIsModeModalOpen(false);
+    setSelectedModeId("");
     setModeFeedback({ type: "", message: "" });
   }, [location.pathname]);
 
@@ -213,14 +279,29 @@ export function PublicLayout() {
     }
 
     const previousOverflow = document.body.style.overflow;
-    if (isSidebarOpen) {
+    if (isSidebarOpen || isModeModalOpen) {
       document.body.style.overflow = "hidden";
     }
 
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isSidebarOpen]);
+  }, [isModeModalOpen, isSidebarOpen]);
+
+  function openModeModal(modeId) {
+    setSelectedModeId(modeId);
+    setModeFeedback({ type: "", message: "" });
+    setIsSidebarOpen(false);
+    setIsModeModalOpen(true);
+  }
+
+  function closeModeModal() {
+    if (isModeSwitching) {
+      return;
+    }
+    setIsModeModalOpen(false);
+    setSelectedModeId("");
+  }
 
   async function handleModeSelect(nextMode) {
     setModeFeedback({ type: "", message: "" });
@@ -228,25 +309,25 @@ export function PublicLayout() {
     if (nextMode === PLATFORM_MODES.SIMPLE) {
       navigate("/marketplace");
       setIsSidebarOpen(false);
-      return;
+      return true;
     }
 
     if (!isAuthenticated) {
       navigate(nextMode === PLATFORM_MODES.DEVELOPER ? "/signup" : "/login");
       setIsSidebarOpen(false);
-      return;
+      return true;
     }
 
     if (isAdminSession) {
       navigate("/admin/profile");
       setIsSidebarOpen(false);
-      return;
+      return true;
     }
 
     if (nextMode === PLATFORM_MODES.DEVELOPER && !modeAccess.developerUnlocked) {
       navigate("/app/settings#mode-access");
       setIsSidebarOpen(false);
-      return;
+      return true;
     }
 
     if (nextMode !== modeAccess.currentMode) {
@@ -264,7 +345,7 @@ export function PublicLayout() {
           message: error.message || "Unable to switch mode right now.",
         });
         setIsModeSwitching(false);
-        return;
+        return false;
       } finally {
         setIsModeSwitching(false);
       }
@@ -272,6 +353,18 @@ export function PublicLayout() {
 
     navigate(nextMode === PLATFORM_MODES.DEVELOPER ? "/app/listed-pdfs" : "/app/profile");
     setIsSidebarOpen(false);
+    return true;
+  }
+
+  async function handleModeAction() {
+    if (!selectedMode) {
+      return;
+    }
+
+    const switched = await handleModeSelect(selectedMode.id);
+    if (switched) {
+      closeModeModal();
+    }
   }
 
   async function handleLogout() {
@@ -316,7 +409,7 @@ export function PublicLayout() {
 
           <div className="public-mobile-navbar-bottom">
             <p className="public-mobile-navbar-copy">
-              Mobile-first PDF browsing, secure payment, and clean mode access for students.
+              Fast mobile-first PDF browsing with secure payment and simple account access.
             </p>
             <div className="public-mobile-auth-actions">
               {isAuthenticated ? (
@@ -347,49 +440,6 @@ export function PublicLayout() {
         </div>
       </header>
 
-      <section className="public-mode-strip" id="mode-switcher">
-        <div className="public-mode-strip-head">
-          <div>
-            <p className="eyebrow">Choose mode</p>
-            <h2>Simple, Professional, or Developer</h2>
-          </div>
-          <button className="public-sidebar-link-button" onClick={() => setIsSidebarOpen(true)} type="button">
-            <i className="bi bi-grid-3x3-gap-fill" />
-            Extra features
-          </button>
-        </div>
-
-        <div className="public-mode-strip-grid">
-          {MODE_CATALOG.map((mode) => {
-            const isActive = activeMode === mode.id;
-            const isLocked =
-              mode.id === PLATFORM_MODES.DEVELOPER && isAuthenticated && !isAdminSession && !modeAccess.developerUnlocked;
-
-            return (
-              <button
-                className={`public-mode-card${isActive ? " active" : ""}`}
-                disabled={isModeSwitching}
-                key={mode.id}
-                onClick={() => handleModeSelect(mode.id)}
-                type="button"
-              >
-                <div className="public-mode-card-top">
-                  <strong>{mode.label}</strong>
-                  <span className={`public-mode-badge${isActive ? " active" : ""}`}>
-                    {isLocked ? "Locked" : isActive ? "Active" : mode.badge}
-                  </span>
-                </div>
-                <p>{mode.description}</p>
-              </button>
-            );
-          })}
-        </div>
-
-        {modeFeedback.message ? (
-          <p className={modeFeedback.type === "error" ? "form-error" : "form-success"}>{modeFeedback.message}</p>
-        ) : null}
-      </section>
-
       <main className={`page-shell${isWidePublicPage ? " page-shell-wide" : ""}${isPdfDetailPage ? " page-shell-detail" : ""}`}>
         <Outlet />
       </main>
@@ -399,17 +449,17 @@ export function PublicLayout() {
           <div className="public-mobile-footer-hero">
             <div>
               <p className="eyebrow">ExamNova AI</p>
-              <h3>One clean mobile-first place to browse, pay, and download PDFs.</h3>
+              <h3>Browse PDFs, pay safely, and download from one clean mobile-friendly flow.</h3>
             </div>
             <div className="public-mobile-footer-hero-actions">
               <Link className="btn btn-primary public-mobile-footer-button" to="/marketplace">
                 <i className="bi bi-search" />
                 Browse PDFs
               </Link>
-              <Link className="btn btn-outline-secondary public-mobile-footer-button" to={accountHref}>
-                <i className={`bi ${isAuthenticated ? "bi-person-circle" : "bi-box-arrow-in-right"}`} />
-                {accountLabel}
-              </Link>
+              <button className="btn btn-outline-secondary public-mobile-footer-button" onClick={() => setIsSidebarOpen(true)} type="button">
+                <i className="bi bi-grid-3x3-gap-fill" />
+                Open menu
+              </button>
             </div>
           </div>
 
@@ -417,28 +467,28 @@ export function PublicLayout() {
             <article className="public-mobile-footer-panel">
               <span className="public-mobile-footer-label">Quick links</span>
               <Link to="/marketplace">Marketplace</Link>
-              <a href="#mode-switcher">Mode switch</a>
-              <a href="#public-footer">Download flow</a>
+              <Link to={accountHref}>{accountLabel}</Link>
+              {!isAuthenticated ? <Link to="/signup">Create account</Link> : null}
             </article>
             <article className="public-mobile-footer-panel">
-              <span className="public-mobile-footer-label">Flow</span>
-              <p>1. Open a PDF</p>
+              <span className="public-mobile-footer-label">Download flow</span>
+              <p>1. Open any PDF card</p>
               <p>2. Enter your full name</p>
               <p>3. Pay and download securely</p>
             </article>
             <article className="public-mobile-footer-panel">
-              <span className="public-mobile-footer-label">Why it feels simple</span>
+              <span className="public-mobile-footer-label">Built for mobile</span>
               <div className="public-mobile-footer-chips">
-                <span>Mobile first</span>
-                <span>Login optional</span>
-                <span>Secure payment</span>
-                <span>Mode-aware</span>
+                <span>Compact navbar</span>
+                <span>Sidebar tools</span>
+                <span>Secure checkout</span>
+                <span>Dark mode</span>
               </div>
             </article>
           </div>
 
           <div className="public-mobile-footer-bottom">
-            <p>Public website stays focused on PDF discovery first. Extra tools stay inside mode access and sidebar navigation.</p>
+            <p>Public website stays focused on PDF discovery. Extra features now live inside the sidebar instead of cluttering the main page.</p>
             <ThemeToggleButton compact className="public-mobile-theme-toggle footer-theme-toggle" />
           </div>
         </div>
@@ -498,24 +548,89 @@ export function PublicLayout() {
           ))}
 
           <section className="public-sidebar-section public-sidebar-mode-section">
-            <span className="public-sidebar-section-title">Modes</span>
+            <span className="public-sidebar-section-title">Switch mode</span>
             <div className="public-sidebar-mode-list">
               {MODE_CATALOG.map((mode) => (
                 <button
                   className={`public-sidebar-mode-item${activeMode === mode.id ? " active" : ""}`}
                   disabled={isModeSwitching}
                   key={mode.id}
-                  onClick={() => handleModeSelect(mode.id)}
+                  onClick={() => openModeModal(mode.id)}
                   type="button"
                 >
                   <strong>{mode.label}</strong>
-                  <small>{mode.badge}</small>
+                  <small>{activeMode === mode.id ? "Current mode" : mode.badge}</small>
                 </button>
               ))}
             </div>
           </section>
         </div>
       </aside>
+
+      {isModeModalOpen && selectedMode ? (
+        <div className="public-mode-modal-overlay" onClick={closeModeModal}>
+          <div className="public-mode-modal" onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="public-mode-modal-title">
+            <button className="public-mode-modal-close" onClick={closeModeModal} type="button">
+              <i className="bi bi-x-lg" />
+            </button>
+
+            <div className="public-mode-modal-icon-wrap">
+              <span className={`public-mode-modal-icon ${selectedMode.id}`}>
+                <i className={`bi ${MODE_ICON_MAP[selectedMode.id] || "bi-stars"}`} />
+              </span>
+              <span className="public-mode-modal-badge">{selectedMode.badge}</span>
+            </div>
+
+            <div className="public-mode-modal-copy">
+              <p className="eyebrow">Mode details</p>
+              <h3 id="public-mode-modal-title">{selectedMode.label}</h3>
+              <p>{selectedMode.description}</p>
+            </div>
+
+            <div className="public-mode-modal-meta">
+              <div>
+                <span className="info-label">Current mode</span>
+                <strong>{MODE_LABELS[activeMode]}</strong>
+              </div>
+              <div>
+                <span className="info-label">Access</span>
+                <strong>
+                  {selectedMode.id === PLATFORM_MODES.DEVELOPER && isAuthenticated && !isAdminSession && !modeAccess.developerUnlocked
+                    ? "Locked"
+                    : "Available"}
+                </strong>
+              </div>
+            </div>
+
+            <div className="public-mode-feature-list">
+              {selectedMode.features.map((feature) => (
+                <div className="public-mode-feature-item" key={feature}>
+                  <i className="bi bi-check2-circle" />
+                  <span>{feature}</span>
+                </div>
+              ))}
+            </div>
+
+            {modeFeedback.message ? (
+              <p className={modeFeedback.type === "error" ? "form-error" : "form-success"}>{modeFeedback.message}</p>
+            ) : null}
+
+            <div className="public-mode-modal-actions">
+              <button className="btn btn-outline-secondary public-mode-modal-button" onClick={closeModeModal} type="button">
+                Cancel
+              </button>
+              <button
+                className={`btn btn-primary public-mode-modal-button public-mode-switch-button${isModeSwitching ? " is-switching" : ""}`}
+                onClick={handleModeAction}
+                type="button"
+              >
+                <i className={`bi ${modeAction.icon}`} />
+                {modeAction.label}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

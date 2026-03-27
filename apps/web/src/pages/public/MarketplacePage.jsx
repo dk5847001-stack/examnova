@@ -115,32 +115,29 @@ export function MarketplacePage() {
         </div>
 
         <form className="detail-card simple-marketplace-toolbar" onSubmit={(event) => event.preventDefault()}>
-          <div className="simple-marketplace-toolbar-head">
-            <SectionHeader
-              eyebrow="Browse PDFs"
-              title={`${isLoading ? "Loading..." : totalListings} PDF${totalListings === 1 ? "" : "s"} ready to review`}
-              description="Use filters only if you need them. Live PDFs are ready to download now, and upcoming PDFs show their release countdown on the same page."
-            />
-            {hasActiveFilters ? (
-              <button className="button ghost" onClick={handleResetFilters} type="button">
-                <i className="bi bi-arrow-counterclockwise" />
-                Clear filters
-              </button>
-            ) : null}
+          <div className="simple-marketplace-toolbar-head compact">
+            <div>
+              <p className="eyebrow">Browse PDFs</p>
+              <h2>{isLoading ? "Loading PDFs..." : `${totalListings} PDF${totalListings === 1 ? "" : "s"} ready`}</h2>
+            </div>
           </div>
 
-          <div className="simple-marketplace-toolbar-grid">
-            <label className="field">
-              <span>Search</span>
+          <label className="field simple-marketplace-search-field">
+            <span className="visually-hidden">Search PDFs</span>
+            <div className="simple-marketplace-search-input">
+              <i className="bi bi-search" />
               <input
                 className="input"
                 onChange={(event) => handleFilterChange("search", event.target.value)}
                 placeholder="Search by title or subject"
                 value={filters.search}
               />
-            </label>
-            <label className="field">
-              <span>University</span>
+            </div>
+          </label>
+
+          <div className="simple-marketplace-mini-filters">
+            <label className="simple-mini-filter">
+              <i className="bi bi-building" />
               <select className="input" onChange={(event) => handleFilterChange("university", event.target.value)} value={filters.university}>
                 {universityOptions.map((option) => (
                   <option key={option.value || "all-university"} value={option.value}>
@@ -149,8 +146,8 @@ export function MarketplacePage() {
                 ))}
               </select>
             </label>
-            <label className="field">
-              <span>Branch</span>
+            <label className="simple-mini-filter">
+              <i className="bi bi-diagram-3-fill" />
               <select className="input" onChange={(event) => handleFilterChange("branch", event.target.value)} value={filters.branch}>
                 {branchOptions.map((option) => (
                   <option key={option.value || "all-branch"} value={option.value}>
@@ -159,8 +156,8 @@ export function MarketplacePage() {
                 ))}
               </select>
             </label>
-            <label className="field">
-              <span>Year</span>
+            <label className="simple-mini-filter">
+              <i className="bi bi-calendar4-event" />
               <select className="input" onChange={(event) => handleFilterChange("year", event.target.value)} value={filters.year}>
                 {yearOptions.map((option) => (
                   <option key={option.value || "all-year"} value={option.value}>
@@ -169,8 +166,8 @@ export function MarketplacePage() {
                 ))}
               </select>
             </label>
-            <label className="field">
-              <span>Semester</span>
+            <label className="simple-mini-filter">
+              <i className="bi bi-collection-fill" />
               <select className="input" onChange={(event) => handleFilterChange("semester", event.target.value)} value={filters.semester}>
                 {semesterOptions.map((option) => (
                   <option key={option.value || "all-semester"} value={option.value}>
@@ -179,24 +176,21 @@ export function MarketplacePage() {
                 ))}
               </select>
             </label>
-            <label className="field">
-              <span>Subject</span>
-              <input
-                className="input"
-                onChange={(event) => handleFilterChange("subject", event.target.value)}
-                placeholder="Example: Operating Systems"
-                value={filters.subject}
-              />
-            </label>
-            <label className="field">
-              <span>Sort</span>
+            <label className="simple-mini-filter">
+              <i className="bi bi-sort-down" />
               <select className="input" onChange={(event) => handleFilterChange("sort", event.target.value)} value={filters.sort}>
                 <option value="latest">Latest</option>
                 <option value="popularity">Popularity</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
+                <option value="price_asc">Price Low-High</option>
+                <option value="price_desc">Price High-Low</option>
               </select>
             </label>
+            {hasActiveFilters ? (
+              <button className="simple-mini-filter action" onClick={handleResetFilters} type="button">
+                <i className="bi bi-arrow-counterclockwise" />
+                <span>Reset</span>
+              </button>
+            ) : null}
           </div>
         </form>
 
