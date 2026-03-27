@@ -657,12 +657,16 @@ export function PdfDetailPage() {
                 ) : null}
 
                 <button
-                  className="button primary full-width"
+                  className="button primary full-width animated-download-button"
                   disabled={releaseLocked || isPurchasing || isGuestDownloading || isAccountDownloading}
                   onClick={handlePrimaryAction}
                   type="button"
                 >
-                  <i className={`bi ${releaseLocked ? "bi-lock" : "bi-download"}`} />
+                  <i
+                    className={`bi ${releaseLocked ? "bi-lock" : "bi-download"} download-button-icon${
+                      releaseLocked ? " is-locked" : ""
+                    }`}
+                  />
                   {getPrimaryButtonLabel()}
                 </button>
 

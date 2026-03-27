@@ -102,8 +102,12 @@ export function MarketplaceListingCard({ listing, sellerView = false, action = n
         {releaseLocked ? <StatusBadge tone="warning">Upcoming</StatusBadge> : null}
       </div>
       <div className="hero-actions card-actions">
-        <Link className="button secondary full-width" to={`/pdf/${listing.slug}`}>
-          <i className={`bi ${releaseLocked ? "bi-lock" : "bi-download"}`} />
+        <Link className="button secondary full-width animated-download-button" to={`/pdf/${listing.slug}`}>
+          <i
+            className={`bi ${releaseLocked ? "bi-lock" : "bi-download"} download-button-icon${
+              releaseLocked ? " is-locked" : ""
+            }`}
+          />
           Download PDF
         </Link>
         {action}
