@@ -172,7 +172,7 @@ export async function createMarketplaceReceiptDownload({
       .fillColor("#168A63")
       .fontSize(24)
       .font("Helvetica-Bold")
-      .text(amount, 402, 308, { width: 110, align: "right" });
+      .text(INR, 402, 308, { width: 110, align: "right" });
 
     drawMetaCard(document, 42, 402, 246, "Verified at", formatDateTime(verifiedAt));
     drawMetaCard(document, 306, 402, 246, "Payment ID", paymentId);
