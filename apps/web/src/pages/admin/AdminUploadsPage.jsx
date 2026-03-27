@@ -38,7 +38,6 @@ function createBlankAdminUploadForm() {
     difficultyLevel: "",
     intendedAudience: "",
     tags: "",
-    coverImageUrl: "",
     seoTitle: "",
     seoDescription: "",
     visibility: "draft",
@@ -67,7 +66,6 @@ function createAdminUploadForm(item = null) {
     difficultyLevel: item.studyMetadata?.difficultyLevel || "",
     intendedAudience: item.studyMetadata?.intendedAudience || "",
     tags: (item.tags || []).join(", "),
-    coverImageUrl: item.coverImageUrl || "",
     seoTitle: item.seoTitle || "",
     seoDescription: item.seoDescription || "",
     visibility: item.visibility || "draft",
@@ -90,6 +88,9 @@ export function AdminUploadsPage() {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(createBlankAdminUploadForm);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedCoverImage, setSelectedCoverImage] = useState(null);
+  const [coverImagePreviewUrl, setCoverImagePreviewUrl] = useState("");
+  const [currentCoverImageUrl, setCurrentCoverImageUrl] = useState("");
   const [editingId, setEditingId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -125,6 +126,18 @@ export function AdminUploadsPage() {
     };
   }, [accessToken]);
 
+  useEffect(() => {
+    if (!selectedCoverImage) {
+      setCoverImagePreviewUrl("");
+      return undefined;
+    }
+
+    const objectUrl = window.URL.createObjectURL(selectedCoverImage);
+    setCoverImagePreviewUrl(objectUrl);
+
+    return () => window.URL.revokeObjectURL(objectUrl);
+  }, [selectedCoverImage]);
+
   const formTitle = useMemo(
     () => (editingId ? "Edit admin upload" : "Create admin upload"),
     [editingId],
@@ -137,12 +150,16 @@ export function AdminUploadsPage() {
   function startEditing(item) {
     setEditingId(item.id);
     setSelectedFile(null);
+    setSelectedCoverImage(null);
+    setCurrentCoverImageUrl(item.coverImageUrl || "");
     setForm(createAdminUploadForm(item));
   }
 
   function resetForm() {
     setEditingId("");
     setSelectedFile(null);
+    setSelectedCoverImage(null);
+    setCurrentCoverImageUrl("");
     setForm(createBlankAdminUploadForm());
   }
 
@@ -178,6 +195,9 @@ export function AdminUploadsPage() {
         if (selectedFile) {
           payload.append("pdf", selectedFile);
         }
+        if (selectedCoverImage) {
+          payload.append("coverImage", selectedCoverImage);
+        }
 
         const response = await updateAdminUpload(accessToken, editingId, payload);
         setItems((current) => current.map((item) => (item.id === editingId ? response.data.item : item)));
@@ -192,6 +212,9 @@ export function AdminUploadsPage() {
         appendAdminUploadFormData(formData, form);
         if (selectedFile) {
           formData.append("pdf", selectedFile);
+        }
+        if (selectedCoverImage) {
+          formData.append("coverImage", selectedCoverImage);
         }
         const response = await createAdminUpload(accessToken, formData);
         setItems((current) => [response.data.item, ...current]);
@@ -257,6 +280,30 @@ export function AdminUploadsPage() {
               Upload a replacement PDF here if an existing marketplace file is missing or needs to be repaired without changing old purchases.
             </p>
           ) : null}
+          <label className="field">
+            <span>{editingId ? "Replace cover image (optional)" : "Cover image (optional)"}</span>
+            <input
+              accept="image/png,image/jpeg,image/webp,image/avif"
+              className="input"
+              onChange={(event) => setSelectedCoverImage(event.target.files?.[0] || null)}
+              type="file"
+            />
+          </label>
+          <p className="support-copy">
+            This uploaded image will show on marketplace cards and on the public PDF detail page.
+          </p>
+          {coverImagePreviewUrl || currentCoverImageUrl ? (
+            <figure className="cover-upload-preview">
+              <img
+                alt={`${form.title || "PDF"} cover preview`}
+                className="cover-upload-preview-image"
+                src={coverImagePreviewUrl || currentCoverImageUrl}
+              />
+              <figcaption className="support-copy">
+                {selectedCoverImage ? "Selected cover image preview" : "Current marketplace cover image"}
+              </figcaption>
+            </figure>
+          ) : null}
           <label className="field"><span>Title</span><input className="input" onChange={(event) => handleChange("title", event.target.value)} placeholder="Example: DBMS End-Sem Important Questions" required value={form.title} /></label>
           <div className="two-column-grid compact">
             <label className="field"><span>Price (Rs.)</span><input className="input" max={MARKETPLACE_PRICE_RANGE.max} min={MARKETPLACE_PRICE_RANGE.min} onChange={(event) => handleChange("priceInr", event.target.value)} type="number" value={form.priceInr} /></label>
@@ -292,7 +339,6 @@ export function AdminUploadsPage() {
           <details className="guided-disclosure" open={Boolean(editingId)}>
             <summary>Optional marketplace polish</summary>
             <div className="stack-section">
-              <label className="field"><span>Cover image URL</span><input className="input" onChange={(event) => handleChange("coverImageUrl", event.target.value)} value={form.coverImageUrl} /></label>
               <label className="field"><span>SEO title</span><input className="input" onChange={(event) => handleChange("seoTitle", event.target.value)} value={form.seoTitle} /></label>
               <label className="field"><span>SEO description</span><textarea className="input" onChange={(event) => handleChange("seoDescription", event.target.value)} rows={3} value={form.seoDescription} /></label>
               <label className="checkbox-row">

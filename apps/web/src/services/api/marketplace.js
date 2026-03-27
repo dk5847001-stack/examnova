@@ -43,7 +43,7 @@ export function createMarketplaceListing(accessToken, payload) {
   return apiRequest("/marketplace/listings", {
     method: "POST",
     headers: authHeaders(accessToken),
-    body: JSON.stringify(payload),
+    body: payload instanceof FormData ? payload : JSON.stringify(payload),
   });
 }
 
@@ -51,6 +51,6 @@ export function updateMarketplaceListing(accessToken, listingId, payload) {
   return apiRequest(`/marketplace/listings/${listingId}`, {
     method: "PATCH",
     headers: authHeaders(accessToken),
-    body: JSON.stringify(payload),
+    body: payload instanceof FormData ? payload : JSON.stringify(payload),
   });
 }

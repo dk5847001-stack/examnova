@@ -1,5 +1,7 @@
+import { createStorageClient } from "../../lib/index.js";
 import { GeneratedPdf, MarketplaceListing } from "../../models/index.js";
 import { ApiError } from "../../utils/ApiError.js";
+import { buildPublicMediaUrl } from "../../utils/publicAssetUrl.js";
 import { slugify } from "../../utils/slugify.js";
 import {
   normalizeAcademicTaxonomy,
@@ -17,6 +19,7 @@ const MIN_PRICE = 4;
 const MAX_PRICE = 10;
 const ALLOWED_VISIBILITY = new Set(["draft", "published", "unlisted"]);
 const ALLOWED_SORTS = new Set(["latest", "price_asc", "price_desc", "popularity"]);
+const storageClient = createStorageClient();
 
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -94,7 +97,11 @@ function normalizeTaxonomy(payload) {
   return normalizeAcademicTaxonomy(payload || {});
 }
 
-function serializeListing(record) {
+function resolveCoverImageUrl(record, req) {
+  return buildPublicMediaUrl(req, record?.coverImageStorageKey, record?.coverImageUrl || "");
+}
+
+function serializeListing(record, req = null) {
   return {
     id: record._id.toString(),
     sellerId: record.sellerId?._id?.toString?.() || record.sellerId?.toString?.() || null,
@@ -115,7 +122,7 @@ function serializeListing(record) {
     isPublished: Boolean(record.isPublished),
     taxonomy: record.taxonomy,
     studyMetadata: record.studyMetadata || {},
-    coverImageUrl: record.coverImageUrl || "",
+    coverImageUrl: resolveCoverImageUrl(record, req),
     previewImages: record.previewImages || [],
     tags: record.tags || [],
     seoTitle: record.seoTitle || "",
@@ -177,7 +184,7 @@ export const marketplaceService = {
     }));
   },
 
-  async createListing(userId, payload) {
+  async createListing(userId, payload, req, coverImageFile = null) {
     const generation = await ensureEligibleGeneratedPdf(userId, payload.generatedPdfId);
 
     const existing = await MarketplaceListing.findOne({
@@ -196,6 +203,13 @@ export const marketplaceService = {
     const studyMetadata = payload.studyMetadata || normalizeStudyMetadata(payload || {});
     const releaseAt = normalizeReleaseAt(payload.releaseAt);
     const slug = await buildUniqueSlug(`${title}-${taxonomy.subject}-${taxonomy.semester}`);
+    const uploadedCoverImage = coverImageFile
+      ? await storageClient.upload({
+          originalName: coverImageFile.originalname,
+          buffer: coverImageFile.buffer,
+          ownerDirectory: "marketplace-covers",
+        })
+      : null;
 
     const listing = await MarketplaceListing.create({
       sellerId: userId,
@@ -213,6 +227,7 @@ export const marketplaceService = {
       taxonomy,
       studyMetadata,
       tags,
+      coverImageStorageKey: uploadedCoverImage?.storageKey || "",
       coverSeal: normalizeCoverSeal(payload.coverSeal),
       releaseAt,
       seoTitle: normalizeText(payload.seoTitle) || title,
@@ -225,10 +240,10 @@ export const marketplaceService = {
     await generation.save();
 
     const populated = await MarketplaceListing.findById(listing._id).populate("sellerId", "name role sellerProfile");
-    return serializeListing(populated);
+    return serializeListing(populated, req);
   },
 
-  async updateListing(userId, listingId, payload) {
+  async updateListing(userId, listingId, payload, req, coverImageFile = null) {
     const listing = await MarketplaceListing.findOne({ _id: listingId, sellerId: userId }).populate(
       "sellerId",
       "name role sellerProfile",
@@ -245,6 +260,25 @@ export const marketplaceService = {
     const tags = normalizeTags(payload.tags);
     const studyMetadata = payload.studyMetadata || normalizeStudyMetadata(payload || {}) || listing.studyMetadata || {};
     const releaseAt = normalizeReleaseAt(payload.releaseAt);
+
+    if (coverImageFile) {
+      try {
+        if (listing.coverImageStorageKey) {
+          await storageClient.remove(listing.coverImageStorageKey);
+        }
+      } catch {
+        // If the old cover image is already missing, continue with replacement.
+      }
+
+      const uploadedCoverImage = await storageClient.upload({
+        originalName: coverImageFile.originalname,
+        buffer: coverImageFile.buffer,
+        ownerDirectory: "marketplace-covers",
+      });
+
+      listing.coverImageStorageKey = uploadedCoverImage.storageKey;
+      listing.coverImageUrl = "";
+    }
 
     listing.title = title;
     listing.description = description;
@@ -263,18 +297,18 @@ export const marketplaceService = {
     listing.publishedAt = visibility === "published" ? listing.publishedAt || new Date() : null;
     await listing.save();
 
-    return serializeListing(listing);
+    return serializeListing(listing, req);
   },
 
-  async listMyListings(userId) {
+  async listMyListings(userId, req) {
     const listings = await MarketplaceListing.find({ sellerId: userId })
       .populate("sellerId", "name role sellerProfile")
       .sort({ updatedAt: -1 });
 
-    return listings.map(serializeListing);
+    return listings.map((item) => serializeListing(item, req));
   },
 
-  async getPublicListings(filters) {
+  async getPublicListings(filters, req) {
     const page = Math.max(Number(filters.page) || 1, 1);
     const limit = Math.min(Math.max(Number(filters.limit) || 12, 1), 24);
     const now = new Date();
@@ -334,8 +368,8 @@ export const marketplaceService = {
     ]);
 
     return {
-      items: items.map(serializeListing),
-      upcomingItems: upcomingItems.map(serializeListing),
+      items: items.map((item) => serializeListing(item, req)),
+      upcomingItems: upcomingItems.map((item) => serializeListing(item, req)),
       pagination: {
         page,
         limit,
@@ -354,7 +388,7 @@ export const marketplaceService = {
     };
   },
 
-  async getPublicListingDetail(slug) {
+  async getPublicListingDetail(slug, req) {
     const listing = await MarketplaceListing.findOne({
       slug,
       isPublished: true,
@@ -382,8 +416,8 @@ export const marketplaceService = {
       .limit(4);
 
     return {
-      listing: serializeListing(listing),
-      relatedListings: related.map(serializeListing),
+      listing: serializeListing(listing, req),
+      relatedListings: related.map((item) => serializeListing(item, req)),
     };
   },
 };

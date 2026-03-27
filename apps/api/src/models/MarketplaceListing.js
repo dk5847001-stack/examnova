@@ -23,6 +23,7 @@ const marketplaceListingSchema = new mongoose.Schema(
     isPublished: { type: Boolean, default: false, index: true },
     taxonomy: { type: requiredAcademicTaxonomySchema, required: true },
     studyMetadata: { type: studyMetadataSchema, default: () => ({}) },
+    coverImageStorageKey: { type: String, default: "" },
     coverImageUrl: { type: String },
     previewImages: [{ type: String }],
     tags: [{ type: String }],

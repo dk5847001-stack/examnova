@@ -22,6 +22,7 @@ const adminUploadedPdfSchema = new mongoose.Schema(
     taxonomy: { type: requiredAcademicTaxonomySchema, required: true },
     studyMetadata: { type: studyMetadataSchema, default: () => ({}) },
     tags: [{ type: String, trim: true }],
+    coverImageStorageKey: { type: String, default: "" },
     coverImageUrl: { type: String, default: "" },
     seoTitle: { type: String, default: "" },
     seoDescription: { type: String, default: "" },

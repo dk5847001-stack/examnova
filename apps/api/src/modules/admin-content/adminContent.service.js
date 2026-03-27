@@ -7,6 +7,7 @@ import {
 } from "../../models/index.js";
 import { createStorageClient } from "../../lib/index.js";
 import { ApiError } from "../../utils/ApiError.js";
+import { buildPublicMediaUrl } from "../../utils/publicAssetUrl.js";
 import { slugify } from "../../utils/slugify.js";
 import { normalizeAcademicTaxonomy, normalizeStudyMetadata } from "../../utils/academicTaxonomy.js";
 import {
@@ -42,6 +43,10 @@ function normalizeTags(value) {
 
 function normalizeTaxonomy(payload) {
   return normalizeAcademicTaxonomy(payload || {});
+}
+
+function resolveCoverImageUrl(record, req) {
+  return buildPublicMediaUrl(req, record?.coverImageStorageKey, record?.coverImageUrl || "");
 }
 
 function ensurePrice(priceInr) {
@@ -127,7 +132,7 @@ async function buildUniqueUpcomingSlug(baseText, excludeId = null) {
   }
 }
 
-function serializeAdminUpload(record) {
+function serializeAdminUpload(record, req = null) {
   return {
     id: record._id.toString(),
     adminId: record.adminId?._id?.toString?.() || record.adminId?.toString?.() || null,
@@ -143,7 +148,7 @@ function serializeAdminUpload(record) {
     taxonomy: record.taxonomy,
     studyMetadata: record.studyMetadata || {},
     tags: record.tags || [],
-    coverImageUrl: record.coverImageUrl || "",
+    coverImageUrl: resolveCoverImageUrl(record, req),
     seoTitle: record.seoTitle || "",
     seoDescription: record.seoDescription || "",
     visibility: record.visibility,
@@ -158,7 +163,7 @@ function serializeAdminUpload(record) {
   };
 }
 
-function serializeUpcoming(record) {
+function serializeUpcoming(record, req = null) {
   return {
     id: record._id.toString(),
     adminId: record.adminId?._id?.toString?.() || record.adminId?.toString?.() || null,
@@ -170,7 +175,7 @@ function serializeUpcoming(record) {
     summary: record.summary || "",
     taxonomy: record.taxonomy,
     tags: record.tags || [],
-    coverImageUrl: record.coverImageUrl || "",
+    coverImageUrl: resolveCoverImageUrl(record, req),
     coverSeal: record.coverSeal || "",
     isFeatured: Boolean(record.isFeatured),
     visibility: Boolean(record.visibility),
@@ -205,6 +210,7 @@ async function syncListingFromAdminUpload(record) {
     isPublished: visibility === "published",
     taxonomy: record.taxonomy,
     studyMetadata: record.studyMetadata || {},
+    coverImageStorageKey: record.coverImageStorageKey || "",
     coverImageUrl: record.coverImageUrl || "",
     tags: record.tags || [],
     coverSeal: record.coverSeal || "",
@@ -250,15 +256,15 @@ async function createAuditLog(action, actor, req, targetType, targetId, after) {
 }
 
 export const adminContentService = {
-  async listAdminUploads() {
+  async listAdminUploads(req) {
     const items = await AdminUploadedPdf.find({ isDeleted: { $ne: true } })
       .populate("adminId", "name")
       .sort({ createdAt: -1 });
 
-    return items.map(serializeAdminUpload);
+    return items.map((item) => serializeAdminUpload(item, req));
   },
 
-  async createAdminUpload({ actor, payload, file, req }) {
+  async createAdminUpload({ actor, payload, file, coverImageFile = null, req }) {
     if (!file) {
       throw new ApiError(422, "A PDF file is required.");
     }
@@ -270,6 +276,13 @@ export const adminContentService = {
       buffer: file.buffer,
       ownerDirectory: "admin-content",
     });
+    const uploadedCoverImage = coverImageFile
+      ? await storageClient.upload({
+          originalName: coverImageFile.originalname,
+          buffer: coverImageFile.buffer,
+          ownerDirectory: "admin-content-covers",
+        })
+      : null;
 
     const record = await AdminUploadedPdf.create({
       adminId: actor.id || actor._id,
@@ -285,7 +298,8 @@ export const adminContentService = {
       taxonomy,
       studyMetadata: payload.studyMetadata || normalizeStudyMetadata(payload),
       tags: normalizeTags(payload.tags),
-      coverImageUrl: normalizeText(payload.coverImageUrl),
+      coverImageStorageKey: uploadedCoverImage?.storageKey || "",
+      coverImageUrl: uploadedCoverImage ? "" : normalizeText(payload.coverImageUrl),
       coverSeal: normalizeCoverSeal(payload.coverSeal),
       seoTitle: normalizeText(payload.seoTitle),
       seoDescription: normalizeText(payload.seoDescription),
@@ -302,10 +316,10 @@ export const adminContentService = {
     });
 
     const populated = await AdminUploadedPdf.findById(record._id).populate("adminId", "name");
-    return serializeAdminUpload(populated);
+    return serializeAdminUpload(populated, req);
   },
 
-  async updateAdminUpload(uploadId, actor, payload, req, file = null) {
+  async updateAdminUpload(uploadId, actor, payload, req, file = null, coverImageFile = null) {
     const record = await AdminUploadedPdf.findById(uploadId).populate("adminId", "name");
     if (!record) {
       throw new ApiError(404, "Admin-uploaded PDF not found.");
@@ -333,13 +347,31 @@ export const adminContentService = {
       record.storageUrl = uploadedFile.url;
     }
 
+    if (coverImageFile) {
+      try {
+        if (record.coverImageStorageKey) {
+          await storageClient.remove(record.coverImageStorageKey);
+        }
+      } catch {
+        // If the old cover image is already missing, continue with replacement.
+      }
+
+      const uploadedCoverImage = await storageClient.upload({
+        originalName: coverImageFile.originalname,
+        buffer: coverImageFile.buffer,
+        ownerDirectory: "admin-content-covers",
+      });
+
+      record.coverImageStorageKey = uploadedCoverImage.storageKey;
+      record.coverImageUrl = "";
+    }
+
     record.title = normalizeText(payload.title);
     record.description = normalizeText(payload.description);
     record.priceInr = ensurePrice(payload.priceInr);
     record.taxonomy = payload.taxonomy || normalizeTaxonomy(payload);
     record.studyMetadata = payload.studyMetadata || normalizeStudyMetadata(payload);
     record.tags = Array.isArray(payload.tags) ? payload.tags : normalizeTags(payload.tags);
-    record.coverImageUrl = normalizeText(payload.coverImageUrl);
     record.coverSeal = normalizeCoverSeal(payload.coverSeal);
     record.seoTitle = normalizeText(payload.seoTitle);
     record.seoDescription = normalizeText(payload.seoDescription);
@@ -355,7 +387,7 @@ export const adminContentService = {
       visibility: record.visibility,
     });
 
-    return serializeAdminUpload(record);
+    return serializeAdminUpload(record, req);
   },
 
   async deleteAdminUpload(uploadId, actor, req) {
@@ -393,7 +425,7 @@ export const adminContentService = {
     };
   },
 
-  async listUpcomingItems(query = {}) {
+  async listUpcomingItems(query = {}, req = null) {
     const conditions = {};
     if (query.mode === "public") {
       conditions.visibility = true;
@@ -418,14 +450,14 @@ export const adminContentService = {
     const highlightedSemester = normalizeText(query.currentSemester || query.semester);
 
     return items.map((item) => ({
-      ...serializeUpcoming(item),
+      ...serializeUpcoming(item, req),
       semesterMatch: highlightedSemester
         ? normalizeText(item.taxonomy?.semester).toLowerCase() === highlightedSemester.toLowerCase()
         : false,
     }));
   },
 
-  async getUpcomingDetail(slug) {
+  async getUpcomingDetail(slug, req = null) {
     const item = await UpcomingLockedPdf.findOne({
       slug,
       visibility: true,
@@ -437,7 +469,7 @@ export const adminContentService = {
       throw new ApiError(404, "Upcoming locked PDF not found.");
     }
 
-    return serializeUpcoming(item);
+    return serializeUpcoming(item, req);
   },
 
   async createUpcomingItem(actor, payload, req) {
@@ -497,7 +529,7 @@ export const adminContentService = {
     });
 
     const populated = await UpcomingLockedPdf.findById(item._id).populate("adminId", "name");
-    return serializeUpcoming(populated);
+    return serializeUpcoming(populated, req);
   },
 
   async updateUpcomingItem(itemId, actor, payload, req) {
@@ -554,7 +586,7 @@ export const adminContentService = {
       status: item.status,
     });
 
-    return serializeUpcoming(item);
+    return serializeUpcoming(item, req);
   },
 
   async updateUpcomingStatus(itemId, actor, action, req) {
@@ -622,6 +654,6 @@ export const adminContentService = {
       status: item.status,
     });
 
-    return serializeUpcoming(item);
+    return serializeUpcoming(item, req);
   },
 };

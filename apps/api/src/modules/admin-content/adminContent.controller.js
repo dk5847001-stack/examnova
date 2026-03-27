@@ -2,21 +2,29 @@ import { sendSuccess } from "../../utils/apiResponse.js";
 import { adminContentService } from "./adminContent.service.js";
 
 export const adminContentController = {
-  async listAdminUploads(_req, res) {
-    const items = await adminContentService.listAdminUploads();
+  async listAdminUploads(req, res) {
+    const items = await adminContentService.listAdminUploads(req);
     return sendSuccess(res, { items }, "Admin uploaded PDFs fetched successfully.");
   },
   async createAdminUpload(req, res) {
     const item = await adminContentService.createAdminUpload({
       actor: req.user,
       payload: req.body,
-      file: req.file,
+      file: req.files?.pdf?.[0] || null,
+      coverImageFile: req.files?.coverImage?.[0] || null,
       req,
     });
     return sendSuccess(res, { item }, "Admin PDF uploaded successfully.", 201);
   },
   async updateAdminUpload(req, res) {
-    const item = await adminContentService.updateAdminUpload(req.params.id, req.user, req.body, req, req.file);
+    const item = await adminContentService.updateAdminUpload(
+      req.params.id,
+      req.user,
+      req.body,
+      req,
+      req.files?.pdf?.[0] || null,
+      req.files?.coverImage?.[0] || null,
+    );
     return sendSuccess(res, { item }, "Admin uploaded PDF updated successfully.");
   },
   async deleteAdminUpload(req, res) {
@@ -24,7 +32,7 @@ export const adminContentController = {
     return sendSuccess(res, { item }, "Admin uploaded PDF deleted successfully.");
   },
   async listUpcomingItems(req, res) {
-    const items = await adminContentService.listUpcomingItems(req.query);
+    const items = await adminContentService.listUpcomingItems(req.query, req);
     return sendSuccess(res, { items }, "Upcoming locked PDFs fetched successfully.");
   },
   async createUpcomingItem(req, res) {
@@ -40,7 +48,7 @@ export const adminContentController = {
     return sendSuccess(res, { item }, "Upcoming locked PDF status updated successfully.");
   },
   async getUpcomingDetail(req, res) {
-    const item = await adminContentService.getUpcomingDetail(req.params.slug);
+    const item = await adminContentService.getUpcomingDetail(req.params.slug, req);
     return sendSuccess(res, { item }, "Upcoming locked PDF detail fetched successfully.");
   },
 };

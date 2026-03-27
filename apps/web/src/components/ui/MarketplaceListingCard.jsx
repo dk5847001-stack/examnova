@@ -17,6 +17,16 @@ export function MarketplaceListingCard({ listing, sellerView = false, action = n
   const cardDate = formatMarketplaceDate(getListingCardDate(listing));
   const releaseLocked = isListingReleaseLocked(listing, now);
   const countdown = getCountdownParts(listing.releaseAt, now);
+  const coverAlt = `${listing.title || "Marketplace PDF"} cover`;
+  const coverArt = listing.coverImageUrl ? (
+    <div className="simple-card-cover">
+      <img alt={coverAlt} className="simple-card-cover-image" loading="lazy" src={listing.coverImageUrl} />
+    </div>
+  ) : (
+    <div className="marketplace-card-icon simple-card-icon" aria-hidden="true">
+      {iconSeed}
+    </div>
+  );
 
   useEffect(() => {
     if (!listing?.releaseAt) {
@@ -40,9 +50,7 @@ export function MarketplaceListingCard({ listing, sellerView = false, action = n
             {cardDate || "Date pending"}
           </span>
         </div>
-        <div className="marketplace-card-icon simple-card-icon" aria-hidden="true">
-          {iconSeed}
-        </div>
+        {coverArt}
         <div className="marketplace-card-copy simple-card-copy">
           <h3>{listing.title}</h3>
         </div>
@@ -79,9 +87,7 @@ export function MarketplaceListingCard({ listing, sellerView = false, action = n
           {cardDate || "Date pending"}
         </span>
       </div>
-      <div className="marketplace-card-icon simple-card-icon" aria-hidden="true">
-        {iconSeed}
-      </div>
+      {coverArt}
       <div className="marketplace-card-copy simple-card-copy">
         <h3>{listing.title}</h3>
       </div>

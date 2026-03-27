@@ -3,6 +3,7 @@ import { marketplaceController } from "./marketplace.controller.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { requireAuth, requireDeveloperMode } from "../../middleware/auth.middleware.js";
 import { aiActionRateLimiter } from "../../middleware/index.js";
+import { marketplaceCoverImageUpload } from "../../middleware/upload.middleware.js";
 import { validateMarketplaceListing, validateMarketplaceListingUpdate } from "../../validators/index.js";
 
 const router = Router();
@@ -16,6 +17,7 @@ router.post(
   requireAuth,
   requireDeveloperMode,
   aiActionRateLimiter,
+  marketplaceCoverImageUpload,
   validateMarketplaceListing,
   asyncHandler(marketplaceController.createListing),
 );
@@ -24,6 +26,7 @@ router.patch(
   requireAuth,
   requireDeveloperMode,
   aiActionRateLimiter,
+  marketplaceCoverImageUpload,
   validateMarketplaceListingUpdate,
   asyncHandler(marketplaceController.updateListing),
 );

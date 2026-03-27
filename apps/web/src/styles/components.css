@@ -1183,6 +1183,25 @@
     0 18px 32px rgba(12, 28, 62, 0.16);
 }
 
+.simple-card-cover {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-subtle);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 18px 32px rgba(12, 28, 62, 0.14);
+}
+
+.simple-card-cover-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
 .simple-card-copy {
   justify-items: center;
 }
@@ -1288,6 +1307,21 @@
   display: grid;
   gap: 1rem;
   align-content: start;
+}
+
+.simple-pdf-cover {
+  width: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-subtle);
+}
+
+.simple-pdf-cover-image {
+  width: 100%;
+  display: block;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
 }
 
 .simple-pdf-detail-summary-row {
@@ -1626,6 +1660,26 @@
 
 .guided-disclosure > .stack-section {
   padding: 0 1.1rem 1.1rem;
+}
+
+.cover-upload-preview {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0.95rem 1rem;
+  border-radius: 22px;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-subtle);
+}
+
+.cover-upload-preview-image {
+  width: 100%;
+  max-width: 320px;
+  display: block;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
 }
 
 .guided-source-preview {

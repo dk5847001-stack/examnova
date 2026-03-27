@@ -3,7 +3,7 @@ import { adminContentController } from "./adminContent.controller.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { requireAuth, requireRole } from "../../middleware/auth.middleware.js";
 import { adminActionRateLimiter } from "../../middleware/index.js";
-import { singleAdminPdfUpload } from "../../middleware/upload.middleware.js";
+import { adminUploadFieldFiles } from "../../middleware/upload.middleware.js";
 import { USER_ROLES } from "../../constants/app.constants.js";
 import {
   validateAdminUploadCreate,
@@ -19,13 +19,13 @@ router.use(requireAuth, requireRole([USER_ROLES.ADMIN]), adminActionRateLimiter)
 router.get("/uploads", asyncHandler(adminContentController.listAdminUploads));
 router.post(
   "/uploads",
-  singleAdminPdfUpload,
+  adminUploadFieldFiles,
   validateAdminUploadCreate,
   asyncHandler(adminContentController.createAdminUpload),
 );
 router.patch(
   "/uploads/:id",
-  singleAdminPdfUpload,
+  adminUploadFieldFiles,
   validateAdminUploadUpdate,
   asyncHandler(adminContentController.updateAdminUpload),
 );

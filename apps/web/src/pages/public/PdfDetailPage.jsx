@@ -573,6 +573,7 @@ export function PdfDetailPage() {
     listing?.description ||
     "Enter your full name, continue to secure payment, and download this PDF from one clean page.";
   const releaseLabel = formatMarketplaceDate(listing?.releaseAt || listing?.publishedAt || listing?.createdAt);
+  const coverAlt = `${listing?.title || "PDF"} cover`;
 
   return (
     <>
@@ -596,6 +597,11 @@ export function PdfDetailPage() {
 
             <div className="simple-pdf-detail-body">
               <article className="detail-card simple-pdf-detail-summary">
+                {listing?.coverImageUrl ? (
+                  <div className="simple-pdf-cover">
+                    <img alt={coverAlt} className="simple-pdf-cover-image" src={listing.coverImageUrl} />
+                  </div>
+                ) : null}
                 <div className="simple-pdf-detail-summary-row">
                   <div>
                     <span className="info-label">Price</span>

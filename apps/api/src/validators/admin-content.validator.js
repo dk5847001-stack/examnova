@@ -51,7 +51,6 @@ function buildSanitizedPayload(body) {
       difficultyLevel: studyMetadata.difficultyLevel,
       intendedAudience: studyMetadata.intendedAudience,
     },
-    coverImageUrl: normalizeOptionalString(body?.coverImageUrl, { maxLength: 400 }),
     seoTitle: normalizeOptionalString(body?.seoTitle, { maxLength: 160 }),
     seoDescription: normalizeOptionalString(body?.seoDescription, { maxLength: 260 }),
     isFeatured: normalizeBoolean(body?.isFeatured, false),
@@ -63,10 +62,11 @@ function buildSanitizedPayload(body) {
 
 export function validateAdminUploadCreate(req, _res, next) {
   try {
-    if (!req.file) {
+    const pdfFile = req.files?.pdf?.[0];
+    if (!pdfFile) {
       throw new ApiError(422, "A PDF file is required.");
     }
-    if (!looksLikePdf(req.file.buffer)) {
+    if (!looksLikePdf(pdfFile.buffer)) {
       throw new ApiError(415, "Uploaded admin file content is not a valid PDF.");
     }
     req.body = buildSanitizedPayload(req.body || {});

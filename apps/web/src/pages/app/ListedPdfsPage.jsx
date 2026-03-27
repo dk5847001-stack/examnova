@@ -37,11 +37,41 @@ function applyEligiblePdfDefaults(currentForm, selectedPdf) {
   };
 }
 
+function buildMarketplaceListingFormData(form, coverImageFile = null) {
+  const payload = new FormData();
+  payload.append("generatedPdfId", form.generatedPdfId);
+  payload.append("title", form.title);
+  payload.append("description", form.description);
+  payload.append("priceInr", String(form.priceInr));
+  payload.append("university", form.university);
+  payload.append("branch", form.branch);
+  payload.append("year", form.year);
+  payload.append("semester", form.semester);
+  payload.append("subject", form.subject);
+  payload.append("examFocus", form.examFocus);
+  payload.append("questionType", form.questionType);
+  payload.append("difficultyLevel", form.difficultyLevel);
+  payload.append("intendedAudience", form.intendedAudience);
+  payload.append("visibility", form.visibility);
+  payload.append("tags", form.tags);
+  payload.append("releaseAt", form.releaseAt ? new Date(form.releaseAt).toISOString() : "");
+  payload.append("coverSeal", form.coverSeal);
+
+  if (coverImageFile) {
+    payload.append("coverImage", coverImageFile);
+  }
+
+  return payload;
+}
+
 export function ListedPdfsPage() {
   const { accessToken } = useAuth();
   const [eligiblePdfs, setEligiblePdfs] = useState([]);
   const [listings, setListings] = useState([]);
   const [form, setForm] = useState(createInitialMarketplaceForm());
+  const [selectedCoverImage, setSelectedCoverImage] = useState(null);
+  const [coverImagePreviewUrl, setCoverImagePreviewUrl] = useState("");
+  const [currentCoverImageUrl, setCurrentCoverImageUrl] = useState("");
   const [editingId, setEditingId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,6 +114,18 @@ export function ListedPdfsPage() {
     };
   }, [accessToken]);
 
+  useEffect(() => {
+    if (!selectedCoverImage) {
+      setCoverImagePreviewUrl("");
+      return undefined;
+    }
+
+    const objectUrl = window.URL.createObjectURL(selectedCoverImage);
+    setCoverImagePreviewUrl(objectUrl);
+
+    return () => window.URL.revokeObjectURL(objectUrl);
+  }, [selectedCoverImage]);
+
   function handleChange(field, value) {
     setForm((current) => {
       if (field !== "generatedPdfId" || editingId) {
@@ -110,25 +152,7 @@ export function ListedPdfsPage() {
     setFeedback({ type: "", message: "" });
     setIsSubmitting(true);
 
-    const payload = {
-      generatedPdfId: form.generatedPdfId,
-      title: form.title,
-      description: form.description,
-      priceInr: Number(form.priceInr),
-      university: form.university,
-      branch: form.branch,
-      year: form.year,
-      semester: form.semester,
-      subject: form.subject,
-      examFocus: form.examFocus,
-      questionType: form.questionType,
-      difficultyLevel: form.difficultyLevel,
-      intendedAudience: form.intendedAudience,
-      visibility: form.visibility,
-      tags: form.tags.split(",").map((item) => item.trim()).filter(Boolean),
-      releaseAt: form.releaseAt ? new Date(form.releaseAt).toISOString() : "",
-      coverSeal: form.coverSeal,
-    };
+    const payload = buildMarketplaceListingFormData(form, selectedCoverImage);
 
     try {
       const response = editingId
@@ -144,6 +168,8 @@ export function ListedPdfsPage() {
         setEligiblePdfs((current) => current.filter((item) => item.id !== listing.sourcePdfId));
       }
       setForm(createInitialMarketplaceForm());
+      setSelectedCoverImage(null);
+      setCurrentCoverImageUrl("");
       setEditingId("");
       setFeedback({
         type: "success",
@@ -158,6 +184,8 @@ export function ListedPdfsPage() {
 
   function startEditing(listing) {
     setEditingId(listing.id);
+    setSelectedCoverImage(null);
+    setCurrentCoverImageUrl(listing.coverImageUrl || "");
     setForm(createInitialMarketplaceForm(listing));
   }
 
@@ -178,12 +206,15 @@ export function ListedPdfsPage() {
 
       <div className="two-column-grid marketplace-shell">
         <MarketplaceListingForm
+          coverImagePreviewUrl={coverImagePreviewUrl || currentCoverImageUrl}
           eligiblePdfs={eligiblePdfs}
           form={form}
           isEditing={Boolean(editingId)}
           isSubmitting={isSubmitting}
           onChange={handleChange}
+          onCoverImageChange={setSelectedCoverImage}
           onSubmit={handleSubmit}
+          selectedCoverImageName={selectedCoverImage?.name || ""}
           submitLabel={editingId ? "Update listing" : "Create listing"}
         />
 

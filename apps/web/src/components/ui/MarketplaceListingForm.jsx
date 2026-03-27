@@ -61,9 +61,12 @@ export function MarketplaceListingForm({
   form,
   isSubmitting,
   onChange,
+  onCoverImageChange,
   onSubmit,
   submitLabel,
   isEditing = false,
+  coverImagePreviewUrl = "",
+  selectedCoverImageName = "",
 }) {
   const selectedEligiblePdf = eligiblePdfs.find((item) => item.id === form.generatedPdfId);
   const hasEligiblePdfs = eligiblePdfs.length > 0;
@@ -152,6 +155,30 @@ export function MarketplaceListingForm({
             ExamNova will prefill title suggestions and academic taxonomy from this source. You can still refine the title, price, release timing, and seal below.
           </p>
         </article>
+      ) : null}
+
+      <label className="field">
+        <span>{isEditing ? "Replace cover image (optional)" : "Cover image (optional)"}</span>
+        <input
+          accept="image/png,image/jpeg,image/webp,image/avif"
+          className="input"
+          onChange={(event) => onCoverImageChange?.(event.target.files?.[0] || null)}
+          type="file"
+        />
+      </label>
+      <p className="support-copy">
+        This image will be visible on the marketplace card and the public PDF detail page.
+      </p>
+      {selectedCoverImageName ? <p className="support-copy">Selected file: {selectedCoverImageName}</p> : null}
+      {coverImagePreviewUrl ? (
+        <figure className="cover-upload-preview">
+          <img
+            alt={`${form.title || "Marketplace PDF"} cover preview`}
+            className="cover-upload-preview-image"
+            src={coverImagePreviewUrl}
+          />
+          <figcaption className="support-copy">Cover image preview</figcaption>
+        </figure>
       ) : null}
 
       <div className="two-column-grid compact">
