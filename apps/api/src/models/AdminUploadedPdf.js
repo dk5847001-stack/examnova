@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import { COLLECTION_NAMES } from "../constants/db.constants.js";
-import { MARKETPLACE_COVER_SEALS } from "../constants/app.constants.js";
+import {
+  MARKETPLACE_COVER_SEALS,
+  MARKETPLACE_LISTING_CATEGORIES,
+} from "../constants/app.constants.js";
 import {
   requiredAcademicTaxonomySchema,
   studyMetadataSchema,
@@ -17,6 +20,7 @@ const adminUploadedPdfSchema = new mongoose.Schema(
     sizeInBytes: { type: Number, required: true },
     storageKey: { type: String, required: true },
     storageUrl: { type: String, default: "" },
+    category: { type: String, enum: ["", ...MARKETPLACE_LISTING_CATEGORIES], default: "", index: true },
     priceInr: { type: Number, required: true },
     currency: { type: String, default: "INR" },
     taxonomy: { type: requiredAcademicTaxonomySchema, required: true },
@@ -47,6 +51,7 @@ adminUploadedPdfSchema.index({
   "taxonomy.semester": 1,
   "taxonomy.subject": 1,
 });
+adminUploadedPdfSchema.index({ category: 1, createdAt: -1 });
 
 export const AdminUploadedPdf =
   mongoose.models.AdminUploadedPdf ||

@@ -7,8 +7,11 @@ import {
   DEFAULT_UNIVERSITY,
 } from "../../features/academic/academicTaxonomy.js";
 import {
+  MARKETPLACE_CATEGORY_LIMIT,
+  MARKETPLACE_CATEGORY_OPTIONS,
   MARKETPLACE_COVER_SEAL_OPTIONS,
   MARKETPLACE_PRICE_RANGE,
+  getMarketplaceCategoryLabel,
 } from "../../features/marketplace/marketplace.constants.js";
 import { useAuth } from "../../hooks/useAuth.js";
 import {
@@ -27,6 +30,7 @@ function createBlankAdminUploadForm() {
   return {
     title: "",
     description: "",
+    category: MARKETPLACE_CATEGORY_OPTIONS[0].value,
     priceInr: String(MARKETPLACE_PRICE_RANGE.min),
     university: DEFAULT_UNIVERSITY,
     branch: "",
@@ -55,6 +59,7 @@ function createAdminUploadForm(item = null) {
   return {
     title: item.title || "",
     description: item.description || "",
+    category: item.category || MARKETPLACE_CATEGORY_OPTIONS[0].value,
     priceInr: String(item.priceInr || MARKETPLACE_PRICE_RANGE.min),
     university: item.taxonomy?.university || DEFAULT_UNIVERSITY,
     branch: item.taxonomy?.branch || "",
@@ -141,6 +146,17 @@ export function AdminUploadsPage() {
   const formTitle = useMemo(
     () => (editingId ? "Edit admin upload" : "Create admin upload"),
     [editingId],
+  );
+  const categoryUsage = useMemo(
+    () =>
+      MARKETPLACE_CATEGORY_OPTIONS.reduce((counts, option) => {
+        const total = items.filter((item) => (item.category || MARKETPLACE_CATEGORY_OPTIONS[0].value) === option.value).length;
+        return {
+          ...counts,
+          [option.value]: total,
+        };
+      }, {}),
+    [items],
   );
 
   function handleChange(key, value) {
@@ -257,10 +273,14 @@ export function AdminUploadsPage() {
               <p className="support-copy">
                 University, branch, year, and semester stay locked to approved Sandip University options so the public marketplace remains clean for first-time students.
               </p>
+              <p className="support-copy">
+                Category slots: {MARKETPLACE_CATEGORY_OPTIONS.map((option) => `${option.label} ${categoryUsage[option.value] || 0}/${MARKETPLACE_CATEGORY_LIMIT}`).join(" | ")}
+              </p>
             </div>
             <div className="guided-pill-row">
               <span className="guided-pill">Admin owned</span>
               <span className="guided-pill">Marketplace synced</span>
+              <span className="guided-pill">Category capped</span>
               <span className="guided-pill">Controlled taxonomy</span>
               <span className="guided-pill">Timed release</span>
             </div>
@@ -306,6 +326,16 @@ export function AdminUploadsPage() {
           ) : null}
           <label className="field"><span>Title</span><input className="input" onChange={(event) => handleChange("title", event.target.value)} placeholder="Example: DBMS End-Sem Important Questions" required value={form.title} /></label>
           <div className="two-column-grid compact">
+            <label className="field">
+              <span>Category</span>
+              <select className="input" onChange={(event) => handleChange("category", event.target.value)} value={form.category}>
+                {MARKETPLACE_CATEGORY_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label} ({categoryUsage[option.value] || 0}/{MARKETPLACE_CATEGORY_LIMIT})
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="field"><span>Price (Rs.)</span><input className="input" max={MARKETPLACE_PRICE_RANGE.max} min={MARKETPLACE_PRICE_RANGE.min} onChange={(event) => handleChange("priceInr", event.target.value)} type="number" value={form.priceInr} /></label>
             <label className="field">
               <span>Visibility</span>
@@ -372,6 +402,9 @@ export function AdminUploadsPage() {
                   {item.taxonomy?.semester ? <span>Semester {item.taxonomy.semester}</span> : null}
                 </div>
                 <div className="topbar-chip-group">
+                  <StatusBadge tone="neutral">
+                    {getMarketplaceCategoryLabel(item.category || MARKETPLACE_CATEGORY_OPTIONS[0].value)}
+                  </StatusBadge>
                   <StatusBadge tone={item.visibility === "published" ? "success" : "warning"}>
                     {item.visibility}
                   </StatusBadge>

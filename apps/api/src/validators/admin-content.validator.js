@@ -1,5 +1,8 @@
 import { ApiError } from "../utils/ApiError.js";
-import { MARKETPLACE_COVER_SEALS } from "../constants/app.constants.js";
+import {
+  MARKETPLACE_COVER_SEALS,
+  MARKETPLACE_LISTING_CATEGORIES,
+} from "../constants/app.constants.js";
 import {
   ensureOptionalDateTime,
   ensureNumericAmount,
@@ -36,12 +39,27 @@ function normalizeCoverSeal(value) {
   return coverSeal;
 }
 
+function normalizeCategory(value) {
+  const category = normalizeOptionalString(value, { maxLength: 40 }).toLowerCase();
+
+  if (!category) {
+    throw new ApiError(422, "category is required.");
+  }
+
+  if (!MARKETPLACE_LISTING_CATEGORIES.includes(category)) {
+    throw new ApiError(422, `category must be one of: ${MARKETPLACE_LISTING_CATEGORIES.join(", ")}.`);
+  }
+
+  return category;
+}
+
 function buildSanitizedPayload(body) {
   const studyMetadata = normalizeStudyMetadata(body || {});
 
   return {
     title: ensureRequiredString(body?.title, "title", { maxLength: 140 }),
     description: normalizeOptionalString(body?.description, { maxLength: 1200 }),
+    category: normalizeCategory(body?.category),
     priceInr: validatePrice(body?.priceInr),
     visibility: normalizeOptionalString(body?.visibility, { maxLength: 20 }).toLowerCase() || "draft",
     tags: studyMetadata.tags,

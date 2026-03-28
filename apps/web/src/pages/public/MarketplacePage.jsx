@@ -10,6 +10,10 @@ import {
   YEAR_OPTIONS,
   withAllOption,
 } from "../../features/academic/academicTaxonomy.js";
+import {
+  MARKETPLACE_CATEGORY_LIMIT,
+  MARKETPLACE_CATEGORY_OPTIONS,
+} from "../../features/marketplace/marketplace.constants.js";
 import { SeoHead } from "../../seo/SeoHead.jsx";
 import { fetchPublicListings } from "../../services/api/index.js";
 import { buildBreadcrumbSchema, buildCollectionSchema, buildSeoPayload } from "../../utils/seo.js";
@@ -23,6 +27,14 @@ const DEFAULT_FILTERS = {
   subject: "",
   sort: "latest",
 };
+
+function resolveListingCategory(listing) {
+  if (listing?.category) {
+    return listing.category;
+  }
+
+  return listing?.sourceType === "admin_upload" ? MARKETPLACE_CATEGORY_OPTIONS[0].value : "";
+}
 
 export function MarketplacePage() {
   const universityOptions = withAllOption([DEFAULT_UNIVERSITY], "All universities");
@@ -79,7 +91,21 @@ export function MarketplacePage() {
   const totalLiveListings = result.pagination?.total || result.items.length;
   const upcomingCount = result.upcomingItems?.length || 0;
   const totalListings = totalLiveListings + upcomingCount;
-  const marketplaceCards = [...result.items, ...(result.upcomingItems || [])];
+  const liveItems = result.items || [];
+  const categoryGroups = result.categoryGroups || {};
+  const otherLiveItems = result.otherItems || [];
+  const fallbackSemesterItems = otherLiveItems.filter(
+    (listing) => !listing.category && listing.sourceType === "admin_upload",
+  );
+  const semesterExamItems = [
+    ...(categoryGroups.semesterExam || []),
+    ...fallbackSemesterItems,
+  ].slice(0, MARKETPLACE_CATEGORY_LIMIT);
+  const ciaExamItems = categoryGroups.ciaExam || [];
+  const uncategorizedLiveItems = otherLiveItems.filter(
+    (listing) => !semesterExamItems.some((item) => item.id === listing.id) && !resolveListingCategory(listing),
+  );
+  const hasVisibleResults = liveItems.length || upcomingCount;
   const hasActiveFilters = Object.entries(filters).some(([key, value]) =>
     key === "sort" ? value !== DEFAULT_FILTERS.sort : Boolean(value),
   );
@@ -198,22 +224,71 @@ export function MarketplacePage() {
 
         {isLoading ? <LoadingCard message="Loading PDFs..." /> : null}
 
-        {!isLoading && marketplaceCards.length ? (
+        {!isLoading && hasVisibleResults ? (
           <section className="stack-section">
-            <SectionHeader
-              eyebrow="All PDFs"
-              title={`${totalListings} card${totalListings === 1 ? "" : "s"} in one grid`}
-              description="Live and upcoming PDFs stay together in the same line-based grid."
-            />
-            <div className="marketplace-grid simple-marketplace-grid">
-              {marketplaceCards.map((listing) => (
-                <MarketplaceListingCard key={listing.id} listing={listing} />
-              ))}
-            </div>
+            {semesterExamItems.length ? (
+              <section className="stack-section">
+                <SectionHeader
+                  eyebrow="Semester Exam"
+                  title="Current semester exam PDFs"
+                  description={`Live mode section for semester exams. Showing up to ${MARKETPLACE_CATEGORY_LIMIT} PDFs.`}
+                />
+                <div className="marketplace-grid simple-marketplace-grid">
+                  {semesterExamItems.map((listing) => (
+                    <MarketplaceListingCard key={listing.id} listing={listing} />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {ciaExamItems.length ? (
+              <section className="stack-section">
+                <SectionHeader
+                  eyebrow="CIA Exam"
+                  title="Current CIA exam PDFs"
+                  description={`Live mode section for CIA exams. Showing up to ${MARKETPLACE_CATEGORY_LIMIT} PDFs.`}
+                />
+                <div className="marketplace-grid simple-marketplace-grid">
+                  {ciaExamItems.map((listing) => (
+                    <MarketplaceListingCard key={listing.id} listing={listing} />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {uncategorizedLiveItems.length ? (
+              <section className="stack-section">
+                <SectionHeader
+                  eyebrow="All PDFs"
+                  title="Other live PDFs"
+                  description="Published PDFs without an admin exam category stay visible here so nothing disappears unexpectedly."
+                />
+                <div className="marketplace-grid simple-marketplace-grid">
+                  {uncategorizedLiveItems.map((listing) => (
+                    <MarketplaceListingCard key={listing.id} listing={listing} />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {upcomingCount ? (
+              <section className="stack-section">
+                <SectionHeader
+                  eyebrow="Upcoming PDFs"
+                  title="Scheduled releases"
+                  description="These PDFs are already listed and will unlock automatically when their go-live time arrives."
+                />
+                <div className="marketplace-grid simple-marketplace-grid">
+                  {result.upcomingItems.map((listing) => (
+                    <MarketplaceListingCard key={listing.id} listing={listing} />
+                  ))}
+                </div>
+              </section>
+            ) : null}
           </section>
         ) : null}
 
-        {!isLoading && !marketplaceCards.length ? (
+        {!isLoading && !hasVisibleResults ? (
           <EmptyStateCard
             title="No PDFs match these filters yet"
             description={

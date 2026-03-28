@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import { COLLECTION_NAMES } from "../constants/db.constants.js";
-import { MARKETPLACE_COVER_SEALS } from "../constants/app.constants.js";
+import {
+  MARKETPLACE_COVER_SEALS,
+  MARKETPLACE_LISTING_CATEGORIES,
+} from "../constants/app.constants.js";
 import {
   requiredAcademicTaxonomySchema,
   studyMetadataSchema,
@@ -15,6 +18,7 @@ const marketplaceListingSchema = new mongoose.Schema(
     title: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, index: true },
     description: { type: String, default: "" },
+    category: { type: String, enum: ["", ...MARKETPLACE_LISTING_CATEGORIES], default: "", index: true },
     priceInr: { type: Number, required: true },
     currency: { type: String, default: "INR" },
     visibility: { type: String, default: "draft", index: true },
@@ -67,6 +71,7 @@ marketplaceListingSchema.index(
 marketplaceListingSchema.index({ isPublished: 1, publishedAt: -1 });
 marketplaceListingSchema.index({ isPublished: 1, releaseAt: 1 });
 marketplaceListingSchema.index({ priceInr: 1, publishedAt: -1 });
+marketplaceListingSchema.index({ category: 1, isPublished: 1, publishedAt: -1 });
 
 export const MarketplaceListing =
   mongoose.models.MarketplaceListing ||

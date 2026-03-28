@@ -4,6 +4,10 @@ import { ApiError } from "../../utils/ApiError.js";
 import { buildPublicMediaUrl } from "../../utils/publicAssetUrl.js";
 import { slugify } from "../../utils/slugify.js";
 import {
+  MARKETPLACE_LISTING_CATEGORIES,
+  MARKETPLACE_LISTING_CATEGORY_LIMIT,
+} from "../../constants/app.constants.js";
+import {
   normalizeAcademicTaxonomy,
   normalizeControlledFilterValue,
   normalizeStudyMetadata,
@@ -40,6 +44,7 @@ function buildSearchText(payload) {
   return [
     payload.title,
     payload.description,
+    normalizeText(payload.category).replace(/_/g, " "),
     payload.taxonomy?.subject,
     payload.taxonomy?.branch,
     payload.taxonomy?.university,
@@ -111,6 +116,7 @@ function serializeListing(record, req = null) {
     sourcePdfId: record.sourcePdfId?._id?.toString?.() || record.sourcePdfId?.toString?.() || null,
     adminUploadId: record.adminUploadId?._id?.toString?.() || record.adminUploadId?.toString?.() || null,
     sourceType: record.sourceType || "generated_pdf",
+    category: record.category || "",
     title: record.title,
     slug: record.slug,
     description: record.description || "",
@@ -218,6 +224,7 @@ export const marketplaceService = {
       title,
       slug,
       description,
+      category: "",
       priceInr: ensurePrice(payload.priceInr),
       currency: "INR",
       visibility,
@@ -232,7 +239,7 @@ export const marketplaceService = {
       releaseAt,
       seoTitle: normalizeText(payload.seoTitle) || title,
       seoDescription: normalizeText(payload.seoDescription) || description.slice(0, 150),
-      searchText: buildSearchText({ title, description, taxonomy, studyMetadata, tags }),
+      searchText: buildSearchText({ title, description, category: "", taxonomy, studyMetadata, tags }),
       publishedAt: visibility === "published" ? new Date() : null,
     });
 
@@ -282,6 +289,7 @@ export const marketplaceService = {
 
     listing.title = title;
     listing.description = description;
+    listing.category = listing.sourceType === "admin_upload" ? listing.category || "" : "";
     listing.priceInr = ensurePrice(payload.priceInr);
     listing.visibility = visibility;
     listing.isPublished = visibility === "published";
@@ -292,7 +300,14 @@ export const marketplaceService = {
     listing.releaseAt = releaseAt;
     listing.seoTitle = normalizeText(payload.seoTitle) || title;
     listing.seoDescription = normalizeText(payload.seoDescription) || description.slice(0, 150);
-    listing.searchText = buildSearchText({ title, description, taxonomy, tags, studyMetadata });
+    listing.searchText = buildSearchText({
+      title,
+      description,
+      category: listing.category,
+      taxonomy,
+      tags,
+      studyMetadata,
+    });
     listing.slug = await buildUniqueSlug(`${title}-${taxonomy.subject}-${taxonomy.semester}`, listing._id);
     listing.publishedAt = visibility === "published" ? listing.publishedAt || new Date() : null;
     await listing.save();
@@ -353,8 +368,28 @@ export const marketplaceService = {
       ...query,
       releaseAt: { $gt: now },
     };
+    const categorizedSemesterQuery = {
+      ...availableQuery,
+      category: "semester_exam",
+    };
+    const categorizedCiaQuery = {
+      ...availableQuery,
+      category: "cia_exam",
+    };
+    const otherQuery = {
+      $and: [
+        availableQuery,
+        {
+          $or: [
+            { category: { $exists: false } },
+            { category: "" },
+            { category: { $nin: MARKETPLACE_LISTING_CATEGORIES } },
+          ],
+        },
+      ],
+    };
 
-    const [items, total, upcomingItems] = await Promise.all([
+    const [items, total, upcomingItems, semesterExamItems, ciaExamItems, otherItems] = await Promise.all([
       MarketplaceListing.find(availableQuery)
         .populate("sellerId", "name role sellerProfile")
         .sort(sort)
@@ -365,10 +400,27 @@ export const marketplaceService = {
         .populate("sellerId", "name role sellerProfile")
         .sort({ releaseAt: 1, isFeatured: -1, publishedAt: -1 })
         .limit(10),
+      MarketplaceListing.find(categorizedSemesterQuery)
+        .populate("sellerId", "name role sellerProfile")
+        .sort(sort)
+        .limit(MARKETPLACE_LISTING_CATEGORY_LIMIT),
+      MarketplaceListing.find(categorizedCiaQuery)
+        .populate("sellerId", "name role sellerProfile")
+        .sort(sort)
+        .limit(MARKETPLACE_LISTING_CATEGORY_LIMIT),
+      MarketplaceListing.find(otherQuery)
+        .populate("sellerId", "name role sellerProfile")
+        .sort(sort)
+        .limit(limit),
     ]);
 
     return {
       items: items.map((item) => serializeListing(item, req)),
+      categoryGroups: {
+        semesterExam: semesterExamItems.map((item) => serializeListing(item, req)),
+        ciaExam: ciaExamItems.map((item) => serializeListing(item, req)),
+      },
+      otherItems: otherItems.map((item) => serializeListing(item, req)),
       upcomingItems: upcomingItems.map((item) => serializeListing(item, req)),
       pagination: {
         page,

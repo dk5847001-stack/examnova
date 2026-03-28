@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { SectionHeader } from "../../components/ui/SectionHeader.jsx";
 import { StatusBadge } from "../../components/ui/StatusBadge.jsx";
-import { MARKETPLACE_COVER_SEAL_OPTIONS } from "../../features/marketplace/marketplace.constants.js";
+import {
+  MARKETPLACE_COVER_SEAL_OPTIONS,
+  getMarketplaceCategoryLabel,
+} from "../../features/marketplace/marketplace.constants.js";
 import { useAuth } from "../../hooks/useAuth.js";
 import {
   deleteAdminListing,
@@ -184,6 +187,11 @@ export function AdminListingsPage() {
               {item.sellerName} - {item.taxonomy?.subject} - Rs. {item.priceInr}
             </span>
             <div className="topbar-chip-group">
+              {getMarketplaceCategoryLabel(item.category || (item.sourceType === "admin_upload" ? "semester_exam" : "")) ? (
+                <StatusBadge tone="neutral">
+                  {getMarketplaceCategoryLabel(item.category || (item.sourceType === "admin_upload" ? "semester_exam" : ""))}
+                </StatusBadge>
+              ) : null}
               <StatusBadge tone={item.isPublished ? "success" : "warning"}>{item.visibility}</StatusBadge>
               <StatusBadge tone={item.moderationStatus === "restricted" ? "danger" : "success"}>
                 {item.moderationStatus}

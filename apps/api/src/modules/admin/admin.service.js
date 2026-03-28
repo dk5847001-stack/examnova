@@ -24,6 +24,26 @@ function toSearchRegex(value) {
   return new RegExp(String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
 }
 
+function buildListingSearchText(listing) {
+  return [
+    listing.title,
+    listing.description,
+    String(listing.category || "").replace(/_/g, " "),
+    listing.taxonomy?.subject,
+    listing.taxonomy?.semester,
+    listing.taxonomy?.branch,
+    listing.taxonomy?.university,
+    listing.studyMetadata?.examFocus,
+    listing.studyMetadata?.questionType,
+    listing.studyMetadata?.difficultyLevel,
+    listing.studyMetadata?.intendedAudience,
+    ...(listing.tags || []),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
 function serializeUser(user) {
   return {
     id: user._id.toString(),
@@ -55,6 +75,7 @@ function serializeListing(listing) {
     priceInr: listing.priceInr,
     sourceType: listing.sourceType || "generated_pdf",
     adminUploadId: listing.adminUploadId?._id?.toString?.() || listing.adminUploadId?.toString?.() || null,
+    category: listing.category || "",
     visibility: listing.visibility,
     approvalStatus: listing.approvalStatus,
     moderationStatus: listing.moderationStatus,
@@ -458,6 +479,7 @@ export const adminService = {
     listing.priceInr = Number(payload.priceInr);
     listing.releaseAt = normalizeReleaseAt(payload.releaseAt);
     listing.coverSeal = normalizeCoverSeal(payload.coverSeal);
+    listing.searchText = buildListingSearchText(listing);
     await listing.save();
 
     if (listing.sourceType === "admin_upload" && listing.adminUploadId) {

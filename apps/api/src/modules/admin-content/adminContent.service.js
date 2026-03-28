@@ -11,6 +11,10 @@ import { buildPublicMediaUrl } from "../../utils/publicAssetUrl.js";
 import { slugify } from "../../utils/slugify.js";
 import { normalizeAcademicTaxonomy, normalizeStudyMetadata } from "../../utils/academicTaxonomy.js";
 import {
+  MARKETPLACE_LISTING_CATEGORIES,
+  MARKETPLACE_LISTING_CATEGORY_LIMIT,
+} from "../../constants/app.constants.js";
+import {
   getListingDisplayDate,
   isReleaseLocked,
   normalizeCoverSeal,
@@ -45,6 +49,20 @@ function normalizeTaxonomy(payload) {
   return normalizeAcademicTaxonomy(payload || {});
 }
 
+function normalizeCategory(value) {
+  const category = normalizeText(value).toLowerCase();
+
+  if (!category) {
+    return "";
+  }
+
+  if (!MARKETPLACE_LISTING_CATEGORIES.includes(category)) {
+    throw new ApiError(422, `category must be one of: ${MARKETPLACE_LISTING_CATEGORIES.join(", ")}.`);
+  }
+
+  return category;
+}
+
 function resolveCoverImageUrl(record, req) {
   return buildPublicMediaUrl(req, record?.coverImageStorageKey, record?.coverImageUrl || "");
 }
@@ -73,10 +91,11 @@ function ensureUpcomingStatus(status) {
   return normalized;
 }
 
-function buildSearchText({ title, description, taxonomy, studyMetadata, tags }) {
+function buildSearchText({ title, description, category, taxonomy, studyMetadata, tags }) {
   return [
     title,
     description,
+    normalizeText(category).replace(/_/g, " "),
     taxonomy?.subject,
     taxonomy?.semester,
     taxonomy?.branch,
@@ -90,6 +109,25 @@ function buildSearchText({ title, description, taxonomy, studyMetadata, tags }) 
     .filter(Boolean)
     .join(" ")
     .toLowerCase();
+}
+
+async function ensureCategoryCapacity(category, excludeId = null) {
+  if (!category) {
+    throw new ApiError(422, "category is required.");
+  }
+
+  const count = await AdminUploadedPdf.countDocuments({
+    category,
+    isDeleted: { $ne: true },
+    ...(excludeId ? { _id: { $ne: excludeId } } : {}),
+  });
+
+  if (count >= MARKETPLACE_LISTING_CATEGORY_LIMIT) {
+    throw new ApiError(
+      409,
+      `Only ${MARKETPLACE_LISTING_CATEGORY_LIMIT} PDFs can be kept in the ${category.replace(/_/g, " ")} category.`,
+    );
+  }
 }
 
 async function buildUniqueListingSlug(baseText, excludeId = null) {
@@ -140,6 +178,7 @@ function serializeAdminUpload(record, req = null) {
     listingId: record.listingId?._id?.toString?.() || record.listingId?.toString?.() || null,
     title: record.title,
     description: record.description || "",
+    category: record.category || "",
     originalName: record.originalName,
     mimeType: record.mimeType,
     sizeInBytes: record.sizeInBytes,
@@ -202,6 +241,7 @@ async function syncListingFromAdminUpload(record) {
     title: record.title,
     slug,
     description: record.description || "",
+    category: record.category || "",
     priceInr: record.priceInr,
     currency: record.currency || "INR",
     visibility,
@@ -220,6 +260,7 @@ async function syncListingFromAdminUpload(record) {
     searchText: buildSearchText({
       title: record.title,
       description: record.description,
+      category: record.category,
       taxonomy: record.taxonomy,
       studyMetadata: record.studyMetadata,
       tags: record.tags,
@@ -270,7 +311,9 @@ export const adminContentService = {
     }
 
     const taxonomy = payload.taxonomy || normalizeTaxonomy(payload);
+    const category = normalizeCategory(payload.category);
     const visibility = ensureVisibility(payload.visibility);
+    await ensureCategoryCapacity(category);
     const uploadedFile = await storageClient.upload({
       originalName: file.originalname,
       buffer: file.buffer,
@@ -288,6 +331,7 @@ export const adminContentService = {
       adminId: actor.id || actor._id,
       title: normalizeText(payload.title),
       description: normalizeText(payload.description),
+      category,
       originalName: file.originalname,
       mimeType: file.mimetype,
       sizeInBytes: file.size,
@@ -366,8 +410,12 @@ export const adminContentService = {
       record.coverImageUrl = "";
     }
 
+    const category = normalizeCategory(payload.category || record.category);
+    await ensureCategoryCapacity(category, record._id);
+
     record.title = normalizeText(payload.title);
     record.description = normalizeText(payload.description);
+    record.category = category;
     record.priceInr = ensurePrice(payload.priceInr);
     record.taxonomy = payload.taxonomy || normalizeTaxonomy(payload);
     record.studyMetadata = payload.studyMetadata || normalizeStudyMetadata(payload);

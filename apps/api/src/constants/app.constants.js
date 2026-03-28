@@ -45,6 +45,8 @@ export const MARKETPLACE_SPLIT = {
 };
 
 export const MARKETPLACE_COVER_SEALS = ["new", "premium", "popular", "updated"];
+export const MARKETPLACE_LISTING_CATEGORIES = ["semester_exam", "cia_exam"];
+export const MARKETPLACE_LISTING_CATEGORY_LIMIT = 5;
 
 export const PAYMENT_STATUS = {
   PENDING: "pending",
