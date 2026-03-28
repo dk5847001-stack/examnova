@@ -92,6 +92,21 @@ function appendAdminUploadFormData(target, source) {
   });
 }
 
+const ADMIN_UPLOAD_TYPE_OPTIONS = [
+  {
+    value: "exam_micro",
+    label: "Micro Upload",
+    icon: "bi-journal-richtext",
+    description: "Publishes into the micro download section for semester and CIA exam PDFs.",
+  },
+  {
+    value: "notes",
+    label: "Notes Upload",
+    icon: "bi-file-earmark-text-fill",
+    description: "Publishes into the notes download section for notes and study materials.",
+  },
+];
+
 export function AdminUploadsPage() {
   const { accessToken } = useAuth();
   const [items, setItems] = useState([]);
@@ -148,8 +163,11 @@ export function AdminUploadsPage() {
   }, [selectedCoverImage]);
 
   const formTitle = useMemo(
-    () => (editingId ? "Edit admin upload" : "Create admin upload"),
-    [editingId],
+    () => {
+      const currentLabel = form.section === "notes" ? "notes upload" : "micro upload";
+      return editingId ? `Edit ${currentLabel}` : `Create ${currentLabel}`;
+    },
+    [editingId, form.section],
   );
   const categoryUsage = useMemo(
     () =>
@@ -170,6 +188,8 @@ export function AdminUploadsPage() {
   function handleChange(key, value) {
     setForm((current) => ({ ...current, [key]: value }));
   }
+
+  const selectedUploadTypeLabel = form.section === "notes" ? "Notes Upload" : "Micro Upload";
 
   function startEditing(item) {
     setEditingId(item.id);
@@ -282,6 +302,9 @@ export function AdminUploadsPage() {
                 University, branch, year, and semester stay locked to approved Sandip University options so the public marketplace remains clean for first-time students.
               </p>
               <p className="support-copy">
+                Selected publishing path: {selectedUploadTypeLabel}
+              </p>
+              <p className="support-copy">
                 Category slots: {MARKETPLACE_CATEGORY_OPTIONS.map((option) => `${option.label} ${categoryUsage[option.value] || 0}/${MARKETPLACE_CATEGORY_LIMIT}`).join(" | ")}
               </p>
             </div>
@@ -293,6 +316,34 @@ export function AdminUploadsPage() {
               <span className="guided-pill">Timed release</span>
             </div>
           </article>
+          <fieldset className="guided-fieldset">
+            <div className="guided-fieldset-header">
+              <div>
+                <h3>Choose upload type</h3>
+                <p className="support-copy">
+                  Pick `Micro Upload` for the micro section or `Notes Upload` for the notes section. The marketplace will sync automatically to the selected area.
+                </p>
+              </div>
+            </div>
+            <div className="admin-upload-section-toggle">
+              {ADMIN_UPLOAD_TYPE_OPTIONS.map((option) => (
+                <button
+                  className={`admin-upload-section-option${form.section === option.value ? " active" : ""}`}
+                  key={option.value}
+                  onClick={() => handleChange("section", option.value)}
+                  type="button"
+                >
+                  <span className="admin-upload-section-option-icon" aria-hidden="true">
+                    <i className={`bi ${option.icon}`} />
+                  </span>
+                  <span className="admin-upload-section-option-copy">
+                    <strong>{option.label}</strong>
+                    <span>{option.description}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </fieldset>
           <label className="field">
             <span>{editingId ? "Replace PDF file (optional)" : "PDF file"}</span>
             <input
@@ -334,16 +385,6 @@ export function AdminUploadsPage() {
           ) : null}
           <label className="field"><span>Title</span><input className="input" onChange={(event) => handleChange("title", event.target.value)} placeholder="Example: DBMS End-Sem Important Questions" required value={form.title} /></label>
           <div className="two-column-grid compact">
-            <label className="field">
-              <span>Marketplace section</span>
-              <select className="input" onChange={(event) => handleChange("section", event.target.value)} value={form.section}>
-                {MARKETPLACE_PDF_SECTION_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
             <label className="field">
               <span>Category</span>
               {form.section === "exam_micro" ? (
@@ -388,7 +429,11 @@ export function AdminUploadsPage() {
             </label>
           </div>
           <AcademicTaxonomyFieldset
-            description="These normalized academic fields drive marketplace filters and keep the public catalog consistent across admin and seller uploads."
+            description={
+              form.section === "notes"
+                ? "Notes uploads can still keep clean academic metadata for search relevance, but they will publish into the notes section instead of the micro exam section."
+                : "These normalized academic fields drive micro-section marketplace filters and keep the public catalog consistent across admin and seller uploads."
+            }
             onChange={handleChange}
             values={form}
           />

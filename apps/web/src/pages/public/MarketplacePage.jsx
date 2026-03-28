@@ -105,6 +105,13 @@ export function MarketplacePage() {
   const [isServiceLoading, setIsServiceLoading] = useState(true);
   const [listingError, setListingError] = useState("");
   const [serviceError, setServiceError] = useState("");
+  const effectiveListingFilters =
+    activeSection === "exam_micro"
+      ? filters
+      : {
+          ...DEFAULT_FILTERS,
+          search: filters.search,
+        };
 
   useEffect(() => {
     let active = true;
@@ -114,7 +121,7 @@ export function MarketplacePage() {
       setListingError("");
 
       try {
-        const response = await fetchPublicListings(filters);
+        const response = await fetchPublicListings(effectiveListingFilters);
         if (active) {
           setResult(response.data);
         }
@@ -134,7 +141,16 @@ export function MarketplacePage() {
     return () => {
       active = false;
     };
-  }, [filters]);
+  }, [
+    activeSection,
+    filters.branch,
+    filters.search,
+    filters.semester,
+    filters.sort,
+    filters.subject,
+    filters.university,
+    filters.year,
+  ]);
 
   useEffect(() => {
     let active = true;
@@ -198,9 +214,14 @@ export function MarketplacePage() {
     key === "sort" ? value !== DEFAULT_FILTERS.sort : Boolean(value),
   );
   const activeCopy = SECTION_COPY[activeSection];
-  const showAcademicFilters = activeSection !== "services";
+  const showAcademicFilters = activeSection === "exam_micro";
   const activeSectionCount =
     activeSection === "exam_micro" ? examCount : activeSection === "notes" ? notesItems.length : services.length;
+  const showResetButton = activeSection === "exam_micro" && hasActiveFilters;
+  const toolbarNote =
+    activeSection === "notes"
+      ? "Notes tab uses only the search bar. Academic filters are reserved for the micro download section."
+      : "Services tab uses only the search bar. Academic filters are reserved for the micro download section.";
 
   const sliderTabs = MARKETPLACE_SECTION_TABS.map((tab) => ({
     ...tab,
@@ -348,7 +369,7 @@ export function MarketplacePage() {
                 </select>
               </label>
 
-              {hasActiveFilters ? (
+              {showResetButton ? (
                 <button className="simple-mini-filter action" onClick={handleResetFilters} type="button">
                   <i className="bi bi-arrow-counterclockwise" />
                   <span>Reset</span>
@@ -358,7 +379,7 @@ export function MarketplacePage() {
           ) : (
             <div className="marketplace-section-inline-note">
               <i className="bi bi-info-circle" />
-              <span>Services tab uses the search bar above. Academic filters are only for PDFs and notes.</span>
+              <span>{toolbarNote}</span>
             </div>
           )}
         </form>
