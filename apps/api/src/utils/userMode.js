@@ -19,64 +19,6 @@ export function isDeveloperUnlocked(user) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export function getAvailableAccountModes(user) {
   if (!user) {
     return [PLATFORM_MODES.SIMPLE];
