@@ -11,7 +11,6 @@ import {
   normalizeStringArray,
 } from "../validators/common.js";
 
-
 function ensureControlledChoice(value, field, options, { required = true, fallback = "" } = {}) {
   const normalized = normalizeOptionalString(value, {
     maxLength: 120,
@@ -26,6 +25,7 @@ function ensureControlledChoice(value, field, options, { required = true, fallba
       }
       throw new ApiError(422, `${field} is required.`);
     }
+    
     return "";
   }
 
