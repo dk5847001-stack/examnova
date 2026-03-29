@@ -9,3 +9,4 @@ export function getPagination(query = {}) {
     skip,
   };
 }
+
