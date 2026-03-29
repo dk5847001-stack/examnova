@@ -190,7 +190,6 @@ export async function createMarketplaceReceiptDownload({
         lineGap: 2,
       });
 
-      
     document
       .roundedRect(420, 36, 132, 82, 20)
       .fill("#163B73");
