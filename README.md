@@ -4,6 +4,7 @@ ExamNova AI is a monorepo for an exam-preparation platform that lets students up
 
 ## What Is Included
 
+
 - Student authentication with OTP verification and password reset
 - Document upload, parsing, and document library
 - AI-assisted question detection and answer generation flow
