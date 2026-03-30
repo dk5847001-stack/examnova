@@ -5,6 +5,7 @@ docs: examnova update 05
 docs: examnova update 06
 docs: examnova update 07
 docs: examnova update 08
+docs: examnova update 09
 
 ExamNova AI is a monorepo for an exam-preparation platform that lets students upload study material, parse documents, detect likely exam questions, generate compact answer drafts, render final PDFs, unlock private PDFs via payment, sell PDFs in a marketplace, manage wallet earnings, and run the platform through an admin console.
 
