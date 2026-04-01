@@ -51,8 +51,8 @@ function readGuestStorage(key) {
 
 function readGuestPurchaseAccess(listingId) {
   if (typeof window === "undefined" || !listingId) return null;
+  const storageKey = getGuestPurchaseStorageKey(listingId);
   try {
-    const storageKey = getGuestPurchaseStorageKey(listingId);
     const rawValue = readGuestStorage(storageKey);
     if (!rawValue) return null;
     const parsedValue = JSON.parse(rawValue);
@@ -64,6 +64,8 @@ function readGuestPurchaseAccess(listingId) {
     }
     return parsedValue;
   } catch {
+    window.sessionStorage.removeItem(storageKey);
+    window.localStorage.removeItem(storageKey);
     return null;
   }
 }
