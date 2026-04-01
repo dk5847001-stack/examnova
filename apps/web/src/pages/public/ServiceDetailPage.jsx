@@ -230,9 +230,9 @@ export function ServiceDetailPage() {
 
     try {
       const response =
-        guestAccess?.purchaseId && guestAccess?.token
-          ? await downloadGuestLibraryItem(guestAccess.purchaseId, guestAccess.token)
-          : await downloadLibraryItem(accessToken, ownedPurchase.id);
+        ownedPurchase?.id
+          ? await downloadLibraryItem(accessToken, ownedPurchase.id)
+          : await downloadGuestLibraryItem(guestAccess.purchaseId, guestAccess.token);
 
       triggerDownload(response.blob, response.filename || `${service.title}.zip`);
     } catch (requestError) {
