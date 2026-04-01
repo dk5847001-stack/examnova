@@ -1155,6 +1155,12 @@ export const paymentService = {
     if (String(payment.userId) !== String(userId)) {
       throw new ApiError(403, "You cannot verify another user's marketplace payment.");
     }
+    if (
+      payment.purpose !== PAYMENT_PURPOSES.MARKETPLACE ||
+      payment.contextType !== PAYMENT_CONTEXT_TYPES.MARKETPLACE
+    ) {
+      throw new ApiError(400, "This payment order is not for a marketplace purchase.");
+    }
 
     const listing = await findPurchasableListing(payment.listingId);
 
@@ -1314,6 +1320,12 @@ export const paymentService = {
     if (payment.buyerMode !== "guest") {
       throw new ApiError(403, "This payment order belongs to an authenticated account.");
     }
+    if (
+      payment.purpose !== PAYMENT_PURPOSES.MARKETPLACE ||
+      payment.contextType !== PAYMENT_CONTEXT_TYPES.MARKETPLACE
+    ) {
+      throw new ApiError(400, "This payment order is not for a marketplace purchase.");
+    }
 
     const listing = await findPurchasableListing(payment.listingId);
 
@@ -1465,6 +1477,12 @@ export const paymentService = {
     if (String(payment.userId) !== String(userId)) {
       throw new ApiError(403, "You cannot verify another user's website service payment.");
     }
+    if (
+      payment.purpose !== PAYMENT_PURPOSES.SERVICE_ASSET ||
+      payment.contextType !== PAYMENT_CONTEXT_TYPES.SERVICE_ASSET
+    ) {
+      throw new ApiError(400, "This payment order is not for a website service purchase.");
+    }
 
     const service = await findPurchasableService(payment.serviceListingId);
 
@@ -1578,6 +1596,12 @@ export const paymentService = {
 
     if (payment.buyerMode !== "guest") {
       throw new ApiError(403, "This payment order belongs to an authenticated account.");
+    }
+    if (
+      payment.purpose !== PAYMENT_PURPOSES.SERVICE_ASSET ||
+      payment.contextType !== PAYMENT_CONTEXT_TYPES.SERVICE_ASSET
+    ) {
+      throw new ApiError(400, "This payment order is not for a website service purchase.");
     }
 
     const service = await findPurchasableService(payment.serviceListingId);
