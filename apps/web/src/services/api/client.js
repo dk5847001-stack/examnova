@@ -133,12 +133,30 @@ export async function apiRequest(path, options = {}) {
 }
 
 export async function apiDownloadRequest(path, options = {}) {
-  const { headers = {}, ...restOptions } = options;
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    credentials: "include",
-    headers,
-    ...restOptions,
-  });
+  const { headers = {}, timeoutMs, signal: optionSignal, ...restOptions } = options;
+  const { signal, cleanup } = createRequestSignal(timeoutMs, optionSignal);
+
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      credentials: "include",
+      headers,
+      signal,
+      ...restOptions,
+    });
+  } catch (error) {
+    cleanup();
+
+    if (error?.name === "AbortError") {
+      const timeoutError = new Error("Download timed out.");
+      timeoutError.status = 408;
+      throw timeoutError;
+    }
+
+    throw error;
+  }
+
+  cleanup();
 
   if (!response.ok) {
     const payload = await response.json().catch(() => ({}));
