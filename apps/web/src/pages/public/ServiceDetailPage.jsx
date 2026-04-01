@@ -76,11 +76,19 @@ function normalizeName(value) {
   return String(value || "").trim().replace(/\s+/g, " ").slice(0, 80);
 }
 
+function sanitizeDownloadName(value, fallback) {
+  const sanitizedValue = String(value || "")
+    .replace(/[<>:"/\\|?*\u0000-\u001f]/g, "-")
+    .trim();
+
+  return sanitizedValue || fallback;
+}
+
 function triggerDownload(blob, fileName) {
   const blobUrl = window.URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = blobUrl;
-  anchor.download = fileName || "website-package.zip";
+  anchor.download = sanitizeDownloadName(fileName, "website-package.zip");
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
