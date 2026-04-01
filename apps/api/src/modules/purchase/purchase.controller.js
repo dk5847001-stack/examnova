@@ -14,6 +14,8 @@ export const purchaseController = {
     const file = await purchaseService.getPurchaseDownload(req.auth.userId, req.params.id);
     res.setHeader("Cache-Control", "private, no-store, max-age=0");
     res.setHeader("Pragma", "no-cache");
+    res.setHeader("Referrer-Policy", "no-referrer");
+    res.setHeader("X-Content-Type-Options", "nosniff");
     if (file.buffer) {
       res.type(file.contentType || "application/pdf");
       res.attachment(file.downloadName);
@@ -26,6 +28,8 @@ export const purchaseController = {
     const file = await purchaseService.getGuestPurchaseDownload(req.params.id, token);
     res.setHeader("Cache-Control", "private, no-store, max-age=0");
     res.setHeader("Pragma", "no-cache");
+    res.setHeader("Referrer-Policy", "no-referrer");
+    res.setHeader("X-Content-Type-Options", "nosniff");
     if (file.buffer) {
       res.type(file.contentType || "application/pdf");
       res.attachment(file.downloadName);
