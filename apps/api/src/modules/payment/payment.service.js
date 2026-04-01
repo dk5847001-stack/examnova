@@ -1519,6 +1519,17 @@ export const paymentService = {
       payment.failureReason = "Razorpay signature verification failed.";
       payment.verificationPayload = payload;
       await payment.save();
+      await notificationService.notifyAdmins({
+        type: "admin_alert",
+        title: "Website service payment verification failed",
+        message: "A website service payment failed signature verification and may need review.",
+        actionUrl: "/admin/commerce",
+        metadata: {
+          paymentId: payment._id.toString(),
+          serviceId: payment.serviceListingId?.toString?.() || null,
+          userId: userId.toString(),
+        },
+      });
       throw new ApiError(400, "Website service payment verification failed.");
     }
 
@@ -1639,6 +1650,17 @@ export const paymentService = {
       payment.failureReason = "Razorpay signature verification failed.";
       payment.verificationPayload = payload;
       await payment.save();
+      await notificationService.notifyAdmins({
+        type: "admin_alert",
+        title: "Guest website service payment verification failed",
+        message: "A guest website service payment failed signature verification and may need review.",
+        actionUrl: "/admin/commerce",
+        metadata: {
+          paymentId: payment._id.toString(),
+          serviceId: payment.serviceListingId?.toString?.() || null,
+          guestBuyerName: payment.guestBuyerName || "",
+        },
+      });
       throw new ApiError(400, "Website service payment verification failed.");
     }
 
