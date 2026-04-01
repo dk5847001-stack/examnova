@@ -1,4 +1,4 @@
-export { createValidator } from "./common.js";
+export { createValidator, validateObjectIdParam } from "./common.js";
 export {
   validateSignup,
   validateLogin,

@@ -156,3 +156,17 @@ export function createValidator(requiredFields = []) {
     }
   };
 }
+
+export function validateObjectIdParam(paramName = "id") {
+  return function objectIdParamValidator(req, _res, next) {
+    try {
+      req.params = {
+        ...(req.params || {}),
+        [paramName]: ensureObjectId(req.params?.[paramName], paramName),
+      };
+      return next();
+    } catch (error) {
+      return next(error);
+    }
+  };
+}
