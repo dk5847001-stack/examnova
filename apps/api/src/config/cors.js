@@ -7,8 +7,11 @@ function normalizeOrigin(value) {
 }
 
 function createCorsError(origin) {
-  const error = new Error(`CORS blocked for origin: ${origin}`);
+  const error = new Error("CORS origin is not allowed.");
   error.statusCode = 403;
+  error.details = {
+    code: "CORS_ORIGIN_BLOCKED",
+  };
   return error;
 }
 
