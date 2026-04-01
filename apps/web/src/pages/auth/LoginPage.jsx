@@ -19,7 +19,7 @@ export function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await login(form);
+      await login(form);
       const redirectTarget = location.state?.from
         ? `${location.state.from.pathname || ""}${location.state.from.search || ""}${location.state.from.hash || ""}`
         : "/marketplace";
@@ -40,7 +40,10 @@ export function LoginPage() {
       <label className="field">
         <span>Email</span>
         <input
+          autoCapitalize="none"
+          autoComplete="username"
           className="input"
+          spellCheck="false"
           type="email"
           value={form.email}
           onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
@@ -51,6 +54,7 @@ export function LoginPage() {
       <label className="field">
         <span>Password</span>
         <input
+          autoComplete="current-password"
           className="input"
           type="password"
           value={form.password}
