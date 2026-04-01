@@ -98,7 +98,6 @@ router.post(
   validatePaymentVerification,
   asyncHandler(paymentController.verifyServicePayment),
 );
-router.post("/verify", requireAuth, paymentRateLimiter, validatePaymentVerification, asyncHandler(paymentController.handleWebhook));
 router.post("/webhook", asyncHandler(paymentController.handleWebhook));
 
 export { router as paymentRoutes };
