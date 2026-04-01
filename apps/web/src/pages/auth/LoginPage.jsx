@@ -46,6 +46,7 @@ export function LoginPage() {
           autoCapitalize="none"
           autoComplete="username"
           className="input"
+          maxLength={254}
           spellCheck="false"
           type="email"
           value={form.email}
@@ -59,6 +60,7 @@ export function LoginPage() {
         <input
           autoComplete="current-password"
           className="input"
+          maxLength={128}
           type="password"
           value={form.password}
           onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
