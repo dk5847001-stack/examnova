@@ -30,9 +30,16 @@ function readGuestServiceAccess(serviceId) {
   }
 
   try {
-    const rawValue = window.localStorage.getItem(getGuestServiceStorageKey(serviceId));
+    const storageKey = getGuestServiceStorageKey(serviceId);
+    const sessionValue = window.sessionStorage.getItem(storageKey);
+    const rawValue = sessionValue || window.localStorage.getItem(storageKey);
     if (!rawValue) {
       return null;
+    }
+
+    if (!sessionValue) {
+      window.sessionStorage.setItem(storageKey, rawValue);
+      window.localStorage.removeItem(storageKey);
     }
 
     const parsedValue = JSON.parse(rawValue);
@@ -41,7 +48,8 @@ function readGuestServiceAccess(serviceId) {
     }
 
     if (parsedValue.expiresAt && new Date(parsedValue.expiresAt).getTime() <= Date.now()) {
-      window.localStorage.removeItem(getGuestServiceStorageKey(serviceId));
+      window.sessionStorage.removeItem(storageKey);
+      window.localStorage.removeItem(storageKey);
       return null;
     }
 
@@ -56,7 +64,9 @@ function storeGuestServiceAccess(serviceId, access) {
     return;
   }
 
-  window.localStorage.setItem(getGuestServiceStorageKey(serviceId), JSON.stringify(access));
+  const storageKey = getGuestServiceStorageKey(serviceId);
+  window.sessionStorage.setItem(storageKey, JSON.stringify(access));
+  window.localStorage.removeItem(storageKey);
 }
 
 function normalizeName(value) {
