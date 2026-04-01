@@ -34,16 +34,16 @@ function getGuestPurchaseStorageKey(listingId) {
 function readGuestStorage(key) {
   if (typeof window === "undefined") return null;
 
-  const localValue = window.localStorage.getItem(key);
-  if (localValue) {
-    return localValue;
+  const sessionValue = window.sessionStorage.getItem(key);
+  if (sessionValue) {
+    return sessionValue;
   }
 
-  const legacySessionValue = window.sessionStorage.getItem(key);
-  if (legacySessionValue) {
-    window.localStorage.setItem(key, legacySessionValue);
-    window.sessionStorage.removeItem(key);
-    return legacySessionValue;
+  const legacyLocalValue = window.localStorage.getItem(key);
+  if (legacyLocalValue) {
+    window.sessionStorage.setItem(key, legacyLocalValue);
+    window.localStorage.removeItem(key);
+    return legacyLocalValue;
   }
 
   return null;
@@ -58,8 +58,8 @@ function readGuestPurchaseAccess(listingId) {
     const parsedValue = JSON.parse(rawValue);
     if (!parsedValue?.purchaseId || !parsedValue?.token) return null;
     if (parsedValue.expiresAt && new Date(parsedValue.expiresAt).getTime() <= Date.now()) {
-      window.localStorage.removeItem(storageKey);
       window.sessionStorage.removeItem(storageKey);
+      window.localStorage.removeItem(storageKey);
       return null;
     }
     return parsedValue;
@@ -71,8 +71,8 @@ function readGuestPurchaseAccess(listingId) {
 function storeGuestPurchaseAccess(listingId, access) {
   if (typeof window === "undefined" || !listingId || !access?.purchaseId || !access?.token) return;
   const storageKey = getGuestPurchaseStorageKey(listingId);
-  window.localStorage.setItem(storageKey, JSON.stringify(access));
-  window.sessionStorage.removeItem(storageKey);
+  window.sessionStorage.setItem(storageKey, JSON.stringify(access));
+  window.localStorage.removeItem(storageKey);
 }
 
 function clearGuestPurchaseAccess(listingId) {
