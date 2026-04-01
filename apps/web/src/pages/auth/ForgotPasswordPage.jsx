@@ -8,6 +8,7 @@ export function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const canSubmit = Boolean(email.trim());
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -50,7 +51,7 @@ export function ForgotPasswordPage() {
         />
       </label>
       {error ? <p className="form-error">{error}</p> : null}
-      <button className="button primary full-width" disabled={isSubmitting} type="submit">
+      <button className="button primary full-width" disabled={isSubmitting || !canSubmit} type="submit">
         <i className="bi bi-envelope-arrow-up" />
         {isSubmitting ? "Sending..." : "Send reset OTP"}
       </button>
