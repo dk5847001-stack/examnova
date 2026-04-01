@@ -122,7 +122,7 @@ export async function apiRequest(path, options = {}) {
     error.details = payload.details || null;
     error.meta = payload.meta || null;
     error.requestId = payload.meta?.requestId || null;
-    if (response.status === 401 && typeof window !== "undefined") {
+    if (response.status === 401 && typeof window !== "undefined" && optionHeaders.Authorization) {
       window.dispatchEvent(
         new CustomEvent("examnova:unauthorized", {
           detail: {
@@ -171,7 +171,7 @@ export async function apiDownloadRequest(path, options = {}) {
     error.details = payload.details || null;
     error.meta = payload.meta || null;
     error.requestId = payload.meta?.requestId || null;
-    if (response.status === 401 && typeof window !== "undefined") {
+    if (response.status === 401 && typeof window !== "undefined" && headers.Authorization) {
       window.dispatchEvent(
         new CustomEvent("examnova:unauthorized", {
           detail: {
