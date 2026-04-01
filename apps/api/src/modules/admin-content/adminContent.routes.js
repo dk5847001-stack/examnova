@@ -8,6 +8,7 @@ import { USER_ROLES } from "../../constants/app.constants.js";
 import {
   validateAdminUploadCreate,
   validateAdminUploadUpdate,
+  validateObjectIdParam,
   validateUpcomingLockedAction,
   validateUpcomingLockedCreate,
   validateUpcomingLockedUpdate,
@@ -26,10 +27,11 @@ router.post(
 router.patch(
   "/uploads/:id",
   adminUploadFieldFiles,
+  validateObjectIdParam(),
   validateAdminUploadUpdate,
   asyncHandler(adminContentController.updateAdminUpload),
 );
-router.delete("/uploads/:id", asyncHandler(adminContentController.deleteAdminUpload));
+router.delete("/uploads/:id", validateObjectIdParam(), asyncHandler(adminContentController.deleteAdminUpload));
 router.get("/upcoming", asyncHandler(adminContentController.listUpcomingItems));
 router.post(
   "/upcoming",
@@ -38,11 +40,13 @@ router.post(
 );
 router.patch(
   "/upcoming/:id",
+  validateObjectIdParam(),
   validateUpcomingLockedUpdate,
   asyncHandler(adminContentController.updateUpcomingItem),
 );
 router.patch(
   "/upcoming/:id/status",
+  validateObjectIdParam(),
   validateUpcomingLockedAction,
   asyncHandler(adminContentController.updateUpcomingStatus),
 );
