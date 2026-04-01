@@ -7,6 +7,7 @@ import {
   validateAnswerGenerationRequest,
   validateAnswerItemsUpdate,
   validateFinalPdfRenderRequest,
+  validateObjectIdParam,
 } from "../../validators/index.js";
 
 const router = Router();
@@ -16,10 +17,11 @@ router.get(
   "/documents/:documentId/latest",
   requireAuth,
   requireProfessionalMode,
+  validateObjectIdParam("documentId"),
   asyncHandler(pdfController.getLatestForDocument),
 );
-router.get("/:id/download", requireAuth, requireProfessionalMode, asyncHandler(pdfController.downloadFinalPdf));
-router.get("/:id", requireAuth, requireProfessionalMode, asyncHandler(pdfController.getPdfGeneration));
+router.get("/:id/download", requireAuth, requireProfessionalMode, validateObjectIdParam(), asyncHandler(pdfController.downloadFinalPdf));
+router.get("/:id", requireAuth, requireProfessionalMode, validateObjectIdParam(), asyncHandler(pdfController.getPdfGeneration));
 router.post(
   "/generate",
   requireAuth,
@@ -32,6 +34,7 @@ router.patch(
   "/:id/answers",
   requireAuth,
   requireProfessionalMode,
+  validateObjectIdParam(),
   validateAnswerItemsUpdate,
   asyncHandler(pdfController.updateAnswerItems),
 );
@@ -40,6 +43,7 @@ router.post(
   requireAuth,
   requireProfessionalMode,
   aiActionRateLimiter,
+  validateObjectIdParam(),
   validateFinalPdfRenderRequest,
   asyncHandler(pdfController.renderFinalPdf),
 );
