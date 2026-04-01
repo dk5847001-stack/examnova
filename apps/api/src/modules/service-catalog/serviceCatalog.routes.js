@@ -8,6 +8,7 @@ import { serviceListingFieldFiles } from "../../middleware/upload.middleware.js"
 import {
   validateServiceListingCreate,
   validateServiceListingUpdate,
+  validateObjectIdParam,
 } from "../../validators/index.js";
 
 const router = Router();
@@ -26,9 +27,10 @@ router.post(
 router.patch(
   "/admin/:id",
   serviceListingFieldFiles,
+  validateObjectIdParam(),
   validateServiceListingUpdate,
   asyncHandler(serviceCatalogController.updateAdminService),
 );
-router.delete("/admin/:id", asyncHandler(serviceCatalogController.deleteAdminService));
+router.delete("/admin/:id", validateObjectIdParam(), asyncHandler(serviceCatalogController.deleteAdminService));
 
 export { router as serviceCatalogRoutes };
