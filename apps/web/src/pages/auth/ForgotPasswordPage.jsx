@@ -7,19 +7,16 @@ export function ForgotPasswordPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
-    setSuccess("");
     setIsSubmitting(true);
 
     try {
       const normalizedEmail = email.trim();
       await forgotPassword({ email: normalizedEmail });
-      setSuccess("If your account exists, a reset OTP has been sent.");
       navigate(`/reset-password?email=${encodeURIComponent(normalizedEmail)}`, {
         state: {
           email: normalizedEmail,
@@ -53,7 +50,6 @@ export function ForgotPasswordPage() {
         />
       </label>
       {error ? <p className="form-error">{error}</p> : null}
-      {success ? <p className="form-success">{success}</p> : null}
       <button className="button primary full-width" disabled={isSubmitting} type="submit">
         <i className="bi bi-envelope-arrow-up" />
         {isSubmitting ? "Sending..." : "Send reset OTP"}
