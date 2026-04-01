@@ -10,18 +10,30 @@ export function loadRazorpayCheckout() {
   }
 
   loadingPromise = new Promise((resolve, reject) => {
-    const script = document.createElement("script");
+    const existingScript = document.querySelector('script[data-examnova-script="razorpay-checkout"]');
+    const script = existingScript || document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
+    script.crossOrigin = "anonymous";
+    script.referrerPolicy = "strict-origin";
+    script.dataset.examnovaScript = "razorpay-checkout";
     script.onload = () => {
       if (window.Razorpay) {
         resolve(window.Razorpay);
         return;
       }
+      loadingPromise = null;
       reject(new Error("Razorpay checkout failed to load."));
     };
-    script.onerror = () => reject(new Error("Unable to load Razorpay checkout script."));
-    document.body.appendChild(script);
+    script.onerror = () => {
+      loadingPromise = null;
+      script.remove();
+      reject(new Error("Unable to load Razorpay checkout script."));
+    };
+
+    if (!existingScript) {
+      document.body.appendChild(script);
+    }
   });
 
   return loadingPromise;
