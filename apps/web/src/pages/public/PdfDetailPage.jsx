@@ -193,6 +193,10 @@ export function PdfDetailPage() {
     return () => window.clearInterval(intervalId);
   }, [listing?.releaseAt]);
 
+  useEffect(() => {
+    autoPurchaseAttemptedRef.current = false;
+  }, [slug]);
+
   const selectedBuyerName = normalizeGuestName(guestFullName);
   const releaseLocked = isListingReleaseLocked(listing, countdownNow);
   const releaseCountdown = getCountdownParts(listing?.releaseAt, countdownNow);
