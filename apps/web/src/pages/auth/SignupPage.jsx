@@ -45,6 +45,7 @@ export function SignupPage() {
       <label className="field">
         <span>Full name</span>
         <input
+          autoComplete="name"
           className="input"
           type="text"
           value={form.name}
@@ -56,7 +57,10 @@ export function SignupPage() {
       <label className="field">
         <span>Email</span>
         <input
+          autoCapitalize="none"
+          autoComplete="email"
           className="input"
+          spellCheck="false"
           type="email"
           value={form.email}
           onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
@@ -67,6 +71,7 @@ export function SignupPage() {
       <label className="field">
         <span>Password</span>
         <input
+          autoComplete="new-password"
           className="input"
           type="password"
           value={form.password}
