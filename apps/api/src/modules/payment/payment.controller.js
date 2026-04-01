@@ -1,4 +1,5 @@
 import { sendSuccess } from "../../utils/apiResponse.js";
+import { ApiError } from "../../utils/ApiError.js";
 import { paymentService } from "./payment.service.js";
 
 export const paymentController = {
@@ -65,7 +66,7 @@ export const paymentController = {
     );
     return sendSuccess(res, result, "Private PDF payment status fetched successfully.");
   },
-  handleWebhook(_req, res) {
-    return sendSuccess(res, {}, "Webhook endpoint reserved for future Razorpay server callbacks.");
+  handleWebhook() {
+    throw new ApiError(501, "Razorpay webhook handling is not configured on this deployment.");
   },
 };
