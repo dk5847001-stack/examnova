@@ -27,6 +27,12 @@ function normalizeIdentity(value) {
   return "anonymous";
 }
 
+function setRateLimitHeaders(res, maxRequests, remainingRequests, resetAt) {
+  res.setHeader("X-RateLimit-Limit", String(maxRequests));
+  res.setHeader("X-RateLimit-Remaining", String(Math.max(remainingRequests, 0)));
+  res.setHeader("X-RateLimit-Reset", String(Math.ceil(resetAt / 1000)));
+}
+
 export function createRateLimiter({
   keyPrefix = "global",
   windowMs = 60 * 1000,
@@ -47,11 +53,14 @@ export function createRateLimiter({
 
     const existing = store.get(storageKey);
     if (!existing || existing.resetAt <= now) {
-      store.set(storageKey, { count: 1, resetAt: now + windowMs });
+      const bucket = { count: 1, resetAt: now + windowMs };
+      store.set(storageKey, bucket);
+      setRateLimitHeaders(res, maxRequests, maxRequests - 1, bucket.resetAt);
       return next();
     }
 
     existing.count += 1;
+    setRateLimitHeaders(res, maxRequests, maxRequests - existing.count, existing.resetAt);
     if (existing.count > maxRequests) {
       const retryAfterSeconds = Math.ceil((existing.resetAt - now) / 1000);
       res.setHeader("Retry-After", String(Math.max(retryAfterSeconds, 1)));
