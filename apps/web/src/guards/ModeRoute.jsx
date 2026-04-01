@@ -8,7 +8,11 @@ import {
 } from "../utils/modes.js";
 
 export function ModeRoute({ children, requiredMode = PLATFORM_MODES.PROFESSIONAL }) {
-  const { user, role } = useAuth();
+  const { status, user, role } = useAuth();
+
+  if (status === "loading") {
+    return <div className="route-loader">Checking account mode...</div>;
+  }
 
   if (role === "admin") {
     return children;
