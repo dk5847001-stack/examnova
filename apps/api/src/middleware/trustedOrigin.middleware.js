@@ -2,7 +2,7 @@ import { env } from "../config/index.js";
 import { sendError } from "../utils/apiResponse.js";
 
 function getOriginFromReferer(refererHeader) {
-  const normalizedReferer = String(refererHeader || "").trim();
+  const normalizedReferer = String(refererHeader || "").trim().slice(0, 2048);
 
   if (!normalizedReferer) {
     return "";
@@ -16,7 +16,7 @@ function getOriginFromReferer(refererHeader) {
 }
 
 function getRequestOrigin(req) {
-  const originHeader = String(req.headers.origin || "").trim();
+  const originHeader = String(req.headers.origin || "").trim().slice(0, 300);
   if (originHeader) {
     return originHeader;
   }
