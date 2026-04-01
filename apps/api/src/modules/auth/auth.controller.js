@@ -98,6 +98,8 @@ export const authController = {
   async logout(req, res) {
     const refreshToken = req.cookies?.[env.refreshTokenCookieName];
     await authService.logout(refreshToken);
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Pragma", "no-cache");
     res.clearCookie(env.refreshTokenCookieName, getRefreshCookieOptions());
 
     return sendSuccess(res, {}, "Logout successful.");
