@@ -16,6 +16,7 @@ export function VerifyOtpPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [countdown, setCountdown] = useState(0);
+  const canSubmit = Boolean(form.email.trim() && form.otp.trim());
 
   useEffect(() => {
     if (countdown <= 0) {
@@ -105,7 +106,7 @@ export function VerifyOtpPage() {
       </label>
       {error ? <p className="form-error">{error}</p> : null}
       {success ? <p className="form-success">{success}</p> : null}
-      <button className="button primary full-width" disabled={isSubmitting} type="submit">
+      <button className="button primary full-width" disabled={isSubmitting || !canSubmit} type="submit">
         <i className="bi bi-shield-check" />
         {isSubmitting ? "Verifying..." : "Verify email"}
       </button>
