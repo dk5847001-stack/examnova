@@ -12,9 +12,13 @@ function resolveInitialTheme() {
     return THEMES.DARK;
   }
 
-  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
-  if (storedTheme === THEMES.DARK || storedTheme === THEMES.LIGHT) {
-    return storedTheme;
+  try {
+    const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+    if (storedTheme === THEMES.DARK || storedTheme === THEMES.LIGHT) {
+      return storedTheme;
+    }
+  } catch {
+    // Fall back to system preference when storage access is blocked.
   }
 
   return window.matchMedia("(prefers-color-scheme: light)").matches ? THEMES.LIGHT : THEMES.DARK;
@@ -34,7 +38,11 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     applyDocumentTheme(theme);
-    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch {
+      // Ignore persistence failures and keep the in-memory theme active.
+    }
   }, [theme]);
 
   function toggleTheme() {
