@@ -43,6 +43,7 @@ export function ForgotPasswordPage() {
           autoCapitalize="none"
           autoComplete="email"
           className="input"
+          maxLength={254}
           spellCheck="false"
           type="email"
           value={email}
