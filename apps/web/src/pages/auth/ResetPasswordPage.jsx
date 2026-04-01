@@ -53,6 +53,7 @@ export function ResetPasswordPage() {
           autoCapitalize="none"
           autoComplete="email"
           className="input"
+          maxLength={254}
           spellCheck="false"
           type="email"
           value={form.email}
@@ -81,6 +82,7 @@ export function ResetPasswordPage() {
         <input
           autoComplete="new-password"
           className="input"
+          maxLength={128}
           type="password"
           value={form.password}
           minLength={8}
@@ -94,6 +96,7 @@ export function ResetPasswordPage() {
         <input
           autoComplete="new-password"
           className="input"
+          maxLength={128}
           type="password"
           value={form.confirmPassword}
           minLength={8}
