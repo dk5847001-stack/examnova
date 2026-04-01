@@ -24,7 +24,7 @@ const STEPS = [
 ];
 
 function normalizeGuestName(value) {
-  return String(value || "").trim().replace(/\s+/g, " ");
+  return String(value || "").trim().replace(/\s+/g, " ").slice(0, 80);
 }
 
 function getGuestPurchaseStorageKey(listingId) {
