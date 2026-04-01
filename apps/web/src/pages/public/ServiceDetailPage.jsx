@@ -29,8 +29,9 @@ function readGuestServiceAccess(serviceId) {
     return null;
   }
 
+  const storageKey = getGuestServiceStorageKey(serviceId);
+
   try {
-    const storageKey = getGuestServiceStorageKey(serviceId);
     const sessionValue = window.sessionStorage.getItem(storageKey);
     const rawValue = sessionValue || window.localStorage.getItem(storageKey);
     if (!rawValue) {
@@ -55,6 +56,8 @@ function readGuestServiceAccess(serviceId) {
 
     return parsedValue;
   } catch {
+    window.sessionStorage.removeItem(storageKey);
+    window.localStorage.removeItem(storageKey);
     return null;
   }
 }
