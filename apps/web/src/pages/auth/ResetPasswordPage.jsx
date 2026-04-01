@@ -15,6 +15,12 @@ export function ResetPasswordPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const canSubmit = Boolean(
+    form.email.trim() &&
+    form.otp.trim() &&
+    form.password &&
+    form.confirmPassword,
+  );
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -107,7 +113,7 @@ export function ResetPasswordPage() {
       </label>
       {error ? <p className="form-error">{error}</p> : null}
       {success ? <p className="form-success">{success}</p> : null}
-      <button className="button primary full-width" disabled={isSubmitting} type="submit">
+      <button className="button primary full-width" disabled={isSubmitting || !canSubmit} type="submit">
         <i className="bi bi-key-fill" />
         {isSubmitting ? "Resetting..." : "Reset password"}
       </button>
