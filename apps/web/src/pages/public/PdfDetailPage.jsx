@@ -598,7 +598,7 @@ export function PdfDetailPage() {
       return (
         <div className="pdf-checkout-panel-stack">
           <div className="pdf-checkout-copy-block"><p className="eyebrow">Step 1</p><h2>Enter name, pay, and auto-download</h2><p className="support-copy">One compact secure step for buyer name, Razorpay payment, and automatic PDF download.</p></div>
-          <label className="field"><span>Full name</span><input autoComplete="name" className="input" disabled={isPurchasing} maxLength={80} onChange={(event) => setGuestFullName(event.target.value)} placeholder="Enter your full name" type="text" value={guestFullName} /></label>
+          <label className="field"><span>Full name</span><input autoCapitalize="words" autoComplete="name" className="input" disabled={isPurchasing} maxLength={80} onChange={(event) => setGuestFullName(event.target.value)} placeholder="Enter your full name" spellCheck="false" type="text" value={guestFullName} /></label>
          
           {releaseLocked ? <div className="simple-release-lock-card"><span className="info-label">Scheduled release</span><strong>{formatMarketplaceDate(listing?.releaseAt)}</strong>{releaseCountdown ? <strong className="simple-release-countdown">{releaseCountdown.shortLabel}</strong> : null}</div> : null}
           
