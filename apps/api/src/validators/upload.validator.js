@@ -42,6 +42,9 @@ export function validateUploadRequest(req, _res, next) {
     if (!req.file) {
       throw new ApiError(400, "Please choose a document to upload.");
     }
+    if (!req.file.buffer?.length) {
+      throw new ApiError(400, "Uploaded document is empty.");
+    }
 
     const sourceCategory = normalizeOptionalString(req.body?.sourceCategory, { maxLength: 40 }) || "notes";
     if (!allowedSourceCategories.has(sourceCategory)) {
