@@ -1,3 +1,4 @@
+import { env } from "../config/index.js";
 import { API_PREFIX } from "../constants/app.constants.js";
 
 function normalizeStorageKey(value) {
@@ -30,6 +31,18 @@ function getRequestOrigin(req) {
   return `${protocol}://${host}`;
 }
 
+function getConfiguredApiOrigin() {
+  const configuredApiBaseUrl = String(env.apiBaseUrl || "").trim().replace(/\/+$/, "");
+
+  if (!configuredApiBaseUrl) {
+    return "";
+  }
+
+  return configuredApiBaseUrl.endsWith(API_PREFIX)
+    ? configuredApiBaseUrl.slice(0, -API_PREFIX.length)
+    : configuredApiBaseUrl;
+}
+
 export function buildPublicMediaUrl(req, storageKey, fallbackUrl = "") {
   const normalizedStorageKey = normalizeStorageKey(storageKey);
   if (!normalizedStorageKey) {
@@ -37,6 +50,6 @@ export function buildPublicMediaUrl(req, storageKey, fallbackUrl = "") {
   }
 
   const mediaPath = `${API_PREFIX}/public/media?key=${encodeURIComponent(normalizedStorageKey)}`;
-  const origin = getRequestOrigin(req);
+  const origin = getConfiguredApiOrigin() || getRequestOrigin(req);
   return origin ? `${origin}${mediaPath}` : mediaPath;
 }
