@@ -30,6 +30,7 @@ import { createMarketplaceReceiptDownload } from "../../utils/paymentReceipt.js"
 
 const PRIVATE_PDF_PRICE = 4;
 const GUEST_PURCHASE_ACCESS_TTL_MS = 1000 * 60 * 60 * 24 * 365;
+const PENDING_PAYMENT_REUSE_WINDOW_MS = 15 * 60 * 1000;
 let paymentClientInstance = null;
 
 function getMissingPaymentEnvVars() {
@@ -281,6 +282,14 @@ function normalizeBuyerName(value) {
   return String(value || "").trim().replace(/\s+/g, " ").slice(0, 80);
 }
 
+function isReusablePendingPayment(payment) {
+  return Boolean(
+    payment?.razorpayOrderId &&
+    payment?.createdAt &&
+    Date.now() - new Date(payment.createdAt).getTime() <= PENDING_PAYMENT_REUSE_WINDOW_MS,
+  );
+}
+
 function getCurrentServicePrice(service) {
   const basePrice = Number(service?.priceInr || 0);
   const offerPrice = Number(service?.offerPriceInr || 0);
@@ -378,7 +387,7 @@ export const paymentService = {
       status: PAYMENT_STATUS.PENDING,
     }).sort({ createdAt: -1 });
 
-    if (existingPendingPayment?.razorpayOrderId) {
+    if (isReusablePendingPayment(existingPendingPayment)) {
       const paymentClient = getPaymentClient();
 
       return {
@@ -552,7 +561,7 @@ export const paymentService = {
       status: PAYMENT_STATUS.PENDING,
     }).sort({ createdAt: -1 });
 
-    if (existingPendingPayment?.razorpayOrderId) {
+    if (isReusablePendingPayment(existingPendingPayment)) {
       const paymentClient = getPaymentClient();
 
       return {
@@ -763,7 +772,7 @@ export const paymentService = {
       status: PAYMENT_STATUS.PENDING,
     }).sort({ createdAt: -1 });
 
-    if (existingPendingPayment?.razorpayOrderId) {
+    if (isReusablePendingPayment(existingPendingPayment)) {
       if (downloadBuyerName && existingPendingPayment.downloadBuyerName !== downloadBuyerName) {
         existingPendingPayment.downloadBuyerName = downloadBuyerName;
         await existingPendingPayment.save();
@@ -854,7 +863,7 @@ export const paymentService = {
       status: PAYMENT_STATUS.PENDING,
     }).sort({ createdAt: -1 });
 
-    if (existingPendingPayment?.razorpayOrderId) {
+    if (isReusablePendingPayment(existingPendingPayment)) {
       if (existingPendingPayment.downloadBuyerName !== guestBuyerName) {
         existingPendingPayment.downloadBuyerName = guestBuyerName;
         await existingPendingPayment.save();
@@ -971,7 +980,7 @@ export const paymentService = {
       status: PAYMENT_STATUS.PENDING,
     }).sort({ createdAt: -1 });
 
-    if (existingPendingPayment?.razorpayOrderId) {
+    if (isReusablePendingPayment(existingPendingPayment)) {
       if (downloadBuyerName && existingPendingPayment.downloadBuyerName !== downloadBuyerName) {
         existingPendingPayment.downloadBuyerName = downloadBuyerName;
         await existingPendingPayment.save();
@@ -1061,7 +1070,7 @@ export const paymentService = {
       status: PAYMENT_STATUS.PENDING,
     }).sort({ createdAt: -1 });
 
-    if (existingPendingPayment?.razorpayOrderId) {
+    if (isReusablePendingPayment(existingPendingPayment)) {
       if (existingPendingPayment.downloadBuyerName !== guestBuyerName) {
         existingPendingPayment.downloadBuyerName = guestBuyerName;
         await existingPendingPayment.save();
