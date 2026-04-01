@@ -30,8 +30,8 @@ export function ResetPasswordPage() {
 
     try {
       await resetPassword({
-        email: form.email,
-        otp: form.otp,
+        email: form.email.trim(),
+        otp: form.otp.trim(),
         password: form.password,
       });
       setSuccess("Password reset successful. Please log in.");
