@@ -152,6 +152,14 @@ export function AppProvider({ children }) {
     }
   }
 
+  function requireAccessToken() {
+    if (!authState.accessToken) {
+      throw new Error("Your session is not ready. Please log in again.");
+    }
+
+    return authState.accessToken;
+  }
+
   async function performProfileRefresh() {
     const token = authState.accessToken;
     if (!token) {
@@ -168,7 +176,7 @@ export function AppProvider({ children }) {
   }
 
   async function performProfileUpdate(payload) {
-    const response = await updateProfile(authState.accessToken, payload);
+    const response = await updateProfile(requireAccessToken(), payload);
     setAuthState((current) => ({
       ...current,
       user: response.data.user,
@@ -178,7 +186,7 @@ export function AppProvider({ children }) {
   }
 
   async function performDashboardSummaryFetch() {
-    const response = await fetchDashboardSummary(authState.accessToken);
+    const response = await fetchDashboardSummary(requireAccessToken());
     setAuthState((current) => ({
       ...current,
       dashboardSummary: response.data.summary,
@@ -187,7 +195,7 @@ export function AppProvider({ children }) {
   }
 
   async function performSettingsUpdate(payload) {
-    const response = await updateProfileSettings(authState.accessToken, payload);
+    const response = await updateProfileSettings(requireAccessToken(), payload);
     setAuthState((current) => ({
       ...current,
       user: response.data.user,
