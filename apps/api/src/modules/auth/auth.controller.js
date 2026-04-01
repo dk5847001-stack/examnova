@@ -27,9 +27,7 @@ export const authController = {
         user: result.user,
         accessToken: result.accessToken,
       },
-      result.alreadyVerified
-        ? "Email was already verified. Session refreshed successfully."
-        : "Email verified successfully.",
+      "Email verified successfully.",
     );
   },
   async resendOtp(req, res) {

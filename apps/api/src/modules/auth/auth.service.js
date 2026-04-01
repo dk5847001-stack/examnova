@@ -188,12 +188,7 @@ export const authService = {
     }
 
     if (user.isEmailVerified) {
-      const tokens = await issueSessionTokens(user, req);
-      return {
-        user: sanitizeUser(user),
-        ...tokens,
-        alreadyVerified: true,
-      };
+      throw new ApiError(409, "Email is already verified. Please log in.");
     }
 
     const record = await getValidOtpRecord(normalizedEmail, OTP_PURPOSES.EMAIL_VERIFICATION);
@@ -222,7 +217,6 @@ export const authService = {
     return {
       user: sanitizeUser(user),
       ...tokens,
-      alreadyVerified: false,
     };
   },
 
