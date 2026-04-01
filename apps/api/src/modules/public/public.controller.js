@@ -20,6 +20,7 @@ export const publicController = {
     }
 
     res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    res.setHeader("X-Content-Type-Options", "nosniff");
     return res.sendFile(absolutePath);
   },
   getUniversityLanding(_req, res) {

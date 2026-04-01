@@ -16,6 +16,18 @@ function normalizeStorageKey(storageKey) {
   return String(storageKey || "").trim().replace(/\\/g, "/").replace(/^\/+/, "");
 }
 
+function isUnsafeStorageKey(storageKey) {
+  const normalizedStorageKey = normalizeStorageKey(storageKey);
+
+  return (
+    !normalizedStorageKey ||
+    normalizedStorageKey.includes("\0") ||
+    normalizedStorageKey.includes("..") ||
+    path.isAbsolute(normalizedStorageKey) ||
+    /^[a-zA-Z]:/.test(normalizedStorageKey)
+  );
+}
+
 function getConfiguredUploadDir() {
   return String(env.localUploadDir || "uploads").trim() || "uploads";
 }
@@ -47,12 +59,11 @@ function resolveWithinBase(baseDir, relativePath) {
 
 function buildStorageCandidates(storageKey) {
   const normalizedStorageKey = normalizeStorageKey(storageKey);
-  if (!normalizedStorageKey) {
+  if (!normalizedStorageKey || isUnsafeStorageKey(normalizedStorageKey)) {
     return [];
   }
 
   const uploadBaseDirs = getUploadBaseDirs();
-  const searchRoots = uniquePaths([runtimeRoot, packageRoot, repoRoot]);
   const keyVariants = new Set([normalizedStorageKey]);
 
   if (normalizedStorageKey.startsWith("uploads/")) {
@@ -60,13 +71,6 @@ function buildStorageCandidates(storageKey) {
   }
 
   const absoluteCandidates = [];
-
-  for (const root of searchRoots) {
-    const candidate = resolveWithinBase(root, normalizedStorageKey);
-    if (candidate) {
-      absoluteCandidates.push(candidate);
-    }
-  }
 
   for (const baseDir of uploadBaseDirs) {
     for (const keyVariant of keyVariants) {
