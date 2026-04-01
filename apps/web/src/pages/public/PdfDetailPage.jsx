@@ -605,7 +605,7 @@ export function PdfDetailPage() {
           {feedback.message ? <div className="stack-section"><p className={feedback.type === "error" ? "form-error" : "form-success"}>{feedback.message}</p>{feedback.detail ? <p className="support-copy">{feedback.detail}</p> : null}</div> : null}
           <div className="pdf-checkout-actions">
             <button className="button secondary" onClick={closeCheckoutWizard} type="button"><i className="bi bi-arrow-left" />Back</button>
-            <button className="button primary animated-download-button" disabled={releaseLocked || isPurchasing} onClick={() => (selectedBuyerName ? handlePurchase() : setFeedback({ type: "error", message: "Enter your full name before starting secure payment.", detail: "", showGuestDownload: false, showAccountDownload: false }))} type="button"><i className="bi bi-credit-card-2-front download-button-icon" />{isPurchasing ? "Opening secure payment..." : `Pay & auto-download PDF`}</button>
+            <button className="button primary animated-download-button" disabled={releaseLocked || isPurchasing || !selectedBuyerName} onClick={() => (selectedBuyerName ? handlePurchase() : setFeedback({ type: "error", message: "Enter your full name before starting secure payment.", detail: "", showGuestDownload: false, showAccountDownload: false }))} type="button"><i className="bi bi-credit-card-2-front download-button-icon" />{isPurchasing ? "Opening secure payment..." : `Pay & auto-download PDF`}</button>
           </div>
         </div>
       );
