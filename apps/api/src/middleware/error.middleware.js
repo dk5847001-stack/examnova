@@ -10,6 +10,9 @@ export function errorHandler(error, _req, res, _next) {
       ? "An unexpected error occurred."
       : error.message || "Something went wrong.";
 
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Pragma", "no-cache");
+
   return res.status(statusCode).json({
     success: false,
     message: safeMessage,
