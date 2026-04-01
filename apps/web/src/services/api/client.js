@@ -62,18 +62,24 @@ function createRequestSignal(timeoutMs, externalSignal) {
 
   const controller = new AbortController();
   const timeoutId = globalThis.setTimeout(() => controller.abort(), timeoutMs);
+  let removeAbortListener = () => {};
 
   if (externalSignal) {
     if (externalSignal.aborted) {
       controller.abort();
     } else {
-      externalSignal.addEventListener("abort", () => controller.abort(), { once: true });
+      const abortListener = () => controller.abort();
+      externalSignal.addEventListener("abort", abortListener, { once: true });
+      removeAbortListener = () => externalSignal.removeEventListener("abort", abortListener);
     }
   }
 
   return {
     signal: controller.signal,
-    cleanup: () => globalThis.clearTimeout(timeoutId),
+    cleanup: () => {
+      globalThis.clearTimeout(timeoutId);
+      removeAbortListener();
+    },
   };
 }
 
