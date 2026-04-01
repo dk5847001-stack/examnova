@@ -110,7 +110,7 @@ export function VerifyOtpPage() {
         {isSubmitting ? "Verifying..." : "Verify email"}
       </button>
       <div className="inline-actions">
-        <button className="button secondary" disabled={isResending || countdown > 0} onClick={handleResend} type="button">
+        <button className="button secondary" disabled={isResending || countdown > 0 || !form.email.trim()} onClick={handleResend} type="button">
           <i className="bi bi-arrow-repeat" />
           {countdown > 0 ? `Resend in ${countdown}s` : isResending ? "Sending..." : "Resend OTP"}
         </button>
