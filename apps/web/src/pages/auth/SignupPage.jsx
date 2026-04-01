@@ -22,11 +22,16 @@ export function SignupPage() {
     setIsSubmitting(true);
 
     try {
-      await signup(form);
+      const payload = {
+        ...form,
+        name: form.name.trim(),
+        email: form.email.trim(),
+      };
+      await signup(payload);
       setSuccess("Account created. We sent an OTP to your email.");
-      navigate(`/verify-otp?email=${encodeURIComponent(form.email)}`, {
+      navigate(`/verify-otp?email=${encodeURIComponent(payload.email)}`, {
         state: {
-          email: form.email,
+          email: payload.email,
           purpose: "email_verification",
           from: location.state?.from || null,
         },
