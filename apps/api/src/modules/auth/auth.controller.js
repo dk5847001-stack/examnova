@@ -46,6 +46,8 @@ export const authController = {
   },
   async login(req, res) {
     const result = await authService.login(req.body, req);
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Pragma", "no-cache");
     res.cookie(env.refreshTokenCookieName, result.refreshToken, getRefreshCookieOptions());
 
     return sendSuccess(
