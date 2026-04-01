@@ -52,6 +52,7 @@ export function SignupPage() {
         <input
           autoComplete="name"
           className="input"
+          maxLength={80}
           type="text"
           value={form.name}
           onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
@@ -65,6 +66,7 @@ export function SignupPage() {
           autoCapitalize="none"
           autoComplete="email"
           className="input"
+          maxLength={254}
           spellCheck="false"
           type="email"
           value={form.email}
@@ -78,6 +80,7 @@ export function SignupPage() {
         <input
           autoComplete="new-password"
           className="input"
+          maxLength={128}
           type="password"
           value={form.password}
           minLength={8}
