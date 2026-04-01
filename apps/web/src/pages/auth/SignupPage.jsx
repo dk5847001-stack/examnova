@@ -12,13 +12,11 @@ export function SignupPage() {
     password: "",
   });
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
-    setSuccess("");
     setIsSubmitting(true);
 
     try {
@@ -28,7 +26,6 @@ export function SignupPage() {
         email: form.email.trim(),
       };
       await signup(payload);
-      setSuccess("Account created. We sent an OTP to your email.");
       navigate(`/verify-otp?email=${encodeURIComponent(payload.email)}`, {
         state: {
           email: payload.email,
@@ -90,7 +87,6 @@ export function SignupPage() {
         />
       </label>
       {error ? <p className="form-error">{error}</p> : null}
-      {success ? <p className="form-success">{success}</p> : null}
       <button className="button primary full-width" disabled={isSubmitting} type="submit">
         <i className="bi bi-person-plus-fill" />
         {isSubmitting ? "Creating account..." : "Create account"}
