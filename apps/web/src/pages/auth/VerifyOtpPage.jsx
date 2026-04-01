@@ -37,7 +37,6 @@ export function VerifyOtpPage() {
         email: form.email.trim(),
         otp: form.otp.trim(),
       });
-      setSuccess("Email verified successfully.");
       const redirectTarget = location.state?.from
         ? `${location.state.from.pathname || ""}${location.state.from.search || ""}${location.state.from.hash || ""}`
         : "/marketplace";
