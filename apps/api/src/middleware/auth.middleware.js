@@ -16,7 +16,8 @@ function getBearerToken(req) {
     return null;
   }
 
-  return authorizationHeader.replace(/^Bearer\s+/i, "").trim();
+  const token = authorizationHeader.replace(/^Bearer\s+/i, "").trim();
+  return token || null;
 }
 
 export async function requireAuth(req, res, next) {
