@@ -82,6 +82,8 @@ export const authController = {
   async refresh(req, res) {
     const refreshToken = req.cookies?.[env.refreshTokenCookieName];
     const result = await authService.refreshSession(refreshToken, req);
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Pragma", "no-cache");
     res.cookie(env.refreshTokenCookieName, result.refreshToken, getRefreshCookieOptions());
 
     return sendSuccess(
