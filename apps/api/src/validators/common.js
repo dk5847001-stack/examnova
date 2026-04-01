@@ -46,10 +46,17 @@ export function normalizeStringArray(value, { maxItems = 20, itemMaxLength = 80 
     : typeof value === "string"
       ? value.split(",")
       : [];
+  const seen = new Set();
 
   return items
     .map((item) => normalizeString(item, { maxLength: itemMaxLength }))
-    .filter(Boolean)
+    .filter((item) => {
+      if (!item || seen.has(item)) {
+        return false;
+      }
+      seen.add(item);
+      return true;
+    })
     .slice(0, maxItems);
 }
 
