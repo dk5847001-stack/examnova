@@ -13,6 +13,7 @@ export function SignupPage() {
   });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const canSubmit = Boolean(form.name.trim() && form.email.trim() && form.password);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -87,7 +88,7 @@ export function SignupPage() {
         />
       </label>
       {error ? <p className="form-error">{error}</p> : null}
-      <button className="button primary full-width" disabled={isSubmitting} type="submit">
+      <button className="button primary full-width" disabled={isSubmitting || !canSubmit} type="submit">
         <i className="bi bi-person-plus-fill" />
         {isSubmitting ? "Creating account..." : "Create account"}
       </button>
