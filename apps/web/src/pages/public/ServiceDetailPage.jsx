@@ -225,6 +225,12 @@ export function ServiceDetailPage() {
 
       triggerDownload(response.blob, response.filename || `${service.title}.zip`);
     } catch (requestError) {
+      if (guestAccess?.purchaseId && (requestError.status === 401 || requestError.status === 403)) {
+        const storageKey = getGuestServiceStorageKey(service.id);
+        window.sessionStorage.removeItem(storageKey);
+        window.localStorage.removeItem(storageKey);
+        setGuestAccess(null);
+      }
       setFeedback({
         type: "error",
         message: requestError.message || "Unable to download website ZIP.",
