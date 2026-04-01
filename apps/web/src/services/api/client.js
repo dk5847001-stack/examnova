@@ -145,6 +145,7 @@ export async function apiDownloadRequest(path, options = {}) {
   let response;
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
+      cache: "no-store",
       credentials: "include",
       headers,
       signal,
