@@ -22,7 +22,7 @@ export const purchaseController = {
     return res.download(file.absolutePath, file.downloadName);
   },
   async downloadGuestPurchase(req, res) {
-    const token = req.headers["x-guest-purchase-token"] || req.query?.token || "";
+    const token = req.headers["x-guest-purchase-token"] || "";
     const file = await purchaseService.getGuestPurchaseDownload(req.params.id, token);
     res.setHeader("Cache-Control", "private, no-store, max-age=0");
     res.setHeader("Pragma", "no-cache");
