@@ -12,11 +12,11 @@ import {
 
 function getBearerToken(req) {
   const authorizationHeader = req.headers.authorization || "";
-  if (!authorizationHeader.startsWith("Bearer ")) {
+  if (!/^Bearer\s+/i.test(authorizationHeader)) {
     return null;
   }
 
-  return authorizationHeader.slice(7).trim();
+  return authorizationHeader.replace(/^Bearer\s+/i, "").trim();
 }
 
 export async function requireAuth(req, res, next) {
