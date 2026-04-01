@@ -78,6 +78,7 @@ export const documentParserService = {
   },
 
   deriveTitle(originalName = "") {
-    return path.basename(originalName, path.extname(originalName)).replace(/[-_]/g, " ").trim();
+    const derivedTitle = path.basename(originalName, path.extname(originalName)).replace(/[-_]/g, " ").trim();
+    return derivedTitle || "Untitled document";
   },
 };
