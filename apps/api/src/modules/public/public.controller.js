@@ -11,6 +11,9 @@ export const publicController = {
     if (!storageKey) {
       throw new ApiError(400, "Media key is required.");
     }
+    if (storageKey.length > 300) {
+      throw new ApiError(400, "Media key is too long.");
+    }
 
     let absolutePath = "";
     try {
