@@ -4,7 +4,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { requireAuth, requireDeveloperMode } from "../../middleware/auth.middleware.js";
 import { aiActionRateLimiter } from "../../middleware/index.js";
 import { marketplaceCoverImageUpload } from "../../middleware/upload.middleware.js";
-import { validateMarketplaceListing, validateMarketplaceListingUpdate } from "../../validators/index.js";
+import { validateMarketplaceListing, validateMarketplaceListingUpdate, validateObjectIdParam } from "../../validators/index.js";
 
 const router = Router();
 
@@ -26,6 +26,7 @@ router.patch(
   requireAuth,
   requireDeveloperMode,
   aiActionRateLimiter,
+  validateObjectIdParam(),
   marketplaceCoverImageUpload,
   validateMarketplaceListingUpdate,
   asyncHandler(marketplaceController.updateListing),
