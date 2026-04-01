@@ -50,7 +50,10 @@ export function ResetPasswordPage() {
       <label className="field">
         <span>Email</span>
         <input
+          autoCapitalize="none"
+          autoComplete="email"
           className="input"
+          spellCheck="false"
           type="email"
           value={form.email}
           onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
@@ -61,7 +64,11 @@ export function ResetPasswordPage() {
       <label className="field">
         <span>Reset OTP</span>
         <input
+          autoComplete="one-time-code"
           className="input"
+          inputMode="numeric"
+          maxLength={8}
+          pattern="\d*"
           type="text"
           value={form.otp}
           onChange={(event) => setForm((current) => ({ ...current, otp: event.target.value }))}
@@ -72,6 +79,7 @@ export function ResetPasswordPage() {
       <label className="field">
         <span>New password</span>
         <input
+          autoComplete="new-password"
           className="input"
           type="password"
           value={form.password}
@@ -84,6 +92,7 @@ export function ResetPasswordPage() {
       <label className="field">
         <span>Confirm password</span>
         <input
+          autoComplete="new-password"
           className="input"
           type="password"
           value={form.confirmPassword}
