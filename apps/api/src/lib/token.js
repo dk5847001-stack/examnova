@@ -6,6 +6,10 @@ const jwtVerifyOptions = {
   algorithms: ["HS256"],
 };
 
+function normalizeToken(token) {
+  return typeof token === "string" ? token.trim() : "";
+}
+
 export function signAccessToken(payload) {
   return jwt.sign(payload, env.jwtAccessSecret, {
     expiresIn: env.jwtAccessExpiresIn,
@@ -19,11 +23,11 @@ export function signRefreshToken(payload) {
 }
 
 export function verifyAccessToken(token) {
-  return jwt.verify(token, env.jwtAccessSecret, jwtVerifyOptions);
+  return jwt.verify(normalizeToken(token), env.jwtAccessSecret, jwtVerifyOptions);
 }
 
 export function verifyRefreshToken(token) {
-  return jwt.verify(token, env.jwtRefreshSecret, jwtVerifyOptions);
+  return jwt.verify(normalizeToken(token), env.jwtRefreshSecret, jwtVerifyOptions);
 }
 
 export function hashToken(token) {
