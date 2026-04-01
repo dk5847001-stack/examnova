@@ -5,6 +5,7 @@ import { requireAuth } from "../../middleware/auth.middleware.js";
 import { paymentRateLimiter } from "../../middleware/index.js";
 import {
   validateMarketplaceOrderRequest,
+  validateObjectIdParam,
   validatePublicServiceOrderRequest,
   validatePublicMarketplaceOrderRequest,
   validatePaymentVerification,
@@ -61,6 +62,7 @@ router.post(
 router.get(
   "/private-pdf/:generationId/status",
   requireAuth,
+  validateObjectIdParam("generationId"),
   asyncHandler(paymentController.getPrivatePdfPaymentStatus),
 );
 router.post(
