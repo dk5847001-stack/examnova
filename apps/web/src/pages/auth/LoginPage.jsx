@@ -19,7 +19,10 @@ export function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      await login(form);
+      await login({
+        ...form,
+        email: form.email.trim(),
+      });
       const redirectTarget = location.state?.from
         ? `${location.state.from.pathname || ""}${location.state.from.search || ""}${location.state.from.hash || ""}`
         : "/marketplace";
