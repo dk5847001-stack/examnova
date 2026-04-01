@@ -17,11 +17,12 @@ export function ForgotPasswordPage() {
     setIsSubmitting(true);
 
     try {
-      await forgotPassword({ email });
+      const normalizedEmail = email.trim();
+      await forgotPassword({ email: normalizedEmail });
       setSuccess("If your account exists, a reset OTP has been sent.");
-      navigate(`/reset-password?email=${encodeURIComponent(email)}`, {
+      navigate(`/reset-password?email=${encodeURIComponent(normalizedEmail)}`, {
         state: {
-          email,
+          email: normalizedEmail,
           purpose: "password_reset",
         },
       });
