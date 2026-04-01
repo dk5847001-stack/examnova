@@ -33,7 +33,10 @@ export function VerifyOtpPage() {
     setIsSubmitting(true);
 
     try {
-      await verifyOtp(form);
+      await verifyOtp({
+        email: form.email.trim(),
+        otp: form.otp.trim(),
+      });
       setSuccess("Email verified successfully.");
       const redirectTarget = location.state?.from
         ? `${location.state.from.pathname || ""}${location.state.from.search || ""}${location.state.from.hash || ""}`
@@ -55,7 +58,7 @@ export function VerifyOtpPage() {
 
     try {
       await resendOtp({
-        email: form.email,
+        email: form.email.trim(),
         purpose: "email_verification",
       });
       setSuccess("A new OTP has been sent to your email.");
