@@ -13,7 +13,7 @@ function uniquePaths(values = []) {
 }
 
 function normalizeStorageKey(storageKey) {
-  return String(storageKey || "").trim().replace(/\\/g, "/").replace(/^\/+/, "");
+  return String(storageKey || "").trim().replace(/\\/g, "/").replace(/^\/+/, "").slice(0, 300);
 }
 
 function isUnsafeStorageKey(storageKey) {
