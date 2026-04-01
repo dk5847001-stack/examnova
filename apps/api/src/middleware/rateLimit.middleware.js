@@ -18,6 +18,15 @@ function cleanupBucket(now) {
   }
 }
 
+function normalizeIdentity(value) {
+  if (typeof value === "string" || typeof value === "number") {
+    const normalizedValue = String(value).trim();
+    return normalizedValue.slice(0, 160) || "anonymous";
+  }
+
+  return "anonymous";
+}
+
 export function createRateLimiter({
   keyPrefix = "global",
   windowMs = 60 * 1000,
@@ -31,10 +40,10 @@ export function createRateLimiter({
       cleanupBucket(now);
     }
 
-    const identity = keyResolver
+    const identity = normalizeIdentity(keyResolver
       ? keyResolver(req)
-      : req.auth?.userId || req.body?.email || getClientIp(req);
-    const storageKey = `${keyPrefix}:${identity || "anonymous"}`;
+      : req.auth?.userId || req.body?.email || getClientIp(req));
+    const storageKey = `${keyPrefix}:${identity}`;
 
     const existing = store.get(storageKey);
     if (!existing || existing.resetAt <= now) {
