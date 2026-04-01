@@ -41,7 +41,7 @@ export function createCorsOptions() {
       "X-Guest-Purchase-Token",
       "x-guest-purchase-token",
     ],
-    exposedHeaders: ["Content-Disposition"],
+    exposedHeaders: ["Content-Disposition", "X-Request-Id", "x-request-id"],
     optionsSuccessStatus: 204,
     maxAge: 60 * 60 * 24,
   };
