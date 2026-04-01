@@ -5,6 +5,7 @@ export {
   validateVerifyOtp,
   validateForgotPassword,
   validateResetPassword,
+  validateResendOtp,
 } from "./auth.validator.js";
 export { validateProfileUpdate } from "./profile.validator.js";
 export { validateProfileSettingsUpdate } from "./profile-settings.validator.js";

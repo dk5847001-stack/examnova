@@ -1,10 +1,13 @@
 import { ApiError } from "../utils/ApiError.js";
 import {
   ensureEmail,
+  ensureEnum,
   ensureMinLength,
   ensureRequiredString,
   normalizeString,
 } from "./common.js";
+
+const otpPurposes = ["email_verification", "password_reset"];
 
 function validatePassword(password, field = "password") {
   const normalized = ensureRequiredString(password, field, { maxLength: 128, collapseWhitespace: false });
@@ -59,6 +62,21 @@ export function validateForgotPassword(req, _res, next) {
     req.body = {
       email: ensureEmail(req.body?.email),
       purpose: normalizeString(req.body?.purpose, { maxLength: 40 }),
+    };
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export function validateResendOtp(req, _res, next) {
+  try {
+    const purpose =
+      normalizeString(req.body?.purpose, { maxLength: 40 }) || "email_verification";
+
+    req.body = {
+      email: ensureEmail(req.body?.email),
+      purpose: ensureEnum(purpose, otpPurposes, "purpose"),
     };
     return next();
   } catch (error) {
