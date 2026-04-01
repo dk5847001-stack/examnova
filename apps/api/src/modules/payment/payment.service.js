@@ -458,6 +458,12 @@ export const paymentService = {
     if (String(payment.userId) !== String(userId)) {
       throw new ApiError(403, "You cannot verify payment for another user's PDF.");
     }
+    if (
+      payment.purpose !== PAYMENT_PURPOSES.PRIVATE_PDF ||
+      payment.contextType !== PAYMENT_CONTEXT_TYPES.PRIVATE_PDF
+    ) {
+      throw new ApiError(400, "This payment order is not for a private PDF unlock.");
+    }
 
     const generation = await findOwnedGeneration(userId, payment.generatedPdfId);
 
