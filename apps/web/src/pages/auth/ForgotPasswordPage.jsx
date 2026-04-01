@@ -39,7 +39,10 @@ export function ForgotPasswordPage() {
       <label className="field">
         <span>Email</span>
         <input
+          autoCapitalize="none"
+          autoComplete="email"
           className="input"
+          spellCheck="false"
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
