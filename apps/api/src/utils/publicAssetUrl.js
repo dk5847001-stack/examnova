@@ -1,7 +1,18 @@
 import { API_PREFIX } from "../constants/app.constants.js";
 
 function normalizeStorageKey(value) {
-  return String(value || "").trim().replace(/^\/+/, "");
+  const normalizedValue = String(value || "").trim().replace(/\\/g, "/").replace(/^\/+/, "");
+
+  if (
+    !normalizedValue ||
+    normalizedValue.includes("\0") ||
+    normalizedValue.includes("..") ||
+    /^[a-zA-Z]:/.test(normalizedValue)
+  ) {
+    return "";
+  }
+
+  return normalizedValue;
 }
 
 function getRequestOrigin(req) {
