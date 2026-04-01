@@ -15,14 +15,13 @@ import {
 } from "../services/api/index.js";
 
 const AppContext = createContext(null);
-const ACCESS_TOKEN_KEY = "examnova_access_token";
 const AUTH_BOOTSTRAP_TIMEOUT_MS = 6000;
 
 export function AppProvider({ children }) {
   const [authState, setAuthState] = useState({
     status: "loading",
     isAuthenticated: false,
-    accessToken: localStorage.getItem(ACCESS_TOKEN_KEY),
+    accessToken: null,
     user: null,
     role: null,
     error: null,
@@ -33,33 +32,6 @@ export function AppProvider({ children }) {
     let isMounted = true;
 
     async function bootstrapAuth() {
-      const storedToken = localStorage.getItem(ACCESS_TOKEN_KEY);
-
-      if (storedToken) {
-        try {
-          const profileResponse = await fetchProfile(storedToken, {
-            timeoutMs: AUTH_BOOTSTRAP_TIMEOUT_MS,
-          });
-
-          if (!isMounted) {
-            return;
-          }
-
-          setAuthState({
-            status: "authenticated",
-            isAuthenticated: true,
-            accessToken: storedToken,
-            user: profileResponse.data.user,
-            role: profileResponse.data.user.role,
-            error: null,
-            dashboardSummary: null,
-          });
-          return;
-        } catch (_error) {
-          localStorage.removeItem(ACCESS_TOKEN_KEY);
-        }
-      }
-
       try {
         const refreshResponse = await refreshSession({
           timeoutMs: AUTH_BOOTSTRAP_TIMEOUT_MS,
@@ -70,7 +42,6 @@ export function AppProvider({ children }) {
         }
 
         const accessToken = refreshResponse.data.accessToken;
-        localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
         setAuthState({
           status: "authenticated",
           isAuthenticated: true,
@@ -106,7 +77,6 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     function handleUnauthorized() {
-      localStorage.removeItem(ACCESS_TOKEN_KEY);
       setAuthState({
         status: "anonymous",
         isAuthenticated: false,
@@ -127,7 +97,6 @@ export function AppProvider({ children }) {
   async function applyAuthenticatedSession(responsePayload) {
     const accessToken = responsePayload.data.accessToken;
     const user = responsePayload.data.user;
-    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
     setAuthState({
       status: "authenticated",
       isAuthenticated: true,
@@ -171,7 +140,6 @@ export function AppProvider({ children }) {
     try {
       await logout();
     } finally {
-      localStorage.removeItem(ACCESS_TOKEN_KEY);
       setAuthState({
         status: "anonymous",
         isAuthenticated: false,
@@ -185,7 +153,7 @@ export function AppProvider({ children }) {
   }
 
   async function performProfileRefresh() {
-    const token = authState.accessToken || localStorage.getItem(ACCESS_TOKEN_KEY);
+    const token = authState.accessToken;
     if (!token) {
       return null;
     }
