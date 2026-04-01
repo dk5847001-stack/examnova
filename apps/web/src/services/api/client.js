@@ -10,6 +10,15 @@ function normalizeUrl(value) {
     .replace(/\/+$/, "");
 }
 
+function normalizeApiPath(path) {
+  const normalizedPath = String(path || "").trim();
+  if (!normalizedPath) {
+    return "/";
+  }
+
+  return normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`;
+}
+
 function getApiBaseUrl() {
   const runtimeOrigin =
     typeof window !== "undefined" ? normalizeUrl(window.location.origin) : "";
@@ -85,13 +94,14 @@ function createRequestSignal(timeoutMs, externalSignal) {
 
 export async function apiRequest(path, options = {}) {
   const { headers: optionHeaders = {}, timeoutMs, signal: optionSignal, ...restOptions } = options;
+  const normalizedPath = normalizeApiPath(path);
   const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
   const hasBody = options.body !== undefined && options.body !== null;
   const { signal, cleanup } = createRequestSignal(timeoutMs, optionSignal);
 
   let response;
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
+    response = await fetch(`${API_BASE_URL}${normalizedPath}`, {
       credentials: "include",
       headers: {
         ...(hasBody && !isFormData ? { "Content-Type": "application/json" } : {}),
@@ -126,7 +136,7 @@ export async function apiRequest(path, options = {}) {
       window.dispatchEvent(
         new CustomEvent("examnova:unauthorized", {
           detail: {
-            path,
+            path: normalizedPath,
             message: error.message,
           },
         }),
@@ -140,11 +150,12 @@ export async function apiRequest(path, options = {}) {
 
 export async function apiDownloadRequest(path, options = {}) {
   const { headers = {}, timeoutMs, signal: optionSignal, ...restOptions } = options;
+  const normalizedPath = normalizeApiPath(path);
   const { signal, cleanup } = createRequestSignal(timeoutMs, optionSignal);
 
   let response;
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
+    response = await fetch(`${API_BASE_URL}${normalizedPath}`, {
       cache: "no-store",
       credentials: "include",
       headers,
@@ -176,7 +187,7 @@ export async function apiDownloadRequest(path, options = {}) {
       window.dispatchEvent(
         new CustomEvent("examnova:unauthorized", {
           detail: {
-            path,
+            path: normalizedPath,
             message: error.message,
           },
         }),
