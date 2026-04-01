@@ -5,9 +5,9 @@ const store = new Map();
 function getClientIp(req) {
   const forwardedFor = req.headers["x-forwarded-for"];
   if (typeof forwardedFor === "string" && forwardedFor.trim()) {
-    return forwardedFor.split(",")[0].trim();
+    return forwardedFor.split(",")[0].trim().slice(0, 120);
   }
-  return req.ip || req.socket?.remoteAddress || "unknown";
+  return String(req.ip || req.socket?.remoteAddress || "unknown").trim().slice(0, 120);
 }
 
 function cleanupBucket(now) {
