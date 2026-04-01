@@ -247,6 +247,9 @@ export const purchaseService = {
     }
 
     if (purchase.guestAccessExpiresAt.getTime() < Date.now()) {
+      purchase.guestAccessTokenHash = "";
+      purchase.guestAccessExpiresAt = null;
+      await purchase.save();
       throw new ApiError(403, "Guest download access has expired. Please use the latest purchase success screen.");
     }
 
