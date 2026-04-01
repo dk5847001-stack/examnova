@@ -474,7 +474,7 @@ export function ServiceDetailPage() {
                     {isDownloading ? "Preparing ZIP..." : "Download ZIP"}
                   </button>
                 ) : (
-                  <button className="button primary" disabled={isPurchasing} onClick={handlePurchase} type="button">
+                  <button className="button primary" disabled={isPurchasing || !normalizedName} onClick={handlePurchase} type="button">
                     <i className="bi bi-credit-card-2-front" />
                     {isPurchasing ? "Opening secure payment..." : `Buy now - Rs. ${pricing.currentPriceInr || 0}`}
                   </button>
