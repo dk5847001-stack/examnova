@@ -5,6 +5,7 @@ function normalizeStorageKey(value) {
 
   if (
     !normalizedValue ||
+    normalizedValue.length > 300 ||
     normalizedValue.includes("\0") ||
     normalizedValue.includes("..") ||
     /^[a-zA-Z]:/.test(normalizedValue)
