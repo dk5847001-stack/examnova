@@ -1,6 +1,10 @@
 let loadingPromise = null;
 
 export function loadRazorpayCheckout() {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return Promise.reject(new Error("Razorpay checkout can only be loaded in a browser context."));
+  }
+
   if (window.Razorpay) {
     return Promise.resolve(window.Razorpay);
   }
