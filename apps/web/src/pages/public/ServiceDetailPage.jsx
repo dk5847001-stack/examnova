@@ -428,7 +428,9 @@ export function ServiceDetailPage() {
               <label className="field">
                 <span>Full name</span>
                 <input
+                  autoComplete="name"
                   className="input"
+                  maxLength={80}
                   onChange={(event) => setFullName(event.target.value)}
                   placeholder="Enter your full name"
                   value={fullName}
