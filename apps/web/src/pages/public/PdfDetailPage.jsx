@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { EmptyStateCard } from "../../components/ui/EmptyStateCard.jsx";
 import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { SeoHead } from "../../seo/SeoHead.jsx";
@@ -119,7 +119,6 @@ function getStepState(stepId, step, hasDownloadAccess, pdfDownloadStatus) {
 
 export function PdfDetailPage() {
   const { slug } = useParams();
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { accessToken, isAuthenticated, user } = useAuth();
   const [listing, setListing] = useState(null);
@@ -245,7 +244,10 @@ export function PdfDetailPage() {
   }
 
   function closeCheckoutWizard() {
-    navigate("/marketplace");
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("checkout");
+    nextParams.delete("buy");
+    setSearchParams(nextParams, { replace: true });
   }
 
   async function downloadReceiptSlip(receipt, { silent = false } = {}) {
