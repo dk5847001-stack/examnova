@@ -80,6 +80,7 @@ export function VerifyOtpPage() {
           autoCapitalize="none"
           autoComplete="email"
           className="input"
+          maxLength={254}
           spellCheck="false"
           type="email"
           value={form.email}
