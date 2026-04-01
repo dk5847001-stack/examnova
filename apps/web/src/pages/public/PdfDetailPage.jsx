@@ -84,11 +84,19 @@ function clearGuestPurchaseAccess(listingId) {
   window.sessionStorage.removeItem(storageKey);
 }
 
+function sanitizeDownloadName(value, fallback) {
+  const sanitizedValue = String(value || "")
+    .replace(/[<>:"/\\|?*\u0000-\u001f]/g, "-")
+    .trim();
+
+  return sanitizedValue || fallback;
+}
+
 function triggerBlobDownload(blob, title) {
   const url = window.URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = `${title || "marketplace-pdf"}.pdf`;
+  anchor.download = `${sanitizeDownloadName(title, "marketplace-pdf")}.pdf`;
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
@@ -102,7 +110,7 @@ function triggerBase64Download(fileName, mimeType, contentBase64) {
   const url = window.URL.createObjectURL(new Blob([bytes], { type: mimeType || "application/pdf" }));
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = fileName || "payment-slip.pdf";
+  anchor.download = sanitizeDownloadName(fileName, "payment-slip.pdf");
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
