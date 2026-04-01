@@ -70,7 +70,7 @@ function storeGuestServiceAccess(serviceId, access) {
 }
 
 function normalizeName(value) {
-  return String(value || "").trim().replace(/\s+/g, " ");
+  return String(value || "").trim().replace(/\s+/g, " ").slice(0, 80);
 }
 
 function triggerDownload(blob, fileName) {
