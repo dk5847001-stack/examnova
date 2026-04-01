@@ -33,7 +33,7 @@ export function VerifyOtpPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await verifyOtp(form);
+      await verifyOtp(form);
       setSuccess("Email verified successfully.");
       const redirectTarget = location.state?.from
         ? `${location.state.from.pathname || ""}${location.state.from.search || ""}${location.state.from.hash || ""}`
@@ -74,7 +74,10 @@ export function VerifyOtpPage() {
       <label className="field">
         <span>Email</span>
         <input
+          autoCapitalize="none"
+          autoComplete="email"
           className="input"
+          spellCheck="false"
           type="email"
           value={form.email}
           onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
@@ -85,7 +88,11 @@ export function VerifyOtpPage() {
       <label className="field">
         <span>OTP</span>
         <input
+          autoComplete="one-time-code"
           className="input"
+          inputMode="numeric"
+          maxLength={8}
+          pattern="\d*"
           type="text"
           value={form.otp}
           onChange={(event) => setForm((current) => ({ ...current, otp: event.target.value }))}
