@@ -116,7 +116,7 @@ export function createStorageClient() {
 
       const filename = createSafeFilename(file.originalName);
       const absolutePath = path.join(targetDirectory, filename);
-      await fs.writeFile(absolutePath, file.buffer);
+      await fs.writeFile(absolutePath, file.buffer, { mode: 0o600 });
 
       const relativePathFromUploadRoot = path.relative(uploadBaseDir, absolutePath).replace(/\\/g, "/");
       const configuredUploadDir = getConfiguredUploadDir();
