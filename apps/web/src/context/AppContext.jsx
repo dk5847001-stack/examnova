@@ -76,14 +76,14 @@ export function AppProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    function handleUnauthorized() {
+    function handleUnauthorized(event) {
       setAuthState({
         status: "anonymous",
         isAuthenticated: false,
         accessToken: null,
         user: null,
         role: null,
-        error: "Your session expired. Please log in again.",
+        error: event?.detail?.message || "Your session expired. Please log in again.",
         dashboardSummary: null,
       });
     }
