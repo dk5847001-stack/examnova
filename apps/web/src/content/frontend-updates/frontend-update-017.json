@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-017",
+    "title":  "Discovery header feed extension",
+    "summary":  "Logged a frontend mini update for the discovery header surface to expand the public update stream. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-03T03:57:25.377Z",
+    "tags":  [
+                 "frontend",
+                 "discovery-header",
+                 "feed"
+             ]
+}
