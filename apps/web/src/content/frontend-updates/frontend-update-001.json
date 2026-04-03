@@ -1,0 +1,9 @@
+{
+  "id": "frontend-update-001",
+  "title": "Public updates page introduced",
+  "summary": "Released a dedicated frontend view that merges UI refinements with backend shipping notes in one browseable timeline.",
+  "area": "frontend",
+  "status": "live",
+  "publishedAt": "2026-04-03T09:15:00.000Z",
+  "tags": ["public-ui", "timeline", "navigation"]
+}

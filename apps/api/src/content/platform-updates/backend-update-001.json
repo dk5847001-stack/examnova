@@ -1,0 +1,9 @@
+{
+  "id": "backend-update-001",
+  "title": "Public updates feed scaffolded",
+  "summary": "Added a filesystem-backed public updates feed so backend change notes can ship without touching routing logic again.",
+  "area": "backend",
+  "status": "shipped",
+  "publishedAt": "2026-04-03T09:00:00.000Z",
+  "tags": ["public-api", "content", "timeline"]
+}

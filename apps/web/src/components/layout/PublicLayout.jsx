@@ -44,6 +44,13 @@ function createPublicSections({ isAuthenticated, isAdminSession, modeAccess }) {
           label: "How it works",
           meta: "See the simple PDF flow",
         },
+        {
+          type: "link",
+          to: "/updates",
+          icon: "bi-activity",
+          label: "Platform updates",
+          meta: "Track frontend and backend shipping notes",
+        },
       ],
     },
   ];
@@ -456,6 +463,10 @@ export function PublicLayout() {
                 <i className="bi bi-search" />
                 Browse PDFs
               </Link>
+              <Link className="btn btn-outline-secondary public-mobile-footer-button" to="/updates">
+                <i className="bi bi-activity" />
+                View updates
+              </Link>
               <button className="btn btn-outline-secondary public-mobile-footer-button" onClick={() => setIsSidebarOpen(true)} type="button">
                 <i className="bi bi-grid-3x3-gap-fill" />
                 Open menu
@@ -467,6 +478,7 @@ export function PublicLayout() {
             <article className="public-mobile-footer-panel">
               <span className="public-mobile-footer-label">Quick links</span>
               <Link to="/marketplace">Marketplace</Link>
+              <Link to="/updates">Platform updates</Link>
               <Link to={accountHref}>{accountLabel}</Link>
               {!isAuthenticated ? <Link to="/signup">Create account</Link> : null}
             </article>

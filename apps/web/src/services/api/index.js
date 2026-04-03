@@ -103,7 +103,7 @@ export {
   updateAdminUserStatus,
   updateAdminWithdrawalStatus,
 } from "./admin.js";
-export { fetchUpcomingLockedPdfDetail, fetchUpcomingLockedPdfs } from "./publicContent.js";
+export { fetchPlatformUpdates, fetchUpcomingLockedPdfDetail, fetchUpcomingLockedPdfs } from "./publicContent.js";
 export {
   fetchSeoDiscoveryIndex,
   fetchSeoHomeData,

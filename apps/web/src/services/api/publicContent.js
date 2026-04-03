@@ -20,3 +20,7 @@ export function fetchUpcomingLockedPdfs(filters = {}) {
 export function fetchUpcomingLockedPdfDetail(slug) {
   return apiRequest(`/public/upcoming-pdfs/${slug}`);
 }
+
+export function fetchPlatformUpdates() {
+  return apiRequest("/public/platform-updates");
+}

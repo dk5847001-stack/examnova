@@ -6,6 +6,7 @@ import { AdminLayout } from "../components/layout/AdminLayout.jsx";
 import { MarketplacePage } from "../pages/public/MarketplacePage.jsx";
 import { PdfDetailPage } from "../pages/public/PdfDetailPage.jsx";
 import { ServiceDetailPage } from "../pages/public/ServiceDetailPage.jsx";
+import { UpdatesPage } from "../pages/public/UpdatesPage.jsx";
 import { LoginPage } from "../pages/auth/LoginPage.jsx";
 import { SignupPage } from "../pages/auth/SignupPage.jsx";
 import { VerifyOtpPage } from "../pages/auth/VerifyOtpPage.jsx";
@@ -53,6 +54,7 @@ export function AppRouter() {
       <Route element={<PublicLayout />}>
         <Route index element={<Navigate to="/marketplace" replace />} />
         <Route path="/marketplace" element={<MarketplacePage />} />
+        <Route path="/updates" element={<UpdatesPage />} />
         <Route path="/pdf/:slug" element={<PdfDetailPage />} />
         <Route path="/services/:slug" element={<ServiceDetailPage />} />
         <Route path="/upcoming" element={<Navigate to="/marketplace" replace />} />

@@ -2,6 +2,7 @@ import { sendSuccess } from "../../utils/apiResponse.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { createStorageClient } from "../../lib/index.js";
 import { adminContentService } from "../admin-content/adminContent.service.js";
+import { publicUpdatesService } from "./publicUpdates.service.js";
 
 const storageClient = createStorageClient();
 
@@ -39,5 +40,9 @@ export const publicController = {
   async getUpcomingLockedPdfDetail(req, res) {
     const item = await adminContentService.getUpcomingDetail(req.params.slug, req);
     return sendSuccess(res, { item }, "Upcoming locked PDF detail fetched successfully.");
+  },
+  async listPlatformUpdates(_req, res) {
+    const items = await publicUpdatesService.listPlatformUpdates();
+    return sendSuccess(res, { items }, "Platform updates fetched successfully.");
   },
 };
