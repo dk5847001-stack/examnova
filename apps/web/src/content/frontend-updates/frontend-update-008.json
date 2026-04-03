@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-008",
+    "title":  "Marketplace filters support note",
+    "summary":  "Logged a frontend mini update for the marketplace filters surface to document another small product-facing change. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-03T03:48:25.377Z",
+    "tags":  [
+                 "frontend",
+                 "marketplace-filters",
+                 "support"
+             ]
+}
