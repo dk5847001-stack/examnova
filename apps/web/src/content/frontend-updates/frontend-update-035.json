@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-035",
+    "title":  "Public sidebar navigation polish",
+    "summary":  "Logged a frontend mini update for the public sidebar surface to make the surface easier to discover. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-03T04:15:25.377Z",
+    "tags":  [
+                 "frontend",
+                 "public-sidebar",
+                 "navigation"
+             ]
+}
