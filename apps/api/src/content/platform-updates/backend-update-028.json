@@ -1,0 +1,13 @@
+{
+    "id":  "backend-update-028",
+    "title":  "Public controller support note",
+    "summary":  "Logged a backend mini update for the public controller surface to document another small product-facing change. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "backend",
+    "status":  "shipped",
+    "publishedAt":  "2026-04-03T04:08:25.377Z",
+    "tags":  [
+                 "backend",
+                 "public-controller",
+                 "support"
+             ]
+}
