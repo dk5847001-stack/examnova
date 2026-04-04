@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-087",
+    "title":  "Auth prompts feed extension",
+    "summary":  "Logged a frontend mini update for the auth prompts surface to expand the public update stream. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-04T05:27:36.326Z",
+    "tags":  [
+                 "frontend",
+                 "auth-prompts",
+                 "feed"
+             ]
+}
