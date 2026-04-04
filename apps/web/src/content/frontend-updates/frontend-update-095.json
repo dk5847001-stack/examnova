@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-095",
+    "title":  "Theme surface navigation polish",
+    "summary":  "Logged a frontend mini update for the theme surface surface to make the surface easier to discover. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-04T05:35:36.326Z",
+    "tags":  [
+                 "frontend",
+                 "theme-surface",
+                 "navigation"
+             ]
+}
