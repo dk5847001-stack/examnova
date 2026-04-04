@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-075",
+    "title":  "Listing cards navigation polish",
+    "summary":  "Logged a frontend mini update for the listing cards surface to make the surface easier to discover. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-04T05:15:36.326Z",
+    "tags":  [
+                 "frontend",
+                 "listing-cards",
+                 "navigation"
+             ]
+}
