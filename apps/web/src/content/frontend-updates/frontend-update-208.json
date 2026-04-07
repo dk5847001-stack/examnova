@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-208",
+    "title":  "Admin withdrawals cadence entry",
+    "summary":  "Logged a frontend mini update for the admin withdrawals surface to keep the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-07T04:54:47.0500825+00:00",
+    "tags":  [
+                 "frontend",
+                 "admin",
+                 "cadence"
+             ]
+}
