@@ -140,7 +140,7 @@ export function UpdatesPage() {
         <article className="detail-card updates-hero-card">
           <div className="updates-hero-copy">
             <p className="eyebrow">Shipping log</p>
-            <h1>110+ mini updates now have one visible trail.</h1>
+            <h1>Product and platform updates now have one visible trail.</h1>
             <p className="support-copy">
               This page combines frontend polish notes and backend shipping updates so the public product can surface what changed without digging through commits.
             </p>
