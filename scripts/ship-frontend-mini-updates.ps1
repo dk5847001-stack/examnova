@@ -31,8 +31,19 @@ function Test-GitTrackedPath {
         [string]$RelativePath
     )
 
-    $null = & git ls-files --error-unmatch -- $RelativePath 2>$null
-    return $LASTEXITCODE -eq 0
+    $processInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $processInfo.FileName = "git"
+    $processInfo.Arguments = "ls-files --error-unmatch -- `"$RelativePath`""
+    $processInfo.WorkingDirectory = (Get-Location).Path
+    $processInfo.UseShellExecute = $false
+    $processInfo.CreateNoWindow = $true
+    $processInfo.RedirectStandardOutput = $true
+    $processInfo.RedirectStandardError = $true
+
+    $process = [System.Diagnostics.Process]::Start($processInfo)
+    $process.WaitForExit()
+
+    return $process.ExitCode -eq 0
 }
 
 $surfaceDefinitions = @(
