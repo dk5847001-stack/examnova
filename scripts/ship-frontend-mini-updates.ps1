@@ -25,6 +25,16 @@ function Write-Utf8File {
     [System.IO.File]::WriteAllText($Path, $Content, $encoding)
 }
 
+function Test-GitTrackedPath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RelativePath
+    )
+
+    $null = & git ls-files --error-unmatch -- $RelativePath 2>$null
+    return $LASTEXITCODE -eq 0
+}
+
 $surfaceDefinitions = @(
     @{ slug = "marketplace-surface"; title = "Marketplace surface"; tag = "marketplace" },
     @{ slug = "updates-timeline"; title = "Updates timeline"; tag = "updates" },
@@ -77,8 +87,7 @@ for ($number = $startNumber; $number -le $endNumber; $number++) {
     $relativePath = "apps/web/src/content/frontend-updates/$id.json"
     $absolutePath = Join-Path $repoRoot $relativePath
 
-    & git ls-files --error-unmatch -- $relativePath *> $null
-    if ($LASTEXITCODE -eq 0) {
+    if (Test-GitTrackedPath -RelativePath $relativePath) {
         Write-Host "Skipping $id because it is already tracked."
         continue
     }
