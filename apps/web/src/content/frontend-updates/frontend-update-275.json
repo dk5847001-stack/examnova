@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-275",
+    "title":  "Public CTA navigation polish",
+    "summary":  "Logged a frontend mini update for the public cta surface to make the surface easier to discover. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-19T08:10:47.441Z",
+    "tags":  [
+                 "frontend",
+                 "public-cta",
+                 "navigation"
+             ]
+}
