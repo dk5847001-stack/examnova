@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-291",
+    "title":  "Navigation route visibility pass",
+    "summary":  "Logged a frontend mini update for the navigation route surface to improve scan clarity. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-19T08:26:47.441Z",
+    "tags":  [
+                 "frontend",
+                 "navigation-route",
+                 "visibility"
+             ]
+}
