@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-297",
+    "title":  "Public CTA feed extension",
+    "summary":  "Logged a frontend mini update for the public cta surface to expand the public update stream. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-19T08:32:47.441Z",
+    "tags":  [
+                 "frontend",
+                 "public-cta",
+                 "feed"
+             ]
+}
