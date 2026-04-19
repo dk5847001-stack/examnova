@@ -1,0 +1,13 @@
+{
+    "id":  "backend-update-185",
+    "title":  "Feed sorting navigation polish",
+    "summary":  "Logged a backend mini update for the feed sorting surface to make the surface easier to discover. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "backend",
+    "status":  "shipped",
+    "publishedAt":  "2026-04-19T06:40:47.441Z",
+    "tags":  [
+                 "backend",
+                 "feed-sorting",
+                 "navigation"
+             ]
+}
