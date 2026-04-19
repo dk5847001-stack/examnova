@@ -1,0 +1,13 @@
+{
+    "id":  "backend-update-195",
+    "title":  "Payload shape navigation polish",
+    "summary":  "Logged a backend mini update for the payload shape surface to make the surface easier to discover. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "backend",
+    "status":  "shipped",
+    "publishedAt":  "2026-04-19T06:50:47.441Z",
+    "tags":  [
+                 "backend",
+                 "payload-shape",
+                 "navigation"
+             ]
+}
