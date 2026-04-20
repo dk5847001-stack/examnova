@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-361",
+    "title":  "Listing cards visibility pass",
+    "summary":  "Logged a frontend mini update for the listing cards surface to improve scan clarity. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-20T10:22:50.561Z",
+    "tags":  [
+                 "frontend",
+                 "listing-cards",
+                 "visibility"
+             ]
+}
