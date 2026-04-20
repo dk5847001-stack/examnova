@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-345",
+    "title":  "Mobile footer navigation polish",
+    "summary":  "Logged a frontend mini update for the mobile footer surface to make the surface easier to discover. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-20T10:06:50.561Z",
+    "tags":  [
+                 "frontend",
+                 "mobile-footer",
+                 "navigation"
+             ]
+}
