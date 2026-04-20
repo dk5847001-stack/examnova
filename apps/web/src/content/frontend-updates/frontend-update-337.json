@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-337",
+    "title":  "Theme surface feed extension",
+    "summary":  "Logged a frontend mini update for the theme surface surface to expand the public update stream. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-20T09:58:50.561Z",
+    "tags":  [
+                 "frontend",
+                 "theme-surface",
+                 "feed"
+             ]
+}
