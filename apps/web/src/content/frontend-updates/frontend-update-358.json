@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-358",
+    "title":  "Discovery header support note",
+    "summary":  "Logged a frontend mini update for the discovery header surface to document another small product-facing change. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-20T10:19:50.561Z",
+    "tags":  [
+                 "frontend",
+                 "discovery-header",
+                 "support"
+             ]
+}
