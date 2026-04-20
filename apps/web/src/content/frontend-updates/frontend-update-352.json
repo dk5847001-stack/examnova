@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-352",
+    "title":  "Public CTA microcopy refresh",
+    "summary":  "Logged a frontend mini update for the public cta surface to tighten user-facing wording. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-20T10:13:50.561Z",
+    "tags":  [
+                 "frontend",
+                 "public-cta",
+                 "copy"
+             ]
+}
