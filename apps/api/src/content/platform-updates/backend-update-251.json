@@ -1,0 +1,13 @@
+{
+    "id":  "backend-update-251",
+    "title":  "Feed sorting visibility pass",
+    "summary":  "Logged a backend mini update for the feed sorting surface to improve scan clarity. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "backend",
+    "status":  "shipped",
+    "publishedAt":  "2026-04-20T08:32:50.561Z",
+    "tags":  [
+                 "backend",
+                 "feed-sorting",
+                 "visibility"
+             ]
+}
