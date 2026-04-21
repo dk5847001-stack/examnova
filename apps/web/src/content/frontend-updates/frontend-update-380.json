@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-380",
+    "title":  "Discovery header cadence entry",
+    "summary":  "Logged a frontend mini update for the discovery header surface to keep update momentum visible. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-21T10:21:03.901Z",
+    "tags":  [
+                 "frontend",
+                 "discovery-header",
+                 "cadence"
+             ]
+}
