@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-375",
+    "title":  "Marketplace search navigation polish",
+    "summary":  "Logged a frontend mini update for the marketplace search surface to make the surface easier to discover. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-21T10:16:03.901Z",
+    "tags":  [
+                 "frontend",
+                 "marketplace-search",
+                 "navigation"
+             ]
+}
