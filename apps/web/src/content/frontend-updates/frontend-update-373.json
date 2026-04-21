@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-373",
+    "title":  "Auth prompts status note",
+    "summary":  "Logged a frontend mini update for the auth prompts surface to make release intent easier to follow. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-04-21T10:14:03.901Z",
+    "tags":  [
+                 "frontend",
+                 "auth-prompts",
+                 "status"
+             ]
+}
