@@ -1,0 +1,13 @@
+{
+    "id":  "backend-update-284",
+    "title":  "Feed sorting metadata pass",
+    "summary":  "Logged a backend mini update for the feed sorting surface to keep update labels consistent. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "backend",
+    "status":  "shipped",
+    "publishedAt":  "2026-04-21T08:45:03.901Z",
+    "tags":  [
+                 "backend",
+                 "feed-sorting",
+                 "metadata"
+             ]
+}
