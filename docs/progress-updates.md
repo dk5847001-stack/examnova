@@ -482,3 +482,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 120
 - Date: 2026-04-29
 - Note: Recorded small repository progress update 120 for the checkout feedback and content delivery surfaces.
+
+## Update 121
+- Date: 2026-04-29
+- Note: Recorded small repository progress update 121 for the faq readability and document parsing surfaces.
