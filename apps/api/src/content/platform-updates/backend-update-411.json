@@ -1,0 +1,13 @@
+{
+    "area":  "backend",
+    "summary":  "Logged a backend mini update for the document parsing surface to preserve stronger observability across release notes. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "publishedAt":  "2026-04-29T05:08:08.0088104+00:00",
+    "tags":  [
+                 "backend",
+                 "document-parsing",
+                 "observability"
+             ],
+    "status":  "shipped",
+    "title":  "Document parsing observability marker",
+    "id":  "backend-update-411"
+}
