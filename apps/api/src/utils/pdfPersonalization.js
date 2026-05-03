@@ -24,10 +24,14 @@ export async function personalizePdfDownload(absolutePath, { buyerName, title = 
 
   let sourceBytes;
 
-  try {
-    sourceBytes = await fs.readFile(absolutePath);
-  } catch {
-    throw new ApiError(404, "The PDF file is not available on the server.");
+  if (Buffer.isBuffer(absolutePath)) {
+    sourceBytes = absolutePath;
+  } else {
+    try {
+      sourceBytes = await fs.readFile(absolutePath);
+    } catch {
+      throw new ApiError(404, "The PDF file is not available on the server.");
+    }
   }
 
   let pdfDocument;

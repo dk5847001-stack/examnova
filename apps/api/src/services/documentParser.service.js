@@ -22,8 +22,12 @@ function buildSections(normalizedText) {
 }
 
 export const documentParserService = {
-  async parseFile({ absolutePath, mimeType }) {
-    const fileBuffer = await fs.readFile(absolutePath);
+  async parseFile({ absolutePath = "", buffer = null, mimeType }) {
+    const fileBuffer = buffer || (absolutePath ? await fs.readFile(absolutePath) : null);
+
+    if (!fileBuffer) {
+      throw new ApiError(404, "The source file is not available for parsing.");
+    }
 
     if (mimeType === "application/pdf") {
       const parsed = await pdfParse(fileBuffer);
@@ -41,7 +45,7 @@ export const documentParserService = {
     }
 
     if (mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-      const parsed = await mammoth.extractRawText({ path: absolutePath });
+      const parsed = absolutePath ? await mammoth.extractRawText({ path: absolutePath }) : await mammoth.extractRawText({ buffer: fileBuffer });
       const normalizedText = normalizeExtractedText(parsed.value || "");
       return {
         extractedText: parsed.value || "",

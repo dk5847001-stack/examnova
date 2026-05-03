@@ -154,17 +154,18 @@ export const pdfGenerationService = {
       throw new ApiError(403, "PDF download is locked until payment is completed.");
     }
 
-    let absolutePath;
-
     try {
-      absolutePath = await storageClient.resolveExisting(generation.storageKey);
+      const storedFile = await storageClient.read({
+        storageKey: generation.storageKey,
+        storageUrl: generation.storageUrl,
+      });
+      return {
+        buffer: storedFile.buffer,
+        contentType: storedFile.contentType || "application/pdf",
+        downloadName: generation.pdfDownloadName || generation.pdfFileName || "examnova-notes.pdf",
+      };
     } catch {
       throw new ApiError(404, "Final PDF file is missing on the server. Please render the PDF again.");
     }
-
-    return {
-      absolutePath,
-      downloadName: generation.pdfDownloadName || generation.pdfFileName || "examnova-notes.pdf",
-    };
   },
 };

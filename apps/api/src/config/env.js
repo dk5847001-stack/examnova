@@ -120,6 +120,9 @@ if (!allowedNodeEnvs.has(nodeEnv)) {
 const webAppUrl = normalizeUrl(getEnv("WEB_APP_URL", "http://localhost:5173"));
 const publicSiteUrl = normalizeUrl(getEnv("PUBLIC_SITE_URL", "http://localhost:5173"));
 const apiBaseUrl = normalizeUrl(getEnv("API_BASE_URL", "http://localhost:4000"));
+const cloudinaryCloudName = getEnv("CLOUDINARY_CLOUD_NAME", getEnv("CLOUD_NAME", ""));
+const cloudinaryApiKey = getEnv("CLOUDINARY_API_KEY", getEnv("CLOUD_API_KEY", ""));
+const cloudinaryApiSecret = getEnv("CLOUDINARY_API_SECRET", getEnv("CLOUD_API_SECRET", ""));
 const defaultCorsAllowedOrigins = [
   normalizeOrigin(webAppUrl),
   normalizeOrigin(publicSiteUrl),
@@ -164,6 +167,9 @@ export const env = {
   razorpayKeyId: getEnv("RAZORPAY_KEY_ID", ""),
   razorpayKeySecret: getEnv("RAZORPAY_KEY_SECRET", ""),
   razorpayWebhookSecret: getEnv("RAZORPAY_WEBHOOK_SECRET", ""),
+  cloudinaryCloudName,
+  cloudinaryApiKey,
+  cloudinaryApiSecret,
   aiProvider: getEnv("AI_PROVIDER", "openai"),
   aiApiKey: getEnv("AI_API_KEY", ""),
   aiModel: getEnv("AI_MODEL", "gpt-5.4"),
@@ -172,7 +178,10 @@ export const env = {
     "ALLOWED_UPLOAD_MIME_TYPES",
     "application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain",
   ),
-  fileStorageDisk: getEnv("FILE_STORAGE_DISK", "local"),
+  fileStorageDisk: getEnv(
+    "FILE_STORAGE_DISK",
+    cloudinaryCloudName && cloudinaryApiKey && cloudinaryApiSecret ? "cloudinary" : "local",
+  ),
   fileStorageBucket: getEnv("FILE_STORAGE_BUCKET", "examnova-assets"),
   localUploadDir: getEnv("LOCAL_UPLOAD_DIR", "uploads"),
   logLevel: getEnv("LOG_LEVEL", "info"),

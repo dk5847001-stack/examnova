@@ -60,9 +60,13 @@ async function buildDirectSourceDownloadFile(purchase) {
   if (purchase?.adminUploadId) {
     const adminUpload = await AdminUploadedPdf.findById(purchase.adminUploadId);
     if (adminUpload?.storageKey) {
-      const absolutePath = await storageClient.resolveExisting(adminUpload.storageKey);
+      const storedFile = await storageClient.read({
+        storageKey: adminUpload.storageKey,
+        storageUrl: adminUpload.storageUrl,
+      });
       return {
-        absolutePath,
+        buffer: storedFile.buffer,
+        contentType: storedFile.contentType || "application/pdf",
         downloadName: adminUpload.originalName || "purchased-admin-pdf.pdf",
       };
     }
@@ -71,9 +75,13 @@ async function buildDirectSourceDownloadFile(purchase) {
   if (purchase?.generatedPdfId) {
     const generatedPdf = await GeneratedPdf.findById(purchase.generatedPdfId);
     if (generatedPdf?.storageKey) {
-      const absolutePath = await storageClient.resolveExisting(generatedPdf.storageKey);
+      const storedFile = await storageClient.read({
+        storageKey: generatedPdf.storageKey,
+        storageUrl: generatedPdf.storageUrl,
+      });
       return {
-        absolutePath,
+        buffer: storedFile.buffer,
+        contentType: storedFile.contentType || "application/pdf",
         downloadName: generatedPdf.pdfDownloadName || `${generatedPdf.title || "purchased-pdf"}.pdf`,
       };
     }
@@ -91,10 +99,23 @@ async function buildPurchaseDownloadFile(listing) {
     throw new ApiError(404, "Purchased PDF file is not available.");
   }
 
-  let absolutePath;
-
   try {
-    absolutePath = await storageClient.resolveExisting(storageKey);
+    const storedFile = await storageClient.read({
+      storageKey,
+      storageUrl:
+        listing?.sourceType === "admin_upload"
+          ? listing?.adminUploadId?.storageUrl || ""
+          : listing?.sourcePdfId?.storageUrl || "",
+    });
+    return {
+      buffer: storedFile.buffer,
+      contentType: storedFile.contentType || "application/pdf",
+      downloadName:
+        (listing?.sourceType === "admin_upload"
+          ? listing?.adminUploadId?.originalName
+          : listing?.sourcePdfId?.pdfDownloadName) ||
+        `${listing.title.replace(/\s+/g, "-").toLowerCase()}.pdf`,
+    };
   } catch {
     throw new ApiError(
       404,
@@ -103,15 +124,6 @@ async function buildPurchaseDownloadFile(listing) {
         : "This purchased PDF file is missing on the server. Please regenerate the PDF and try again.",
     );
   }
-
-  return {
-    absolutePath,
-    downloadName:
-      (listing?.sourceType === "admin_upload"
-        ? listing?.adminUploadId?.originalName
-        : listing?.sourcePdfId?.pdfDownloadName) ||
-      `${listing.title.replace(/\s+/g, "-").toLowerCase()}.pdf`,
-  };
 }
 
 async function buildServiceDownloadFile(service) {
@@ -119,19 +131,19 @@ async function buildServiceDownloadFile(service) {
     throw new ApiError(404, "Purchased website ZIP file is not available.");
   }
 
-  let absolutePath;
-
   try {
-    absolutePath = await storageClient.resolveExisting(service.zipStorageKey);
+    const storedFile = await storageClient.read({
+      storageKey: service.zipStorageKey,
+      storageUrl: service.zipStorageUrl || "",
+    });
+    return {
+      buffer: storedFile.buffer,
+      contentType: storedFile.contentType || "application/zip",
+      downloadName: service.zipFileName || `${service.title.replace(/\s+/g, "-").toLowerCase()}.zip`,
+    };
   } catch {
     throw new ApiError(404, "This purchased website ZIP file is missing on the server. Please re-upload it.");
   }
-
-  return {
-    absolutePath,
-    downloadName: service.zipFileName || `${service.title.replace(/\s+/g, "-").toLowerCase()}.zip`,
-    contentType: service.zipMimeType || "application/zip",
-  };
 }
 
 async function buildPersonalizedDownloadFile(file, purchase, listing) {
@@ -141,7 +153,7 @@ async function buildPersonalizedDownloadFile(file, purchase, listing) {
     throw new ApiError(400, "Buyer name is missing for this PDF download.");
   }
 
-  const personalizedBuffer = await personalizePdfDownload(file.absolutePath, {
+  const personalizedBuffer = await personalizePdfDownload(file.buffer, {
     buyerName,
     title: listing?.title || purchase?.listingId?.title || purchase?.title || file.downloadName,
   });

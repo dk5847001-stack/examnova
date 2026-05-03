@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import { CardPlaceholderGrid } from "../../components/ui/CardPlaceholderGrid.jsx";
 import { PageHero } from "../../components/ui/PageHero.jsx";
 import { EmptyStateCard } from "../../components/ui/EmptyStateCard.jsx";
-import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { UpcomingLockedCard } from "../../components/ui/UpcomingLockedCard.jsx";
 import {
   BRANCH_OPTIONS,
@@ -154,7 +154,12 @@ export function UpcomingLockedPage() {
         <section className="stack-section">
           {error ? <p className="form-error">{error}</p> : null}
           {isLoading ? (
-            <LoadingCard message="Loading upcoming locked PDFs..." />
+            <CardPlaceholderGrid
+              ariaLabel="Loading upcoming locked PDFs"
+              count={6}
+              variant="upcoming"
+              className="marketplace-grid"
+            />
           ) : items.length ? (
             <div className="marketplace-grid">
               {items.map((item) => (

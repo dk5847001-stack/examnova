@@ -15,7 +15,8 @@ export const integrationConfig = {
     enabled: Boolean(env.razorpayKeyId && env.razorpayKeySecret),
   },
   storage: {
-    disk: env.fileStorageDisk,
+    provider: env.fileStorageDisk,
+    cloudinaryEnabled: Boolean(env.cloudinaryCloudName && env.cloudinaryApiKey && env.cloudinaryApiSecret),
     bucket: env.fileStorageBucket,
   },
 };

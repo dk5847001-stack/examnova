@@ -16,16 +16,15 @@ export const publicController = {
       throw new ApiError(400, "Media key is too long.");
     }
 
-    let absolutePath = "";
     try {
-      absolutePath = await storageClient.resolveExisting(storageKey);
+      const file = await storageClient.read({ storageKey });
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      res.setHeader("X-Content-Type-Options", "nosniff");
+      res.type(file.contentType || "application/octet-stream");
+      return res.send(file.buffer);
     } catch {
       throw new ApiError(404, "Media file not found.");
     }
-
-    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-    res.setHeader("X-Content-Type-Options", "nosniff");
-    return res.sendFile(absolutePath);
   },
   getUniversityLanding(_req, res) {
     return sendSuccess(res, { items: [] }, "Public university landing stub is wired.");

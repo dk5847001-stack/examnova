@@ -27,14 +27,15 @@ function serializeDocument(document) {
   };
 }
 
-async function parseAndPersist(document, absolutePath) {
+async function parseAndPersist(document, sourceFile) {
   try {
     document.parsingStatus = "processing";
     document.parsingError = "";
     await document.save();
 
     const parsedOutput = await documentParserService.parseFile({
-      absolutePath,
+      buffer: Buffer.isBuffer(sourceFile) ? sourceFile : null,
+      absolutePath: Buffer.isBuffer(sourceFile) ? "" : sourceFile,
       mimeType: document.mimeType,
     });
 
@@ -92,7 +93,7 @@ export const uploadService = {
       status: "active",
     });
 
-    await parseAndPersist(document, storedFile.absolutePath);
+    await parseAndPersist(document, file.buffer);
 
     return serializeDocument(document);
   },
@@ -175,15 +176,15 @@ export const uploadService = {
       throw new ApiError(404, "Uploaded document not found.");
     }
 
-    let absolutePath;
-
     try {
-      absolutePath = await storageClient.resolveExisting(document.storageKey);
+      const storedFile = await storageClient.read({
+        storageKey: document.storageKey,
+        storageUrl: document.storageUrl,
+      });
+      await parseAndPersist(document, storedFile.buffer);
     } catch {
       throw new ApiError(404, "The uploaded source file is missing on the server. Please upload the document again.");
     }
-
-    await parseAndPersist(document, absolutePath);
 
     return this.getDocumentForUser(documentId, userId);
   },

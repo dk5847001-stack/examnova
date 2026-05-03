@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { CardPlaceholderGrid } from "../../components/ui/CardPlaceholderGrid.jsx";
 import { EmptyStateCard } from "../../components/ui/EmptyStateCard.jsx";
-import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { SectionHeader } from "../../components/ui/SectionHeader.jsx";
 import { getServiceCategoryLabel } from "../../features/marketplace/marketplace.constants.js";
 import { useAuth } from "../../hooks/useAuth.js";
@@ -112,7 +112,12 @@ export function PurchasedPdfsPage() {
       {feedback ? <p className="form-success">{feedback}</p> : null}
       {error ? <p className="form-error">{error}</p> : null}
       {isLoading ? (
-        <LoadingCard message="Loading purchased library..." />
+        <CardPlaceholderGrid
+          ariaLabel="Loading purchased library"
+          count={6}
+          variant="library"
+          className="marketplace-grid"
+        />
       ) : items.length ? (
         <div className="marketplace-grid">
           {items.map((item) => {

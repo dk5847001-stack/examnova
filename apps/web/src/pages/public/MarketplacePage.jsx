@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { CardPlaceholderGrid } from "../../components/ui/CardPlaceholderGrid.jsx";
 import { EmptyStateCard } from "../../components/ui/EmptyStateCard.jsx";
-import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { MarketplaceListingCard } from "../../components/ui/MarketplaceListingCard.jsx";
+import { MarketplaceSectionLoading } from "../../components/ui/MarketplaceSectionLoading.jsx";
 import { SectionHeader } from "../../components/ui/SectionHeader.jsx";
 import { ServiceListingCard } from "../../components/ui/ServiceListingCard.jsx";
 import {
@@ -393,7 +394,22 @@ export function MarketplacePage() {
             />
 
             {listingError ? <p className="form-error">{listingError}</p> : null}
-            {isListingLoading ? <LoadingCard message="Loading exam PDFs..." /> : null}
+            {isListingLoading ? (
+              <section className="stack-section">
+                <MarketplaceSectionLoading
+                  eyebrow="Semester Exam"
+                  title="Current semester exam PDFs"
+                  description={`Live mode section for semester exams. Showing up to ${MARKETPLACE_CATEGORY_LIMIT} PDFs.`}
+                  count={3}
+                />
+                <MarketplaceSectionLoading
+                  eyebrow="CIA Exam"
+                  title="Current CIA exam PDFs"
+                  description={`Live mode section for CIA exams. Showing up to ${MARKETPLACE_CATEGORY_LIMIT} PDFs.`}
+                  count={3}
+                />
+              </section>
+            ) : null}
 
             {!isListingLoading && !listingError && hasExamItems ? (
               <section className="stack-section">
@@ -459,7 +475,7 @@ export function MarketplacePage() {
             />
 
             {listingError ? <p className="form-error">{listingError}</p> : null}
-            {isListingLoading ? <LoadingCard message="Loading notes..." /> : null}
+            {isListingLoading ? <CardPlaceholderGrid count={6} variant="marketplace" /> : null}
 
             {!isListingLoading && !listingError && hasNoteItems ? (
               <div className="marketplace-grid simple-marketplace-grid">
@@ -506,7 +522,20 @@ export function MarketplacePage() {
             />
 
             {serviceError ? <p className="form-error">{serviceError}</p> : null}
-            {isServiceLoading ? <LoadingCard message="Loading website services..." /> : null}
+            {isServiceLoading ? (
+              <section className="stack-section">
+                {SERVICE_CATEGORY_OPTIONS.slice(0, 2).map((section) => (
+                  <MarketplaceSectionLoading
+                    eyebrow="Service category"
+                    title={section.label}
+                    description={SERVICE_SECTION_DESCRIPTIONS[section.value]}
+                    count={3}
+                    key={section.value}
+                    variant="service"
+                  />
+                ))}
+              </section>
+            ) : null}
 
             {!isServiceLoading && !serviceError && hasServiceItems ? (
               <section className="stack-section">

@@ -16,12 +16,9 @@ export const purchaseController = {
     res.setHeader("Pragma", "no-cache");
     res.setHeader("Referrer-Policy", "no-referrer");
     res.setHeader("X-Content-Type-Options", "nosniff");
-    if (file.buffer) {
-      res.type(file.contentType || "application/pdf");
-      res.attachment(file.downloadName);
-      return res.send(file.buffer);
-    }
-    return res.download(file.absolutePath, file.downloadName);
+    res.type(file.contentType || "application/pdf");
+    res.attachment(file.downloadName);
+    return res.send(file.buffer);
   },
   async downloadGuestPurchase(req, res) {
     const rawTokenHeader = req.headers["x-guest-purchase-token"];
@@ -31,11 +28,8 @@ export const purchaseController = {
     res.setHeader("Pragma", "no-cache");
     res.setHeader("Referrer-Policy", "no-referrer");
     res.setHeader("X-Content-Type-Options", "nosniff");
-    if (file.buffer) {
-      res.type(file.contentType || "application/pdf");
-      res.attachment(file.downloadName);
-      return res.send(file.buffer);
-    }
-    return res.download(file.absolutePath, file.downloadName);
+    res.type(file.contentType || "application/pdf");
+    res.attachment(file.downloadName);
+    return res.send(file.buffer);
   },
 };

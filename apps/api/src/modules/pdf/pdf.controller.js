@@ -43,6 +43,8 @@ export const pdfController = {
   },
   async downloadFinalPdf(req, res) {
     const file = await pdfGenerationService.getDownloadFile(req.auth.userId, req.params.id);
-    return res.download(file.absolutePath, file.downloadName);
+    res.type(file.contentType || "application/pdf");
+    res.attachment(file.downloadName);
+    return res.send(file.buffer);
   },
 };
