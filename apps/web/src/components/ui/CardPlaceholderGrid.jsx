@@ -3,12 +3,12 @@ const PLACEHOLDER_KEYS = Array.from({ length: 6 }, (_, index) => `placeholder-${
 function PlaceholderLine({ width = "w-100", size = "" }) {
   const sizeClassName = size ? ` ${size}` : "";
 
-  return <span className={`placeholder placeholder-glow ${width}${sizeClassName}`} aria-hidden="true" />;
+  return <span className={`placeholder placeholder-glow bg-secondary ${width}${sizeClassName}`} aria-hidden="true" />;
 }
 
 function MarketplacePlaceholderCard() {
   return (
-    <article className="marketplace-card simple-marketplace-card placeholder-card" aria-hidden="true">
+    <article className="marketplace-card simple-marketplace-card placeholder-card bootstrap-skeleton-card" aria-hidden="true">
       <div className="simple-card-topline">
         <PlaceholderLine width="w-25" />
         <PlaceholderLine width="w-35" />
@@ -27,7 +27,7 @@ function MarketplacePlaceholderCard() {
         <PlaceholderLine width="w-25" />
       </div>
       <div className="hero-actions card-actions">
-        <span className="placeholder placeholder-glow placeholder-button w-100" />
+        <span className="placeholder placeholder-glow bg-secondary placeholder-button w-100" />
       </div>
     </article>
   );
@@ -35,7 +35,7 @@ function MarketplacePlaceholderCard() {
 
 function ServicePlaceholderCard() {
   return (
-    <article className="marketplace-card service-listing-card placeholder-card" aria-hidden="true">
+    <article className="marketplace-card service-listing-card placeholder-card bootstrap-skeleton-card" aria-hidden="true">
       <div className="simple-card-cover service-card-cover placeholder-block placeholder-cover" />
       <div className="marketplace-card-copy simple-card-copy placeholder-stack">
         <PlaceholderLine width="w-35" />
@@ -53,8 +53,8 @@ function ServicePlaceholderCard() {
         <PlaceholderLine width="w-35" />
       </div>
       <div className="hero-actions card-actions">
-        <span className="placeholder placeholder-glow placeholder-button w-35" />
-        <span className="placeholder placeholder-glow placeholder-button w-35" />
+        <span className="placeholder placeholder-glow bg-secondary placeholder-button w-35" />
+        <span className="placeholder placeholder-glow bg-secondary placeholder-button w-35" />
       </div>
     </article>
   );
@@ -62,7 +62,7 @@ function ServicePlaceholderCard() {
 
 function UpcomingPlaceholderCard() {
   return (
-    <article className="marketplace-card upcoming-card placeholder-card" aria-hidden="true">
+    <article className="marketplace-card upcoming-card placeholder-card bootstrap-skeleton-card" aria-hidden="true">
       <div className="marketplace-card-header">
         <div className="placeholder-stack">
           <PlaceholderLine width="w-35" />
@@ -88,7 +88,7 @@ function UpcomingPlaceholderCard() {
         <PlaceholderLine width="w-35" />
       </div>
       <div className="hero-actions">
-        <span className="placeholder placeholder-glow placeholder-button w-50" />
+        <span className="placeholder placeholder-glow bg-secondary placeholder-button w-50" />
       </div>
     </article>
   );
@@ -96,7 +96,7 @@ function UpcomingPlaceholderCard() {
 
 function LibraryPlaceholderCard() {
   return (
-    <article className="marketplace-card service-listing-card placeholder-card" aria-hidden="true">
+    <article className="marketplace-card service-listing-card placeholder-card bootstrap-skeleton-card" aria-hidden="true">
       <div className="marketplace-card-header">
         <div className="placeholder-stack">
           <PlaceholderLine width="w-35" />
@@ -114,9 +114,9 @@ function LibraryPlaceholderCard() {
         <PlaceholderLine width="w-35" />
       </div>
       <div className="hero-actions">
-        <span className="placeholder placeholder-glow placeholder-button w-35" />
-        <span className="placeholder placeholder-glow placeholder-button w-35" />
-        <span className="placeholder placeholder-glow placeholder-button w-35" />
+        <span className="placeholder placeholder-glow bg-secondary placeholder-button w-35" />
+        <span className="placeholder placeholder-glow bg-secondary placeholder-button w-35" />
+        <span className="placeholder placeholder-glow bg-secondary placeholder-button w-35" />
       </div>
     </article>
   );

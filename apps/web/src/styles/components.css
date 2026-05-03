@@ -634,6 +634,12 @@
   pointer-events: none;
 }
 
+.bootstrap-skeleton-card {
+  border-color: var(--border-soft);
+  background: var(--surface-strong);
+  box-shadow: var(--shadow-sm);
+}
+
 .placeholder-stack,
 .placeholder-end {
   display: grid;
@@ -662,15 +668,31 @@
   position: relative;
   overflow: hidden;
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-subtle-strong);
+  border: 1px solid var(--border-soft);
+}
+
+.placeholder-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  animation: placeholder-shimmer 1.35s ease-in-out infinite;
 }
 
 .placeholder {
-  --placeholder-color: rgba(255, 255, 255, 0.12);
+  --placeholder-color: rgba(148, 163, 184, 0.24);
   display: inline-block;
   min-height: 0.9rem;
   border-radius: 999px;
   background: var(--placeholder-color);
+  opacity: 1;
+  vertical-align: middle;
+}
+
+.bg-secondary {
+  background-color: var(--placeholder-color) !important;
 }
 
 .placeholder-glow {
@@ -1407,18 +1429,19 @@
 
 .simple-marketplace-grid {
   grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: stretch;
 }
 
 .simple-marketplace-card {
   min-height: 100%;
   justify-items: center;
   align-content: start;
-  gap: 0.62rem;
+  gap: 0.72rem;
   text-align: center;
-  padding: 0.72rem 0.62rem 0.78rem;
-  background:
-    radial-gradient(circle at top center, rgba(111, 232, 255, 0.08), transparent 24%),
-    var(--surface-strong);
+  padding: 0.82rem;
+  border-radius: 22px;
+  background: var(--surface-strong);
+  box-shadow: 0 16px 34px rgba(12, 28, 62, 0.1);
 }
 
 .simple-card-topline {
@@ -1441,6 +1464,7 @@
   color: var(--muted);
   font-size: 0.72rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .simple-cover-seal {
@@ -1486,7 +1510,7 @@
 .simple-card-icon {
   width: 72px;
   height: 72px;
-  border-radius: 50%;
+  border-radius: 22px;
   display: grid;
   place-items: center;
   font-family: var(--font-display);
@@ -1505,13 +1529,11 @@
 .simple-card-cover {
   width: 100%;
   aspect-ratio: 4 / 3;
-  border-radius: 20px;
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-soft);
   background: var(--surface-subtle);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    0 18px 32px rgba(12, 28, 62, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .simple-card-cover-image {
@@ -1528,7 +1550,8 @@
 .simple-card-copy h3 {
   margin: 0;
   font-size: clamp(1rem, 1.35vw, 1.22rem);
-  line-height: 1.08;
+  line-height: 1.18;
+  letter-spacing: 0;
 }
 
 .simple-card-copy .support-copy {
@@ -1574,6 +1597,7 @@
   width: 100%;
   min-height: 44px;
   padding: 0.72rem 0.8rem;
+  border-radius: 14px;
 }
 
 .service-listing-card {

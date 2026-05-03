@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { CardPlaceholderGrid } from "../../components/ui/CardPlaceholderGrid.jsx";
 import { EmptyStateCard } from "../../components/ui/EmptyStateCard.jsx";
-import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { SectionHeader } from "../../components/ui/SectionHeader.jsx";
 import { StatusBadge } from "../../components/ui/StatusBadge.jsx";
 import { useAuth } from "../../hooks/useAuth.js";
@@ -52,7 +52,12 @@ export function GeneratedPdfsPage() {
       />
       {error ? <p className="form-error">{error}</p> : null}
       {isLoading ? (
-        <LoadingCard message="Loading generated answers..." />
+        <CardPlaceholderGrid
+          ariaLabel="Loading generated PDF cards"
+          className="document-grid pdf-card-grid"
+          count={6}
+          variant="library"
+        />
       ) : generations.length ? (
         <div className="document-grid">
           {generations.map((generation) => (

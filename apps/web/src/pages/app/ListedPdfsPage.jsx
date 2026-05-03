@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { EmptyStateCard } from "../../components/ui/EmptyStateCard.jsx";
+import { CardPlaceholderGrid } from "../../components/ui/CardPlaceholderGrid.jsx";
 import {
   MarketplaceListingForm,
   createInitialMarketplaceForm,
 } from "../../components/ui/MarketplaceListingForm.jsx";
 import { MarketplaceListingCard } from "../../components/ui/MarketplaceListingCard.jsx";
-import { LoadingCard } from "../../components/ui/LoadingCard.jsx";
 import { SectionHeader } from "../../components/ui/SectionHeader.jsx";
 import { DEFAULT_UNIVERSITY } from "../../features/academic/academicTaxonomy.js";
 import { useAuth } from "../../hooks/useAuth.js";
@@ -189,10 +189,6 @@ export function ListedPdfsPage() {
     setForm(createInitialMarketplaceForm(listing));
   }
 
-  if (isLoading) {
-    return <LoadingCard message="Loading seller marketplace workspace..." />;
-  }
-
   return (
     <section className="stack-section">
       <SectionHeader
@@ -229,7 +225,14 @@ export function ListedPdfsPage() {
             </div>
           </div>
 
-          {listings.length ? (
+          {isLoading ? (
+            <CardPlaceholderGrid
+              ariaLabel="Loading listed PDF cards"
+              count={4}
+              variant="marketplace"
+              className="marketplace-grid"
+            />
+          ) : listings.length ? (
             <div className="marketplace-grid">
               {listings.map((listing) => (
                 <MarketplaceListingCard
