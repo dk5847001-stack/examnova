@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-537",
+    "title":  "Listing cards feed extension",
+    "summary":  "Logged a frontend mini update for the listing cards surface to expand the public update stream. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-05-03T15:34:00.332Z",
+    "tags":  [
+                 "frontend",
+                 "listing-cards",
+                 "feed"
+             ]
+}
