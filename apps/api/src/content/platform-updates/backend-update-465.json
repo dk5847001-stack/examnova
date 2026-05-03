@@ -1,0 +1,13 @@
+{
+    "id":  "backend-update-465",
+    "title":  "Content parsing navigation polish",
+    "summary":  "Logged a backend mini update for the content parsing surface to make the surface easier to discover. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "backend",
+    "status":  "shipped",
+    "publishedAt":  "2026-05-03T14:22:00.332Z",
+    "tags":  [
+                 "backend",
+                 "content-parsing",
+                 "navigation"
+             ]
+}
