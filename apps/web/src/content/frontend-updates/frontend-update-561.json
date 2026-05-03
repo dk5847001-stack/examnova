@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-561",
+    "title":  "Public CTA visibility pass",
+    "summary":  "Logged a frontend mini update for the public cta surface to improve scan clarity. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-05-03T15:58:00.332Z",
+    "tags":  [
+                 "frontend",
+                 "public-cta",
+                 "visibility"
+             ]
+}
