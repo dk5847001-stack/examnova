@@ -1310,3 +1310,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 327
 - Date: 2026-05-06
 - Note: Recorded small repository progress update 327 for the checkout feedback and content delivery surfaces.
+
+## Update 328
+- Date: 2026-05-06
+- Note: Recorded small repository progress update 328 for the faq readability and document parsing surfaces.
