@@ -1,0 +1,13 @@
+{
+    "area":  "frontend",
+    "summary":  "Logged a frontend mini update for the account settings surface to improve layout. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "publishedAt":  "2026-05-06T11:05:50.1702316+00:00",
+    "tags":  [
+                 "frontend",
+                 "account-settings",
+                 "layout"
+             ],
+    "status":  "live",
+    "title":  "Account settings layout pass",
+    "id":  "frontend-update-668"
+}
