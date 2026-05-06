@@ -1,0 +1,13 @@
+{
+    "area":  "backend",
+    "summary":  "Logged a backend mini update for the notification payload surface to preserve stronger observability across release notes. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "publishedAt":  "2026-05-06T09:33:07.0593331+00:00",
+    "tags":  [
+                 "backend",
+                 "notification-payload",
+                 "observability"
+             ],
+    "status":  "shipped",
+    "title":  "Notification payload observability marker",
+    "id":  "backend-update-513"
+}
