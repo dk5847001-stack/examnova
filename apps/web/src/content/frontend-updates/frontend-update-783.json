@@ -1,0 +1,13 @@
+{
+    "area":  "frontend",
+    "summary":  "Logged a frontend mini update for the faq readability surface to improve navigation. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "publishedAt":  "2026-05-09T06:08:45.7942891+00:00",
+    "tags":  [
+                 "frontend",
+                 "faq-readability",
+                 "navigation"
+             ],
+    "status":  "live",
+    "title":  "FAQ readability navigation pass",
+    "id":  "frontend-update-783"
+}
