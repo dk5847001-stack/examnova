@@ -1710,3 +1710,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 427
 - Date: 2026-05-09
 - Note: Recorded small repository progress update 427 for the faq readability and document parsing surfaces.
+
+## Update 428
+- Date: 2026-05-09
+- Note: Recorded small repository progress update 428 for the resource layout and pdf pipeline surfaces.
