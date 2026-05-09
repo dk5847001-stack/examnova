@@ -1522,3 +1522,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 380
 - Date: 2026-05-09
 - Note: Recorded small repository progress update 380 for the resource layout and pdf pipeline surfaces.
+
+## Update 381
+- Date: 2026-05-09
+- Note: Recorded small repository progress update 381 for the mobile footer and payload shape surfaces.
