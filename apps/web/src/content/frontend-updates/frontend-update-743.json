@@ -1,0 +1,13 @@
+{
+    "area":  "frontend",
+    "summary":  "Logged a frontend mini update for the account settings surface to improve navigation. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "publishedAt":  "2026-05-09T05:26:23.2476531+00:00",
+    "tags":  [
+                 "frontend",
+                 "account-settings",
+                 "navigation"
+             ],
+    "status":  "live",
+    "title":  "Account settings navigation pass",
+    "id":  "frontend-update-743"
+}
