@@ -1374,3 +1374,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 343
 - Date: 2026-05-09
 - Note: Recorded small repository progress update 343 for the faq readability and document parsing surfaces.
+
+## Update 344
+- Date: 2026-05-09
+- Note: Recorded small repository progress update 344 for the resource layout and pdf pipeline surfaces.
