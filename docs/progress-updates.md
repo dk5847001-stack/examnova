@@ -1946,3 +1946,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 486
 - Date: 2026-05-13
 - Note: Recorded small repository progress update 486 for the account settings and notification payload surfaces.
+
+## Update 487
+- Date: 2026-05-13
+- Note: Recorded small repository progress update 487 for the route guard copy and wallet summary surfaces.
