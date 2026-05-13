@@ -1990,3 +1990,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 497
 - Date: 2026-05-13
 - Note: Recorded small repository progress update 497 for the upload progress and upload workflow surfaces.
+
+## Update 498
+- Date: 2026-05-13
+- Note: Recorded small repository progress update 498 for the account settings and notification payload surfaces.
