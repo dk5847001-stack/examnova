@@ -1958,3 +1958,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 489
 - Date: 2026-05-13
 - Note: Recorded small repository progress update 489 for the checkout feedback and content delivery surfaces.
+
+## Update 490
+- Date: 2026-05-13
+- Note: Recorded small repository progress update 490 for the faq readability and document parsing surfaces.
