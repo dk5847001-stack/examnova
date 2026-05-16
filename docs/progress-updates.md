@@ -2390,3 +2390,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 597
 - Date: 2026-05-16
 - Note: Recorded small repository progress update 597 for the account settings and notification payload surfaces.
+
+## Update 598
+- Date: 2026-05-16
+- Note: Recorded small repository progress update 598 for the route guard copy and wallet summary surfaces.
