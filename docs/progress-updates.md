@@ -2338,3 +2338,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 584
 - Date: 2026-05-16
 - Note: Recorded small repository progress update 584 for the upload progress and upload workflow surfaces.
+
+## Update 585
+- Date: 2026-05-16
+- Note: Recorded small repository progress update 585 for the account settings and notification payload surfaces.
