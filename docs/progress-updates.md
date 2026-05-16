@@ -2362,3 +2362,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 590
 - Date: 2026-05-16
 - Note: Recorded small repository progress update 590 for the resource layout and pdf pipeline surfaces.
+
+## Update 591
+- Date: 2026-05-16
+- Note: Recorded small repository progress update 591 for the mobile footer and payload shape surfaces.
