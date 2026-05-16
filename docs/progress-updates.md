@@ -2334,3 +2334,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 583
 - Date: 2026-05-16
 - Note: Recorded small repository progress update 583 for the marketplace filters and route sequencing surfaces.
+
+## Update 584
+- Date: 2026-05-16
+- Note: Recorded small repository progress update 584 for the upload progress and upload workflow surfaces.
