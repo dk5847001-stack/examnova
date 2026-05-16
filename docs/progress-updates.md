@@ -2238,3 +2238,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 559
 - Date: 2026-05-16
 - Note: Recorded small repository progress update 559 for the marketplace filters and route sequencing surfaces.
+
+## Update 560
+- Date: 2026-05-16
+- Note: Recorded small repository progress update 560 for the upload progress and upload workflow surfaces.
