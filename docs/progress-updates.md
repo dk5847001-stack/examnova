@@ -2646,3 +2646,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 661
 - Date: 2026-05-16
 - Note: Recorded small repository progress update 661 for the faq readability and document parsing surfaces.
+
+## Update 662
+- Date: 2026-05-16
+- Note: Recorded small repository progress update 662 for the resource layout and pdf pipeline surfaces.
