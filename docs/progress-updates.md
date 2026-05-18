@@ -2894,3 +2894,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 723
 - Date: 2026-05-18
 - Note: Recorded small repository progress update 723 for the checkout feedback and content delivery surfaces.
+
+## Update 724
+- Date: 2026-05-18
+- Note: Recorded small repository progress update 724 for the faq readability and document parsing surfaces.
