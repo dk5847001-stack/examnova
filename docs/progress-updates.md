@@ -2682,3 +2682,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 670
 - Date: 2026-05-18
 - Note: Recorded small repository progress update 670 for the marketplace filters and route sequencing surfaces.
+
+## Update 671
+- Date: 2026-05-18
+- Note: Recorded small repository progress update 671 for the upload progress and upload workflow surfaces.
