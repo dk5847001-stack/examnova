@@ -2990,3 +2990,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 747
 - Date: 2026-05-18
 - Note: Recorded small repository progress update 747 for the checkout feedback and content delivery surfaces.
+
+## Update 748
+- Date: 2026-05-18
+- Note: Recorded small repository progress update 748 for the faq readability and document parsing surfaces.
