@@ -2802,3 +2802,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 700
 - Date: 2026-05-18
 - Note: Recorded small repository progress update 700 for the faq readability and document parsing surfaces.
+
+## Update 701
+- Date: 2026-05-18
+- Note: Recorded small repository progress update 701 for the resource layout and pdf pipeline surfaces.
