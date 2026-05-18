@@ -2898,3 +2898,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 724
 - Date: 2026-05-18
 - Note: Recorded small repository progress update 724 for the faq readability and document parsing surfaces.
+
+## Update 725
+- Date: 2026-05-18
+- Note: Recorded small repository progress update 725 for the resource layout and pdf pipeline surfaces.
