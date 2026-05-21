@@ -3762,3 +3762,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 940
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 940 for the marketplace filters and route sequencing surfaces.
+
+## Update 941
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 941 for the upload progress and upload workflow surfaces.
