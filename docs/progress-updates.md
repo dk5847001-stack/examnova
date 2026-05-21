@@ -3886,3 +3886,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 971
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 971 for the resource layout and pdf pipeline surfaces.
+
+## Update 972
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 972 for the mobile footer and payload shape surfaces.
