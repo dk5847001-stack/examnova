@@ -3482,3 +3482,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 870
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 870 for the checkout feedback and content delivery surfaces.
+
+## Update 871
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 871 for the faq readability and document parsing surfaces.
