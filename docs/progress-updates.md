@@ -3962,3 +3962,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 990
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 990 for the account settings and notification payload surfaces.
+
+## Update 991
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 991 for the route guard copy and wallet summary surfaces.
