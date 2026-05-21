@@ -3742,3 +3742,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 935
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 935 for the resource layout and pdf pipeline surfaces.
+
+## Update 936
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 936 for the mobile footer and payload shape surfaces.
