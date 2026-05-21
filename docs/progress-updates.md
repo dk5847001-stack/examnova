@@ -3814,3 +3814,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 953
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 953 for the upload progress and upload workflow surfaces.
+
+## Update 954
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 954 for the account settings and notification payload surfaces.
