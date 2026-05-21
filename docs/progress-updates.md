@@ -3186,3 +3186,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 796
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 796 for the route guard copy and wallet summary surfaces.
+
+## Update 797
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 797 for the theme contrast and marketplace sync surfaces.
