@@ -3862,3 +3862,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 965
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 965 for the upload progress and upload workflow surfaces.
+
+## Update 966
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 966 for the account settings and notification payload surfaces.
