@@ -3930,3 +3930,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 982
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 982 for the faq readability and document parsing surfaces.
+
+## Update 983
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 983 for the resource layout and pdf pipeline surfaces.
