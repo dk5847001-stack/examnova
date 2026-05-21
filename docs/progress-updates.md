@@ -4066,3 +4066,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 1016
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 1016 for the upload progress and upload workflow surfaces.
+
+## Update 1017
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 1017 for the account settings and notification payload surfaces.
