@@ -3914,3 +3914,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 978
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 978 for the account settings and notification payload surfaces.
+
+## Update 979
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 979 for the route guard copy and wallet summary surfaces.
