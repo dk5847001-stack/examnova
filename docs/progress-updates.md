@@ -3326,3 +3326,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 831
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 831 for the account settings and notification payload surfaces.
+
+## Update 832
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 832 for the route guard copy and wallet summary surfaces.
