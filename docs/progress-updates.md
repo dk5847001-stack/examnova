@@ -3346,3 +3346,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 836
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 836 for the resource layout and pdf pipeline surfaces.
+
+## Update 837
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 837 for the mobile footer and payload shape surfaces.
