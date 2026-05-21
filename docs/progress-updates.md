@@ -4014,3 +4014,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 1003
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 1003 for the marketplace filters and route sequencing surfaces.
+
+## Update 1004
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 1004 for the upload progress and upload workflow surfaces.
