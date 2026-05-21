@@ -3486,3 +3486,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 871
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 871 for the faq readability and document parsing surfaces.
+
+## Update 872
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 872 for the resource layout and pdf pipeline surfaces.
