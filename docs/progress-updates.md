@@ -3298,3 +3298,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 824
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 824 for the resource layout and pdf pipeline surfaces.
+
+## Update 825
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 825 for the mobile footer and payload shape surfaces.
