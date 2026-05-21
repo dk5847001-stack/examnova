@@ -3782,3 +3782,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 945
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 945 for the checkout feedback and content delivery surfaces.
+
+## Update 946
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 946 for the faq readability and document parsing surfaces.
