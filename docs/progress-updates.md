@@ -3958,3 +3958,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 989
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 989 for the upload progress and upload workflow surfaces.
+
+## Update 990
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 990 for the account settings and notification payload surfaces.
