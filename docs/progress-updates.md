@@ -3722,3 +3722,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 930
 - Date: 2026-05-21
 - Note: Recorded small repository progress update 930 for the account settings and notification payload surfaces.
+
+## Update 931
+- Date: 2026-05-21
+- Note: Recorded small repository progress update 931 for the route guard copy and wallet summary surfaces.
