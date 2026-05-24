@@ -4922,3 +4922,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 1230
 - Date: 2026-05-24
 - Note: Recorded small repository progress update 1230 for the checkout feedback and content delivery surfaces.
+
+## Update 1231
+- Date: 2026-05-24
+- Note: Recorded small repository progress update 1231 for the faq readability and document parsing surfaces.
