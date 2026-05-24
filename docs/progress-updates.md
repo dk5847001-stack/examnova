@@ -4998,3 +4998,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 1249
 - Date: 2026-05-24
 - Note: Recorded small repository progress update 1249 for the marketplace filters and route sequencing surfaces.
+
+## Update 1250
+- Date: 2026-05-24
+- Note: Recorded small repository progress update 1250 for the upload progress and upload workflow surfaces.
