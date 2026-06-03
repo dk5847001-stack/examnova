@@ -5498,3 +5498,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 1374
 - Date: 2026-06-03
 - Note: Recorded small repository progress update 1374 for the account settings and notification payload surfaces.
+
+## Update 1375
+- Date: 2026-06-03
+- Note: Recorded small repository progress update 1375 for the route guard copy and wallet summary surfaces.
