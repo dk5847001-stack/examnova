@@ -5490,3 +5490,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 1372
 - Date: 2026-06-03
 - Note: Recorded small repository progress update 1372 for the marketplace filters and route sequencing surfaces.
+
+## Update 1373
+- Date: 2026-06-03
+- Note: Recorded small repository progress update 1373 for the upload progress and upload workflow surfaces.
