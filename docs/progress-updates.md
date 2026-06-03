@@ -5494,3 +5494,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 1373
 - Date: 2026-06-03
 - Note: Recorded small repository progress update 1373 for the upload progress and upload workflow surfaces.
+
+## Update 1374
+- Date: 2026-06-03
+- Note: Recorded small repository progress update 1374 for the account settings and notification payload surfaces.
