@@ -5558,3 +5558,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 1389
 - Date: 2026-06-03
 - Note: Recorded small repository progress update 1389 for the checkout feedback and content delivery surfaces.
+
+## Update 1390
+- Date: 2026-06-03
+- Note: Recorded small repository progress update 1390 for the faq readability and document parsing surfaces.
