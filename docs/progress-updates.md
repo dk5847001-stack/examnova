@@ -5834,3 +5834,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 1458
 - Date: 2026-06-06
 - Note: Recorded small repository progress update 1458 for the faq readability and document parsing surfaces.
+
+## Update 1459
+- Date: 2026-06-06
+- Note: Recorded small repository progress update 1459 for the resource layout and pdf pipeline surfaces.
