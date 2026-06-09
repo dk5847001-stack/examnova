@@ -6722,3 +6722,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 1680
 - Date: 2026-06-09
 - Note: Recorded small repository progress update 1680 for the faq readability and document parsing surfaces.
+
+## Update 1681
+- Date: 2026-06-09
+- Note: Recorded small repository progress update 1681 for the resource layout and pdf pipeline surfaces.
