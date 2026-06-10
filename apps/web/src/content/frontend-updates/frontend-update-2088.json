@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-2088",
+    "title":  "Listing cards support note",
+    "summary":  "Logged a frontend mini update for the listing cards surface to document another small product-facing change. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-06-11T16:01:17.598Z",
+    "tags":  [
+                 "frontend",
+                 "listing-cards",
+                 "support"
+             ]
+}
