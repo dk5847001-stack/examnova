@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-2111",
+    "title":  "Auth prompts visibility pass",
+    "summary":  "Logged a frontend mini update for the auth prompts surface to improve scan clarity. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-06-11T16:24:17.598Z",
+    "tags":  [
+                 "frontend",
+                 "auth-prompts",
+                 "visibility"
+             ]
+}
