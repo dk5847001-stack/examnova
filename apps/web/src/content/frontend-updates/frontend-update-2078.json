@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-2078",
+    "title":  "Auth prompts support note",
+    "summary":  "Logged a frontend mini update for the auth prompts surface to document another small product-facing change. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-06-11T15:51:17.598Z",
+    "tags":  [
+                 "frontend",
+                 "auth-prompts",
+                 "support"
+             ]
+}
