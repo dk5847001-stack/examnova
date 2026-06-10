@@ -1,0 +1,13 @@
+{
+    "id":  "frontend-update-2089",
+    "title":  "Auth prompts release marker",
+    "summary":  "Logged a frontend mini update for the auth prompts surface to signal one more shipped increment. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "frontend",
+    "status":  "live",
+    "publishedAt":  "2026-06-11T16:02:17.598Z",
+    "tags":  [
+                 "frontend",
+                 "auth-prompts",
+                 "release"
+             ]
+}
