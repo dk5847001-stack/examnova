@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-  [int]$Count = 110
+  [int]$Count = 110,
+  [switch]$SkipGit
 )
 
 Set-StrictMode -Version Latest
@@ -159,9 +160,11 @@ function New-UpdateDefinition {
 
 Push-Location $workspaceRoot
 try {
-  $workingTreeState = git status --porcelain
-  if ($workingTreeState) {
-    throw "Working tree must be clean before running batch updates."
+  if (-not $SkipGit) {
+    $workingTreeState = git status --porcelain
+    if ($workingTreeState) {
+      throw "Working tree must be clean before running batch updates."
+    }
   }
 
   $backendSequence = Get-NextSequence -DirectoryPath $backendDir -Prefix "backend-update"
@@ -177,9 +180,11 @@ try {
     Write-Host "Created $($definition.Id)"
     Start-Sleep -Milliseconds 250
 
-    Invoke-GitCommand -Arguments @("add", ".")
-    Invoke-GitCommand -Arguments @("commit", "-m", $definition.CommitMessage)
-    Invoke-GitCommand -Arguments @("push", "origin", "main")
+    if (-not $SkipGit) {
+      Invoke-GitCommand -Arguments @("add", ".")
+      Invoke-GitCommand -Arguments @("commit", "-m", $definition.CommitMessage)
+      Invoke-GitCommand -Arguments @("push", "origin", "main")
+    }
 
     if ($area -eq "backend") {
       $backendSequence += 1
