@@ -1,0 +1,13 @@
+{
+    "id":  "backend-update-2077",
+    "title":  "Feed sorting feed extension",
+    "summary":  "Logged a backend mini update for the feed sorting surface to expand the public update stream. This entry keeps the public shipping timeline growing in small, traceable steps.",
+    "area":  "backend",
+    "status":  "shipped",
+    "publishedAt":  "2026-06-20T17:01:06.958Z",
+    "tags":  [
+                 "backend",
+                 "feed-sorting",
+                 "feed"
+             ]
+}
