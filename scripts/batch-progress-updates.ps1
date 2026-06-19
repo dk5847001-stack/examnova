@@ -71,9 +71,23 @@ function Invoke-GitCommand {
     [string[]]$Arguments
   )
 
-  & git @Arguments
+  $attempt = 0
+  $maxAttempts = 4
+
+  do {
+    $attempt += 1
+    & git @Arguments
+    if ($LASTEXITCODE -eq 0) {
+      return
+    }
+
+    if ($attempt -lt $maxAttempts) {
+      Start-Sleep -Seconds $attempt
+    }
+  } while ($attempt -lt $maxAttempts)
+
   if ($LASTEXITCODE -ne 0) {
-    throw "git $($Arguments -join ' ') failed."
+    throw "git $($Arguments -join ' ') failed after $maxAttempts attempts."
   }
 }
 
@@ -161,6 +175,7 @@ try {
 
     Write-Utf8NoBomFile -Path $definition.FilePath -Content "$json`n"
     Write-Host "Created $($definition.Id)"
+    Start-Sleep -Milliseconds 250
 
     Invoke-GitCommand -Arguments @("add", ".")
     Invoke-GitCommand -Arguments @("commit", "-m", $definition.CommitMessage)
