@@ -6898,3 +6898,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 1724
 - Date: 2026-08-04
 - Note: Recorded small repository progress update 1724 for the checkout feedback and content delivery surfaces.
+
+## Update 1725
+- Date: 2026-08-04
+- Note: Recorded small repository progress update 1725 for the faq readability and document parsing surfaces.
