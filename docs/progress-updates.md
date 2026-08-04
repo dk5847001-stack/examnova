@@ -6882,3 +6882,7 @@ This log tracks intentionally small repository updates made as separate commits.
 ## Update 1720
 - Date: 2026-08-04
 - Note: Recorded small repository progress update 1720 for the upload progress and upload workflow surfaces.
+
+## Update 1721
+- Date: 2026-08-04
+- Note: Recorded small repository progress update 1721 for the account settings and notification payload surfaces.
